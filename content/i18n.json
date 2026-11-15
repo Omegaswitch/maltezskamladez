@@ -1,0 +1,512 @@
+{
+ "cs": {
+  "langName": "Čeština",
+  "skip": "Přejít na obsah",
+  "menu": "Menu",
+  "langLabel": "Jazyk",
+  "home": "Úvod",
+  "news": "Aktuality",
+  "contact": "Kontakt",
+  "inSection": "V této části",
+  "allNews": "Všechny aktuality",
+  "backToNews": "Zpět na aktuality",
+  "category": "Rubrika",
+  "allCategories": "Vše",
+  "year": "Rok",
+  "calendarLoading": "Načítá se kalendář…",
+  "calendarFallback": "Kalendář se nepodařilo načíst. Otevřete jej přímo na stránce AddCal:",
+  "subscribe": "Odebírat kalendář",
+  "subscribeNote": "Google, Apple, Outlook a další kalendáře; termíny se aktualizují samy.",
+  "fullCalendar": "Celý kalendář a odběr do telefonu",
+  "oneOrder": "Součást jednoho Řádu",
+  "oneOrderText": "Suverénní maltézský řád se sídlem v Římě působí ve více než 120 zemích. Je neutrální, nestranný a apolitický.",
+  "gmLink": "Velmistr, poslání a historie Řádu na orderofmalta.int",
+  "gmNews": "Zprávy z Velkého magisteria",
+  "privacy": "Ochrana osobních údajů",
+  "gdpr": "GDPR",
+  "notFound": "Stránka nenalezena",
+  "notFoundText": "Stránka na této adrese neexistuje. Mohla být přesunuta při obnově webu.",
+  "address": "Adresa",
+  "phone": "Telefon",
+  "email": "E-mail",
+  "map": "Mapa",
+  "status": {
+   "verified": "Ověřený obsah",
+   "existing": "Převzato ze stávajícího webu – čeká na revizi",
+   "new": "Nový text – čeká na schválení",
+   "approval": "Vyžaduje institucionální schválení",
+   "translation": "Překlad – čeká na kontrolu"
+  },
+  "months": [
+   "ledna",
+   "února",
+   "března",
+   "dubna",
+   "května",
+   "června",
+   "července",
+   "srpna",
+   "září",
+   "října",
+   "listopadu",
+   "prosince"
+  ],
+  "newsCzech": "Aktuality",
+  "morePages": "další stránky",
+  "breadcrumb": "Drobečková navigace",
+  "mottoLabel": "heslo Řádu",
+  "ico": "IČO",
+  "seat": "Sídlo",
+  "calendarTitle": "Kalendář",
+  "calendarLead": "Výlety, tábory, koncerty a další akce České maltézské mládeže. Kalendář si můžete přidat do telefonu, termíny se pak aktualizují samy.",
+  "homeLead": "Jsme skupina mládeže sdružující osoby s fyzickým či duševním handicapem, členy Českého velkopřevorství a dobrovolníky z celé České republiky.",
+  "homeText": "Naším hlavním cílem je organizace volnočasových a jiných dobročinných aktivit pro mladé handicapované, osoby jinak potřebné a pro pomáhající dobrovolníky. Česká maltézská mládež je dílem Českého velkopřevorství Suverénního maltézského řádu.",
+  "mottoGloss": "Ochrana víry a služba chudým a nemocným",
+  "homeLinks": [
+   "O nás",
+   "Naše aktivity",
+   "Kontakt"
+  ],
+  "service": "Zapojte se",
+  "serviceText": "Naše aktivity jsou otevřeny všem, kdo s námi chtějí vytvářet lepší podmínky pro ty, jimž pomáháme.",
+  "works": [
+   [
+    "Naše aktivity",
+    "Co děláme?",
+    "/nase-aktivity/"
+   ],
+   [
+    "Naše služby",
+    "Máte zájem o naše služby?",
+    "/mam-zajem-o-sluzby/"
+   ],
+   [
+    "Dobrovolníci",
+    "Chcete s námi spolupracovat?",
+    "/chci-byt-dobrovolnikem/"
+   ],
+   [
+    "Dary a podpora",
+    "Přemýšlíte, že nás podpoříte?",
+    "/jak-nas-podporit/"
+   ],
+   [
+    "Granty",
+    "Finanční pomoc handicapovaným osobám a jejich rodinám.",
+    "/granty-ceske-maltezske-mladeze/"
+   ]
+  ],
+  "newsInCzech": "",
+  "facebookLink": "Česká maltézská mládež na Facebooku",
+  "bank": "Číslo účtu",
+  "homeDescription": "Česká maltézská mládež: volnočasové a dobročinné aktivity pro mladé lidi s handicapem a pro dobrovolníky. Dílo Českého velkopřevorství Maltézského řádu."
+ },
+ "en": {
+  "langName": "English",
+  "skip": "Skip to content",
+  "menu": "Menu",
+  "langLabel": "Language",
+  "home": "Home",
+  "news": "News",
+  "contact": "Contact",
+  "inSection": "In this section",
+  "allNews": "All news",
+  "backToNews": "Back to news",
+  "category": "Category",
+  "allCategories": "All",
+  "year": "Year",
+  "calendarLoading": "Loading calendar…",
+  "calendarFallback": "The calendar could not be loaded. Open it directly on AddCal:",
+  "subscribe": "Subscribe to the calendar",
+  "subscribeNote": "Google, Apple, Outlook and other calendars; dates update automatically.",
+  "fullCalendar": "Full calendar and phone subscription",
+  "oneOrder": "One Order",
+  "oneOrderText": "The Sovereign Order of Malta, based in Rome, is present in more than 120 countries. It is neutral, impartial and apolitical.",
+  "gmLink": "The Grand Master, mission and history of the Order on orderofmalta.int",
+  "gmNews": "News from the Grand Magistry",
+  "privacy": "Privacy",
+  "gdpr": "GDPR",
+  "notFound": "Page not found",
+  "notFoundText": "There is no page at this address.",
+  "address": "Address",
+  "phone": "Phone",
+  "email": "Email",
+  "map": "Map",
+  "status": {
+   "verified": "Verified",
+   "existing": "Existing content – awaiting review",
+   "new": "New text – awaiting approval",
+   "approval": "Requires institutional approval",
+   "translation": "Translation – awaiting review"
+  },
+  "months": [
+   "January",
+   "February",
+   "March",
+   "April",
+   "May",
+   "June",
+   "July",
+   "August",
+   "September",
+   "October",
+   "November",
+   "December"
+  ],
+  "newsCzech": "News (in Czech)",
+  "morePages": "more pages",
+  "breadcrumb": "Breadcrumb",
+  "mottoLabel": "the Order's motto",
+  "ico": "Reg. no. (IČO)",
+  "seat": "Seat",
+  "calendarTitle": "Calendar",
+  "calendarLead": "Trips, camps, concerts and other events of the Czech Maltese Youth. Add the calendar to your phone to keep the dates up to date.",
+  "homeLead": "We are a youth group that brings together people with physical or mental disabilities, members of the Grand Priory of Bohemia and volunteers from all over the Czech Republic.",
+  "homeText": "Our main aim is to organise leisure and other charitable activities for young people with disabilities, for others in need and for the volunteers who help them. The Czech Maltese Youth is a work of the Grand Priory of Bohemia of the Sovereign Order of Malta.",
+  "mottoGloss": "Defence of the faith and service to the poor and the sick",
+  "homeLinks": [
+   "About us",
+   "Our activities",
+   "Contact"
+  ],
+  "service": "Get involved",
+  "serviceText": "Our activities are open to everyone who wants to help us create better conditions for the people we serve.",
+  "works": [
+   [
+    "Our activities",
+    "What do we do?",
+    "/nase-aktivity/"
+   ],
+   [
+    "Our services",
+    "Interested in our services?",
+    "/mam-zajem-o-sluzby/"
+   ],
+   [
+    "Volunteers",
+    "Would you like to work with us?",
+    "/chci-byt-dobrovolnikem/"
+   ],
+   [
+    "Donations and support",
+    "Thinking of supporting us?",
+    "/jak-nas-podporit/"
+   ],
+   [
+    "Grants",
+    "Financial help for people with disabilities and their families.",
+    "/granty-ceske-maltezske-mladeze/"
+   ]
+  ],
+  "newsInCzech": "News of the Czech Maltese Youth is published in Czech.",
+  "facebookLink": "Czech Maltese Youth on Facebook",
+  "bank": "Bank account",
+  "homeDescription": "Czech Maltese Youth: leisure and charitable activities for young people with disabilities and for volunteers. A work of the Grand Priory of Bohemia of the Order of Malta."
+ },
+ "fr": {
+  "langName": "Français",
+  "skip": "Aller au contenu",
+  "menu": "Menu",
+  "langLabel": "Langue",
+  "home": "Accueil",
+  "news": "Actualités",
+  "contact": "Contact",
+  "inSection": "Dans cette rubrique",
+  "allNews": "Toutes les actualités",
+  "backToNews": "Retour aux actualités",
+  "category": "Rubrique",
+  "allCategories": "Tout",
+  "year": "Année",
+  "calendarLoading": "Chargement du calendrier…",
+  "calendarFallback": "Le calendrier n'a pas pu être chargé. Ouvrez-le directement sur AddCal :",
+  "subscribe": "S'abonner au calendrier",
+  "subscribeNote": "Google, Apple, Outlook et autres agendas ; les dates se mettent à jour automatiquement.",
+  "fullCalendar": "Calendrier complet et abonnement sur téléphone",
+  "oneOrder": "Un seul Ordre",
+  "oneOrderText": "L'Ordre souverain de Malte, dont le siège est à Rome, est présent dans plus de 120 pays. Il est neutre, impartial et apolitique.",
+  "gmLink": "Le Grand Maître, la mission et l'histoire de l'Ordre sur orderofmalta.int",
+  "gmNews": "Actualités du Grand Magistère",
+  "privacy": "Données personnelles",
+  "gdpr": "RGPD",
+  "notFound": "Page introuvable",
+  "notFoundText": "Aucune page n'existe à cette adresse.",
+  "address": "Adresse",
+  "phone": "Téléphone",
+  "email": "Courriel",
+  "map": "Plan",
+  "status": {
+   "verified": "Vérifié",
+   "existing": "Contenu existant – à revoir",
+   "new": "Nouveau texte – à approuver",
+   "approval": "Approbation institutionnelle requise",
+   "translation": "Traduction – en attente de relecture"
+  },
+  "months": [
+   "janvier",
+   "février",
+   "mars",
+   "avril",
+   "mai",
+   "juin",
+   "juillet",
+   "août",
+   "septembre",
+   "octobre",
+   "novembre",
+   "décembre"
+  ],
+  "newsCzech": "Actualités (en tchèque)",
+  "morePages": "autres pages",
+  "breadcrumb": "Fil d'Ariane",
+  "mottoLabel": "devise de l'Ordre",
+  "ico": "N° d'identification (IČO)",
+  "seat": "Siège",
+  "calendarTitle": "Calendrier",
+  "calendarLead": "Sorties, camps, concerts et autres événements de la Jeunesse maltaise tchèque. Ajoutez le calendrier à votre téléphone pour garder les dates à jour.",
+  "homeLead": "Nous sommes un groupe de jeunes qui réunit des personnes en situation de handicap physique ou mental, des membres du Grand Prieuré de Bohême et des bénévoles de toute la République tchèque.",
+  "homeText": "Notre but principal est d'organiser des activités de loisirs et d'autres activités caritatives pour les jeunes en situation de handicap, pour d'autres personnes dans le besoin et pour les bénévoles qui les aident. La Jeunesse maltaise tchèque est une œuvre du Grand Prieuré de Bohême de l'Ordre souverain de Malte.",
+  "mottoGloss": "Défense de la foi et service des pauvres et des malades",
+  "homeLinks": [
+   "Qui sommes-nous",
+   "Nos activités",
+   "Contact"
+  ],
+  "service": "Participer",
+  "serviceText": "Nos activités sont ouvertes à tous ceux qui veulent créer avec nous de meilleures conditions pour les personnes que nous aidons.",
+  "works": [
+   [
+    "Nos activités",
+    "Que faisons-nous ?",
+    "/nase-aktivity/"
+   ],
+   [
+    "Nos services",
+    "Nos services vous intéressent ?",
+    "/mam-zajem-o-sluzby/"
+   ],
+   [
+    "Bénévoles",
+    "Vous souhaitez collaborer avec nous ?",
+    "/chci-byt-dobrovolnikem/"
+   ],
+   [
+    "Dons et soutien",
+    "Vous envisagez de nous soutenir ?",
+    "/jak-nas-podporit/"
+   ],
+   [
+    "Bourses",
+    "Aide financière aux personnes en situation de handicap et à leurs familles.",
+    "/granty-ceske-maltezske-mladeze/"
+   ]
+  ],
+  "newsInCzech": "Les actualités de la Jeunesse maltaise tchèque sont publiées en tchèque.",
+  "facebookLink": "La Jeunesse maltaise tchèque sur Facebook",
+  "bank": "Compte bancaire",
+  "homeDescription": "Jeunesse maltaise tchèque : activités de loisirs et activités caritatives pour les jeunes en situation de handicap et pour les bénévoles. Une œuvre du Grand Prieuré de Bohême de l'Ordre de Malte."
+ },
+ "it": {
+  "langName": "Italiano",
+  "skip": "Vai al contenuto",
+  "menu": "Menu",
+  "langLabel": "Lingua",
+  "home": "Home",
+  "news": "Notizie",
+  "contact": "Contatti",
+  "inSection": "In questa sezione",
+  "allNews": "Tutte le notizie",
+  "backToNews": "Torna alle notizie",
+  "category": "Categoria",
+  "allCategories": "Tutte",
+  "year": "Anno",
+  "calendarLoading": "Caricamento del calendario…",
+  "calendarFallback": "Impossibile caricare il calendario. Aprilo direttamente su AddCal:",
+  "subscribe": "Iscriviti al calendario",
+  "subscribeNote": "Google, Apple, Outlook e altri calendari; le date si aggiornano automaticamente.",
+  "fullCalendar": "Calendario completo e abbonamento sul telefono",
+  "oneOrder": "Un solo Ordine",
+  "oneOrderText": "Il Sovrano Ordine di Malta, con sede a Roma, è presente in più di 120 paesi. È neutrale, imparziale e apolitico.",
+  "gmLink": "Il Gran Maestro, la missione e la storia dell'Ordine su orderofmalta.int",
+  "gmNews": "Notizie dal Gran Magistero",
+  "privacy": "Privacy",
+  "gdpr": "GDPR",
+  "notFound": "Pagina non trovata",
+  "notFoundText": "Non esiste alcuna pagina a questo indirizzo.",
+  "address": "Indirizzo",
+  "phone": "Telefono",
+  "email": "E-mail",
+  "map": "Mappa",
+  "status": {
+   "verified": "Verificato",
+   "existing": "Contenuto esistente – da rivedere",
+   "new": "Nuovo testo – da approvare",
+   "approval": "Richiede approvazione istituzionale",
+   "translation": "Traduzione – in attesa di revisione"
+  },
+  "months": [
+   "gennaio",
+   "febbraio",
+   "marzo",
+   "aprile",
+   "maggio",
+   "giugno",
+   "luglio",
+   "agosto",
+   "settembre",
+   "ottobre",
+   "novembre",
+   "dicembre"
+  ],
+  "newsCzech": "Notizie (in ceco)",
+  "morePages": "altre pagine",
+  "breadcrumb": "Percorso",
+  "mottoLabel": "motto dell'Ordine",
+  "ico": "N. identificativo (IČO)",
+  "seat": "Sede",
+  "calendarTitle": "Calendario",
+  "calendarLead": "Gite, campi, concerti e altri eventi della Gioventù maltese ceca. Aggiungi il calendario al telefono per avere le date sempre aggiornate.",
+  "homeLead": "Siamo un gruppo di giovani che riunisce persone con disabilità fisica o mentale, membri del Gran Priorato di Boemia e volontari di tutta la Repubblica Ceca.",
+  "homeText": "Il nostro scopo principale è organizzare attività ricreative e altre attività caritative per i giovani con disabilità, per altre persone nel bisogno e per i volontari che li aiutano. La Gioventù maltese ceca è un'opera del Gran Priorato di Boemia del Sovrano Ordine di Malta.",
+  "mottoGloss": "Difesa della fede e servizio ai poveri e ai malati",
+  "homeLinks": [
+   "Chi siamo",
+   "Le nostre attività",
+   "Contatti"
+  ],
+  "service": "Partecipa",
+  "serviceText": "Le nostre attività sono aperte a tutti coloro che vogliono creare con noi condizioni migliori per le persone che aiutiamo.",
+  "works": [
+   [
+    "Le nostre attività",
+    "Che cosa facciamo?",
+    "/nase-aktivity/"
+   ],
+   [
+    "I nostri servizi",
+    "Vi interessano i nostri servizi?",
+    "/mam-zajem-o-sluzby/"
+   ],
+   [
+    "Volontari",
+    "Volete collaborare con noi?",
+    "/chci-byt-dobrovolnikem/"
+   ],
+   [
+    "Donazioni e sostegno",
+    "Pensate di sostenerci?",
+    "/jak-nas-podporit/"
+   ],
+   [
+    "Contributi",
+    "Aiuto economico alle persone con disabilità e alle loro famiglie.",
+    "/granty-ceske-maltezske-mladeze/"
+   ]
+  ],
+  "newsInCzech": "Le notizie della Gioventù maltese ceca sono pubblicate in ceco.",
+  "facebookLink": "La Gioventù maltese ceca su Facebook",
+  "bank": "Conto bancario",
+  "homeDescription": "Gioventù maltese ceca: attività ricreative e caritative per i giovani con disabilità e per i volontari. Un'opera del Gran Priorato di Boemia dell'Ordine di Malta."
+ },
+ "de": {
+  "langName": "Deutsch",
+  "skip": "Zum Inhalt",
+  "menu": "Menü",
+  "langLabel": "Sprache",
+  "home": "Startseite",
+  "news": "Nachrichten",
+  "contact": "Kontakt",
+  "inSection": "In diesem Bereich",
+  "allNews": "Alle Nachrichten",
+  "backToNews": "Zurück zu den Nachrichten",
+  "category": "Rubrik",
+  "allCategories": "Alle",
+  "year": "Jahr",
+  "calendarLoading": "Kalender wird geladen…",
+  "calendarFallback": "Der Kalender konnte nicht geladen werden. Öffnen Sie ihn direkt bei AddCal:",
+  "subscribe": "Kalender abonnieren",
+  "subscribeNote": "Google, Apple, Outlook und andere Kalender; Termine aktualisieren sich automatisch.",
+  "fullCalendar": "Vollständiger Kalender und Abo fürs Telefon",
+  "oneOrder": "Ein Orden",
+  "oneOrderText": "Der Souveräne Malteserorden mit Sitz in Rom ist in mehr als 120 Ländern tätig. Er ist neutral, unparteiisch und unpolitisch.",
+  "gmLink": "Großmeister, Mission und Geschichte des Ordens auf orderofmalta.int",
+  "gmNews": "Nachrichten des Großmagisteriums",
+  "privacy": "Datenschutz",
+  "gdpr": "DSGVO",
+  "notFound": "Seite nicht gefunden",
+  "notFoundText": "Unter dieser Adresse gibt es keine Seite.",
+  "address": "Adresse",
+  "phone": "Telefon",
+  "email": "E-Mail",
+  "map": "Karte",
+  "status": {
+   "verified": "Geprüft",
+   "existing": "Bestehender Inhalt – Prüfung ausstehend",
+   "new": "Neuer Text – Freigabe ausstehend",
+   "approval": "Institutionelle Freigabe erforderlich",
+   "translation": "Übersetzung – Prüfung ausstehend"
+  },
+  "months": [
+   "Januar",
+   "Februar",
+   "März",
+   "April",
+   "Mai",
+   "Juni",
+   "Juli",
+   "August",
+   "September",
+   "Oktober",
+   "November",
+   "Dezember"
+  ],
+  "newsCzech": "Aktuelles (auf Tschechisch)",
+  "morePages": "weitere Seiten",
+  "breadcrumb": "Brotkrumen-Navigation",
+  "mottoLabel": "Wahlspruch des Ordens",
+  "ico": "Identifikationsnummer (IČO)",
+  "seat": "Sitz",
+  "calendarTitle": "Kalender",
+  "calendarLead": "Ausflüge, Lager, Konzerte und weitere Veranstaltungen der Tschechischen Malteserjugend. Fügen Sie den Kalender Ihrem Telefon hinzu, damit die Termine aktuell bleiben.",
+  "homeLead": "Wir sind eine Jugendgruppe, die Menschen mit körperlicher oder geistiger Behinderung, Mitglieder des Großpriorats Böhmen und Freiwillige aus der ganzen Tschechischen Republik zusammenbringt.",
+  "homeText": "Unser Hauptziel ist es, Freizeit- und andere karitative Aktivitäten für junge Menschen mit Behinderung, für andere Bedürftige und für die helfenden Freiwilligen zu organisieren. Die Tschechische Malteserjugend ist ein Werk des Großpriorats Böhmen des Souveränen Malteserordens.",
+  "mottoGloss": "Bezeugung des Glaubens und Hilfe den Bedürftigen",
+  "homeLinks": [
+   "Über uns",
+   "Unsere Aktivitäten",
+   "Kontakt"
+  ],
+  "service": "Mitmachen",
+  "serviceText": "Unsere Aktivitäten stehen allen offen, die mit uns bessere Bedingungen für die Menschen schaffen wollen, denen wir helfen.",
+  "works": [
+   [
+    "Unsere Aktivitäten",
+    "Was machen wir?",
+    "/nase-aktivity/"
+   ],
+   [
+    "Unsere Dienste",
+    "Interessieren Sie sich für unsere Dienste?",
+    "/mam-zajem-o-sluzby/"
+   ],
+   [
+    "Freiwillige",
+    "Möchten Sie mit uns zusammenarbeiten?",
+    "/chci-byt-dobrovolnikem/"
+   ],
+   [
+    "Spenden und Unterstützung",
+    "Überlegen Sie, uns zu unterstützen?",
+    "/jak-nas-podporit/"
+   ],
+   [
+    "Zuschüsse",
+    "Finanzielle Hilfe für Menschen mit Behinderung und ihre Familien.",
+    "/granty-ceske-maltezske-mladeze/"
+   ]
+  ],
+  "newsInCzech": "Die Nachrichten der Tschechischen Malteserjugend erscheinen auf Tschechisch.",
+  "facebookLink": "Die Tschechische Malteserjugend auf Facebook",
+  "bank": "Bankverbindung",
+  "homeDescription": "Tschechische Malteserjugend: Freizeit- und karitative Aktivitäten für junge Menschen mit Behinderung und für Freiwillige. Ein Werk des Großpriorats Böhmen des Malteserordens."
+ }
+}

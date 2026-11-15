@@ -1,0 +1,187 @@
+{
+ "baseUrl": "https://cmm.maltezskyrad.cz",
+ "addcal": {
+  "calendarUid": "",
+  "publicUrl": "",
+  "script": "https://cdn.addcal.co/embed/v3/calendar.min.js"
+ },
+ "names": {
+  "cs": {
+   "order": "Suverénní vojenský špitální řád svatého Jana Jeruzalémského, z Rhodu a z Malty",
+   "orderShort": "Suverénní maltézský řád",
+   "orderActivities": "Maltézský řád",
+   "entity": "Česká maltézská mládež",
+   "site": "Maltézský řád – Česká maltézská mládež",
+   "lockup": "Maltézský řád – Česká republika"
+  },
+  "en": {
+   "order": "Sovereign Military Hospitaller Order of St. John of Jerusalem of Rhodes and of Malta",
+   "orderShort": "Sovereign Order of Malta",
+   "orderActivities": "Order of Malta",
+   "entity": "Czech Maltese Youth",
+   "site": "Order of Malta – Czech Maltese Youth",
+   "lockup": "Order of Malta – Czech Republic"
+  },
+  "fr": {
+   "order": "Ordre Souverain Militaire et Hospitalier de Saint-Jean de Jérusalem de Rhodes et de Malte",
+   "orderShort": "Ordre souverain de Malte",
+   "orderActivities": "Ordre de Malte",
+   "entity": "Jeunesse maltaise tchèque",
+   "site": "Ordre de Malte – Jeunesse maltaise tchèque",
+   "lockup": "Ordre de Malte – République tchèque"
+  },
+  "it": {
+   "order": "Sovrano Militare Ordine Ospedaliero di San Giovanni di Gerusalemme di Rodi e di Malta",
+   "orderShort": "Sovrano Ordine di Malta",
+   "orderActivities": "Ordine di Malta",
+   "entity": "Gioventù maltese ceca",
+   "site": "Ordine di Malta – Gioventù maltese ceca",
+   "lockup": "Ordine di Malta – Repubblica Ceca"
+  },
+  "de": {
+   "order": "Souveräner Ritter- und Hospitalorden vom Heiligen Johannes von Jerusalem von Rhodos und von Malta",
+   "orderShort": "Souveräner Malteserorden",
+   "orderActivities": "Malteserorden",
+   "entity": "Tschechische Malteserjugend",
+   "site": "Malteserorden – Tschechische Malteserjugend",
+   "lockup": "Der Malteserorden – Tschechische Republik"
+  }
+ },
+ "languages": [
+  "cs",
+  "en",
+  "fr",
+  "it",
+  "de"
+ ],
+ "contact": {
+  "legalName": "Česká maltézská mládež, z.s.",
+  "ico": "06519555",
+  "street": "Velkopřevorské náměstí 485/4",
+  "postalCode": "118 00",
+  "locality": "Praha 1",
+  "address": "Velkopřevorské náměstí 485/4, Malá Strana, 118 00 Praha 1",
+  "addressIntl": "Velkopřevorské náměstí 485/4, Malá Strana, 118 00 Prague 1, Czech Republic",
+  "phones": [
+   "+420 724 047 401",
+   "+420 607 827 014"
+  ],
+  "email": "mladez@maltezskamladez.cz",
+  "mapUrl": "https://www.openstreetmap.org/search?query=Velkop%C5%99evorsk%C3%A9%20n%C3%A1m%C4%9Bst%C3%AD%204%2C%20Praha",
+  "bank": {
+   "account": "7605192/0800",
+   "iban": "CZ50 0800 0000 0000 0760 5192",
+   "bic": "GIBACZPXXXX"
+  }
+ },
+ "parent": {
+  "name": "České velkopřevorství",
+  "url": "https://www.maltezskyrad.cz/"
+ },
+ "gdpr": {
+  "principles": "https://www.maltezskyrad.cz/gdpr/zasady-pro-zpracovani-osobnich-udaju-cmm/",
+  "consent": "https://www.maltezskyrad.cz/gdpr/maltezska-mladez/"
+ },
+ "social": [
+  {
+   "label": "Facebook",
+   "url": "https://www.facebook.com/maltezskamladez/",
+   "owner": "Česká maltézská mládež"
+  }
+ ],
+ "gm": {
+  "cs": {
+   "home": "https://www.orderofmalta.int/",
+   "news": "https://www.orderofmalta.int/news/",
+   "feed": "https://www.orderofmalta.int/news/feed/?lang=en"
+  },
+  "en": {
+   "home": "https://www.orderofmalta.int/",
+   "mission": "https://www.orderofmalta.int/about-the-order-of-malta/mission/",
+   "spirituality": "https://www.orderofmalta.int/about-the-order-of-malta/spiritual-commitment/",
+   "history": "https://www.orderofmalta.int/history/",
+   "grandMaster": "https://www.orderofmalta.int/government/grand-master/",
+   "faq": "https://www.orderofmalta.int/about-the-order-of-malta/faq/",
+   "news": "https://www.orderofmalta.int/news/",
+   "contacts": "https://www.orderofmalta.int/contacts/",
+   "feed": "https://www.orderofmalta.int/news/feed/?lang=en"
+  },
+  "fr": {
+   "home": "https://www.orderofmalta.int/fr/",
+   "mission": "https://www.orderofmalta.int/fr/l-ordre-de-malte/mission/",
+   "spirituality": "https://www.orderofmalta.int/fr/l-ordre-de-malte/engagement-spirituel/",
+   "history": "https://www.orderofmalta.int/fr/histoire/",
+   "grandMaster": "https://www.orderofmalta.int/fr/gouvernement/grand-maitre/",
+   "faq": "https://www.orderofmalta.int/fr/l-ordre-de-malte/faq/",
+   "news": "https://www.orderofmalta.int/fr/actualites/",
+   "contacts": "https://www.orderofmalta.int/fr/contacts/",
+   "feed": "https://www.orderofmalta.int/fr/actualites/feed/?lang=fr"
+  },
+  "it": {
+   "home": "https://www.orderofmalta.int/it/",
+   "mission": "https://www.orderofmalta.int/it/l-ordine-di-malta/missione/",
+   "spirituality": "https://www.orderofmalta.int/it/l-ordine-di-malta/impegno-spirituale/",
+   "history": "https://www.orderofmalta.int/it/storia/",
+   "grandMaster": "https://www.orderofmalta.int/it/governo/gran-maestro/",
+   "faq": "https://www.orderofmalta.int/it/l-ordine-di-malta/faq/",
+   "news": "https://www.orderofmalta.int/it/notizie/",
+   "contacts": "https://www.orderofmalta.int/it/contatti/",
+   "feed": "https://www.orderofmalta.int/it/notizie/feed/?lang=it"
+  },
+  "de": {
+   "home": "https://www.orderofmalta.int/de/",
+   "mission": "https://www.orderofmalta.int/de/der-malteserorden/mission/",
+   "spirituality": "https://www.orderofmalta.int/de/der-malteserorden/spirituelles-engagement/",
+   "history": "https://www.orderofmalta.int/de/geschichte/",
+   "grandMaster": "https://www.orderofmalta.int/de/regierung/grossmeister/",
+   "faq": "https://www.orderofmalta.int/de/der-malteserorden/faq/",
+   "news": "https://www.orderofmalta.int/de/nachrichten/",
+   "contacts": "https://www.orderofmalta.int/de/kontakte/",
+   "feed": "https://www.orderofmalta.int/de/nachrichten/feed/?lang=de"
+  }
+ },
+ "nav": [
+  {
+   "title": "O nás",
+   "url": "/kdo-jsme/"
+  },
+  {
+   "title": "Naše aktivity",
+   "url": "/nase-aktivity/"
+  },
+  {
+   "title": "Mám zájem o služby",
+   "url": "/mam-zajem-o-sluzby/"
+  },
+  {
+   "title": "Granty",
+   "url": "/granty-ceske-maltezske-mladeze/",
+   "children": [
+    {
+     "url": "/pravidla-pro-udelovani-grantu/"
+    }
+   ]
+  },
+  {
+   "title": "Chci být dobrovolníkem",
+   "url": "/chci-byt-dobrovolnikem/"
+  },
+  {
+   "title": "Jak nás podpořit",
+   "url": "/jak-nas-podporit/"
+  },
+  {
+   "title": "Aktuality",
+   "url": "/aktuality/"
+  },
+  {
+   "title": "Kontakt",
+   "url": "/kontakt/"
+  }
+ ],
+ "newsCategories": {
+  "nezarazene": "Zprávy",
+  "galerie": "Galerie"
+ },
+ "defaultCategory": "nezarazene"
+}
