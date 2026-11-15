@@ -257,6 +257,12 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(meta(lastCommit()[0].content).authorId, undefined);
   assert.strictEqual(meta(lastCommit()[0].content).author, "Jana");
 
+  // a body with a line ending in --- is not cut short
+  stored["content/news/2018/09/17/pomlcky.html"] = `---\n${JSON.stringify({ title: "Pomlčky", url: "/2018/09/17/pomlcky/", date: "2018-09-17T10:00", categories: [CAT], excerpt: "x", imported: true }, null, 1)}\n---\n<p>ok ---\nafter</p>\n<p>Konec.</p>\n`;
+  const dashed = await call("POST", { action: "load", path: "content/news/2018/09/17/pomlcky.html" }, O);
+  assert.strictEqual(dashed.status, 200);
+  assert.strictEqual(dashed.body.body, "<p>ok ---\nafter</p>\n<p>Konec.</p>");
+
   // ---- deleting: the author or an admin
   assert.strictEqual((await call("POST", { action: "delete", path: "../../.env" }, A)).status, 400);
   assert.strictEqual((await call("POST", { action: "delete", path: "content/news/2026/11/02/nic.html" }, A)).status, 404);

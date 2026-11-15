@@ -199,7 +199,9 @@ const editable = (html) => !/<(figure|figcaption|table|hr|h4|h5|div|iframe|video
 async function readNews(path) {
   const text = await readFile(path);
   if (text == null) return null;
-  const [, meta, body] = text.split("---\n");
+  const parts = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);  // the first two delimiters only: a later line ending in --- belongs to the body
+  if (!parts) throw new Error("no front matter in " + path);
+  const [, meta, body] = parts;
   const attachments = [];
   const content = (body || "").replace(FILE_P, (_, url, label, ext) => { attachments.push({ url, label, ext }); return ""; }).trim();
   return { meta: JSON.parse(meta), body: content, attachments };
