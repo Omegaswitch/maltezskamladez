@@ -12,7 +12,9 @@ People sign in with their e-mail address and a password (Better Auth, `api/_auth
 | | editor | admin | owner |
 |---|---|---|---|
 | write, save a draft, schedule, publish | ✅ | ✅ | ✅ |
-| edit or delete a post | own only | any | any |
+| edit a post | own, and imported ones | any | any |
+| delete a post | own only | any | any |
+| delete an imported post (no author id) | ❌ | ✅ | ✅ |
 | pin a notice to the home page | – | ✅ | ✅ |
 | add and remove people, set a new password for someone | – | – | ✅ |
 | two-step sign-in (code from an authenticator app) | optional | **required** | **required** |

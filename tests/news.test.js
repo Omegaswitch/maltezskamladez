@@ -264,6 +264,12 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(dashed.body.body, "<p>ok ---\nafter</p>\n<p>Konec.</p>");
 
   // ---- deleting: the author or an admin
+  // an imported post (no author id) is deleted only by an admin or owner
+  assert.strictEqual((await call("POST", { action: "delete", path: "content/news/2018/09/17/pomlcky.html" }, E)).status, 403);
+  assert.strictEqual((await call("POST", { action: "delete", path: "content/news/2018/09/17/pomlcky.html" }, O)).status, 403);
+  assert.strictEqual(stored["content/news/2018/09/17/pomlcky.html"] != null, true);
+  assert.strictEqual((await call("POST", { action: "delete", path: "content/news/2018/09/17/pomlcky.html" }, A)).status, 200);
+  assert.strictEqual(stored["content/news/2018/09/17/pomlcky.html"], undefined);
   assert.strictEqual((await call("POST", { action: "delete", path: "../../.env" }, A)).status, 400);
   assert.strictEqual((await call("POST", { action: "delete", path: "content/news/2026/11/02/nic.html" }, A)).status, 404);
   const del = await call("POST", { action: "delete", path }, E);

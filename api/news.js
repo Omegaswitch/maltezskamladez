@@ -2,7 +2,8 @@
 // one (each request stays under Vercel's 4.5 MB body limit) and publish. An article is committed to the main branch
 // as content/news/YYYY/MM/DD/slug.html, its files to static/media/YYYY/MM/; Vercel then rebuilds the site.
 //
-// Who may do what: an editor changes their own posts, an admin or owner any post. Admins and owners must have
+// Who may do what: an editor changes their own posts (and edits imported ones), an admin or owner any post and
+// deletes imported ones. Admins and owners must have
 // two-step sign-in switched on; until then every action here is refused ("2fa"). Every change is refused unless it
 // comes from this site's own pages (Origin). Who did what is kept twice: in the post's front matter ("audit") and
 // in the commit ("Audit-…" trailers). The list of all posts, drafts included, is served only to a signed-in person
@@ -236,7 +237,8 @@ async function remove(body, user) {
   if (!NEWS_PATH.test(body.path || "")) return [400, { error: "path" }];
   const n = await readNews(body.path);
   if (!n) return [404, { error: "gone" }];
-  if (!mayChange(user, n.meta)) return [403, { error: "forbidden" }];
+  // an imported post has no author id: editing it is open to editors, deleting it only to admins and owners
+  if (!mayChange(user, n.meta) || (!n.meta.authorId && user.role !== "admin")) return [403, { error: "forbidden" }];
   await commit([{ path: body.path, delete: true }], `Smazána aktualita: ${n.meta.title} (${user.name})`, user, "delete");
   await notify(`Smazaná aktualita: ${n.meta.title}`, `<p>${esc(user.name)} smazal(a) aktualitu <b>${esc(n.meta.title)}</b> (${esc(n.meta.url)}).</p>`);
   return [200, { url: n.meta.url }];

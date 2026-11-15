@@ -216,7 +216,7 @@
       if (p.draft || p.date.slice(0, 10) > today()) li.classList.add("ne-unpublished");
       li.querySelector(".btn").onclick = function () { edit(p); };
       var delBtn = li.querySelector(".ne-del");
-      if (mine(p)) delBtn.onclick = function () { del(p, li); }; else delBtn.remove();
+      if (state.role === "admin" || (p.authorId && mine(p))) delBtn.onclick = function () { del(p, li); }; else delBtn.remove();
       ul.appendChild(li);
     });
     if (!items.length) ul.innerHTML = '<li class="ne-list-empty">Nic nenalezeno.</li>';
