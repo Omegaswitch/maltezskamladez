@@ -1,0 +1,26 @@
+{
+ "/kdo-jsme/": {
+  "url": "/fr/qui-sommes-nous/",
+  "title": "Qui sommes-nous",
+  "description": "La Jeunesse maltaise tchèque : un groupe de jeunes réunissant des personnes en situation de handicap, des membres du Grand Prieuré de Bohême et des bénévoles.",
+  "body": "<p>Nous sommes un groupe de jeunes qui réunit des personnes en situation de handicap physique ou mental, des membres du Grand Prieuré de Bohême et des bénévoles de toute la République tchèque. En tant qu'organisation relevant de l'Ordre souverain de Malte, nous suivons dans notre action, dans l'esprit de l'Ordre, les principes de la foi catholique ; nos activités sont toutefois ouvertes à tous ceux qui veulent créer avec nous de meilleures conditions pour les personnes que nous aidons. De même, selon la tradition de l'Ordre de Malte, notre aide est offerte à tous sans distinction.</p>\n<p>Notre but principal est d'organiser des activités de loisirs et d'autres activités caritatives pour les jeunes en situation de handicap, pour d'autres personnes dans le besoin et pour les bénévoles qui les aident.</p>\n<p>Parmi nos activités principales figurent l'organisation régulière de sorties, d'excursions et de manifestations spirituelles, sportives et culturelles, ainsi que la participation de jeunes en situation de handicap au camp d'été international « Malta Camp ».</p>\n<p>La formation des bénévoles fait partie intégrante de notre travail, de même que l'organisation d'événements destinés à réunir des fonds pour soutenir notre action.</p>"
+ },
+ "/nase-aktivity/": {
+  "url": "/fr/activites/",
+  "title": "Nos activités",
+  "description": "Ce que fait la Jeunesse maltaise tchèque : sorties, week-ends sur l'eau, Malta Camp, vente caritative de punch, concerts et formation des bénévoles.",
+  "body": "<ul>\n<li>Sorties régulières pour les jeunes en situation de handicap</li>\n<li>« Společně na vodu » (Ensemble sur l'eau)</li>\n<li>Malta Camp</li>\n<li>Vente caritative du punch maltais</li>\n<li>Concerts caritatifs réguliers et autres manifestations culturelles</li>\n<li>Formations des bénévoles, rencontres spirituelles des bénévoles, ateliers</li>\n<li>Autres projets</li>\n</ul>"
+ },
+ "/kontakt/": {
+  "url": "/fr/contact/",
+  "title": "Contact",
+  "description": "Coordonnées de la Jeunesse maltaise tchèque : adresse, e-mail, téléphone, Facebook et compte bancaire.",
+  "body": ""
+ },
+ "/ochrana-osobnich-udaju/": {
+  "url": "/fr/confidentialite/",
+  "title": "Données personnelles",
+  "description": "Comment le site de la Jeunesse maltaise tchèque traite les données personnelles : ni cookies ni suivi des visiteurs.",
+  "body": "<h2>Responsable du traitement</h2>\n<p>Le responsable du traitement est Česká maltézská mládež, z.s. (Jeunesse maltaise tchèque), n° d'identification (IČO) 06519555, Velkopřevorské náměstí 485/4, Malá Strana, 118 00 Prague 1, République tchèque. Veuillez adresser vos questions et demandes à <a href=\"mailto:mladez@maltezskamladez.cz\">mladez@maltezskamladez.cz</a> ou à cette adresse.</p>\n<h2>Cookies et mesure d'audience</h2>\n<p>Ce site n'utilise ni cookies ni outils d'analyse ou de publicité et ne suit pas les visiteurs. Les polices et les images sont chargées depuis ce site.</p>\n<h2>Hébergement</h2>\n<p>Le site est hébergé sur les serveurs de Vercel Inc. (États-Unis). À chaque visite, ceux-ci traitent les données nécessaires pour livrer la page et protéger le site contre les abus (adresse IP, heure et adresse de la requête, informations sur le navigateur). La base juridique est notre intérêt légitime à exploiter le site en toute sécurité (art. 6, par. 1, point f) du RGPD). Les transferts vers les États-Unis reposent sur le cadre de protection des données UE–États-Unis. Voir la <a href=\"https://vercel.com/legal/privacy-notice\">politique de confidentialité de Vercel</a>.</p>\n<h2>Photographies</h2>\n<p>Les actualités contiennent des photographies de nos événements. Si vous ne souhaitez pas qu'une photographie de vous ou de votre enfant reste sur le site, écrivez-nous à <a href=\"mailto:mladez@maltezskamladez.cz\">mladez@maltezskamladez.cz</a> et nous la retirerons.</p>\n<h2>Vos droits</h2>\n<p>Vous disposez d'un droit d'accès à vos données, de rectification, d'effacement, de limitation du traitement et de portabilité, ainsi que du droit de vous opposer au traitement fondé sur l'intérêt légitime. Vous pouvez introduire une réclamation auprès de l'autorité tchèque de protection des données, Úřad pro ochranu osobních údajů, <a href=\"https://uoou.gov.cz/\">uoou.gov.cz</a>.</p>\n<p>La <a href=\"/ochrana-osobnich-udaju/\" hreflang=\"cs\">version tchèque</a> de cette notice est complète et fait foi.</p>"
+ }
+}

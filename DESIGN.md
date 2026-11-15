@@ -1,6 +1,6 @@
 ---
-name: maltezskyrad.cz
-description: Official site of the Czech Grand Priory of the Sovereign Order of Malta, inside the Grand Magistry frame
+name: Česká maltézská mládež
+description: Site of Česká maltézská mládež, a work of the Czech Grand Priory of the Sovereign Order of Malta, inside the Grand Magistry frame; design system shared with maltezskyrad.cz
 colors:
   magistry-red: "#e31a18"
   magistry-red-pressed: "#c41513"
@@ -131,7 +131,9 @@ components:
     padding: "0 4px"
 ---
 
-# Design System: maltezskyrad.cz
+# Design System: Česká maltézská mládež
+
+This is the design system of the Grand Priory's site (maltezskyrad.cz), used here unchanged. Where it speaks of the Priory, read Česká maltézská mládež; this site shows the red shield only (no armorial bearing), and its calendar block appears only once an AddCal calendar is set in `content/site.json`.
 
 ## Overview
 

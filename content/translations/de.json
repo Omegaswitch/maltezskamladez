@@ -1,0 +1,26 @@
+{
+ "/kdo-jsme/": {
+  "url": "/de/ueber-uns/",
+  "title": "Über uns",
+  "description": "Die Tschechische Malteserjugend: eine Jugendgruppe aus Menschen mit Behinderung, Mitgliedern des Großpriorats Böhmen und Freiwilligen.",
+  "body": "<p>Wir sind eine Jugendgruppe, die Menschen mit körperlicher oder geistiger Behinderung, Mitglieder des Großpriorats Böhmen und Freiwillige aus der ganzen Tschechischen Republik zusammenbringt. Als Organisation, die zum Souveränen Malteserorden gehört, richten wir unsere Tätigkeit in seinem Geist nach den Grundsätzen des katholischen Glaubens aus; unsere Aktivitäten stehen jedoch allen offen, die mit uns bessere Bedingungen für die Menschen schaffen wollen, denen wir helfen. Ebenso wird unsere Hilfe nach der Tradition des Malteserordens allen ohne Unterschied angeboten.</p>\n<p>Unser Hauptziel ist es, Freizeit- und andere karitative Aktivitäten für junge Menschen mit Behinderung, für andere Bedürftige und für die helfenden Freiwilligen zu organisieren.</p>\n<p>Zu den wichtigsten Tätigkeiten gehören regelmäßige Ausflüge, Exkursionen sowie geistliche, sportliche und kulturelle Veranstaltungen und die Teilnahme junger Menschen mit Behinderung am internationalen Sommerlager „Malta Camp“.</p>\n<p>Ein fester Bestandteil unserer Arbeit ist die Ausbildung der Freiwilligen sowie die Organisation von Veranstaltungen, um Mittel zur Unterstützung unserer Tätigkeit zu gewinnen.</p>"
+ },
+ "/nase-aktivity/": {
+  "url": "/de/aktivitaeten/",
+  "title": "Unsere Aktivitäten",
+  "description": "Was die Tschechische Malteserjugend macht: Ausflüge, Wochenenden auf dem Wasser, Malta Camp, Benefiz-Punschverkauf, Konzerte und Schulungen für Freiwillige.",
+  "body": "<ul>\n<li>Regelmäßige Ausflüge für junge Menschen mit Behinderung</li>\n<li>„Společně na vodu“ (Gemeinsam aufs Wasser)</li>\n<li>Malta Camp</li>\n<li>Benefizverkauf des Malteserpunschs</li>\n<li>Regelmäßige Benefizkonzerte und weitere Kulturveranstaltungen</li>\n<li>Schulungen für Freiwillige, geistliche Treffen der Freiwilligen, Workshops</li>\n<li>Weitere Projekte</li>\n</ul>"
+ },
+ "/kontakt/": {
+  "url": "/de/kontakt/",
+  "title": "Kontakt",
+  "description": "Kontaktdaten der Tschechischen Malteserjugend: Adresse, E-Mail, Telefon, Facebook und Bankverbindung.",
+  "body": ""
+ },
+ "/ochrana-osobnich-udaju/": {
+  "url": "/de/datenschutz/",
+  "title": "Datenschutz",
+  "description": "Wie die Website der Tschechischen Malteserjugend mit personenbezogenen Daten umgeht: keine Cookies, kein Tracking der Besucher.",
+  "body": "<h2>Verantwortlicher</h2>\n<p>Verantwortlicher ist Česká maltézská mládež, z.s. (Tschechische Malteserjugend), Identifikationsnummer (IČO) 06519555, Velkopřevorské náměstí 485/4, Malá Strana, 118 00 Prag 1, Tschechische Republik. Fragen und Anträge richten Sie bitte an <a href=\"mailto:mladez@maltezskamladez.cz\">mladez@maltezskamladez.cz</a> oder an diese Adresse.</p>\n<h2>Cookies und Reichweitenmessung</h2>\n<p>Diese Website verwendet weder Cookies noch Analyse- oder Werbewerkzeuge und verfolgt die Besucher nicht. Schriften und Bilder werden von dieser Website selbst geladen.</p>\n<h2>Hosting</h2>\n<p>Die Website läuft auf den Servern von Vercel Inc. (USA). Bei jedem Besuch verarbeiten diese die Daten, die zur Auslieferung der Seite und zum Schutz der Website vor Missbrauch nötig sind (IP-Adresse, Zeit und Adresse der Anfrage, Angaben zum Browser). Rechtsgrundlage ist unser berechtigtes Interesse am sicheren Betrieb der Website (Art. 6 Abs. 1 lit. f DSGVO). Übermittlungen in die USA stützen sich auf das EU-US-Datenschutzrahmenabkommen. Siehe die <a href=\"https://vercel.com/legal/privacy-notice\">Datenschutzhinweise von Vercel</a>.</p>\n<h2>Fotografien</h2>\n<p>Die Nachrichten enthalten Fotografien von unseren Veranstaltungen. Wenn Sie nicht möchten, dass ein Foto von Ihnen oder Ihrem Kind auf der Website bleibt, schreiben Sie uns an <a href=\"mailto:mladez@maltezskamladez.cz\">mladez@maltezskamladez.cz</a>, und wir entfernen es.</p>\n<h2>Ihre Rechte</h2>\n<p>Sie haben das Recht auf Auskunft über Ihre Daten, auf Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit sowie das Recht, der Verarbeitung auf Grundlage des berechtigten Interesses zu widersprechen. Sie können Beschwerde bei der tschechischen Datenschutzbehörde einlegen, Úřad pro ochranu osobních údajů, <a href=\"https://uoou.gov.cz/\">uoou.gov.cz</a>.</p>\n<p>Die <a href=\"/ochrana-osobnich-udaju/\" hreflang=\"cs\">tschechische Fassung</a> dieses Hinweises ist vollständig und maßgeblich.</p>"
+ }
+}

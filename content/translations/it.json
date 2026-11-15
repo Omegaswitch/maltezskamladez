@@ -1,0 +1,26 @@
+{
+ "/kdo-jsme/": {
+  "url": "/it/chi-siamo/",
+  "title": "Chi siamo",
+  "description": "La Gioventù maltese ceca: un gruppo di giovani che riunisce persone con disabilità, membri del Gran Priorato di Boemia e volontari.",
+  "body": "<p>Siamo un gruppo di giovani che riunisce persone con disabilità fisica o mentale, membri del Gran Priorato di Boemia e volontari di tutta la Repubblica Ceca. In quanto organizzazione che appartiene al Sovrano Ordine di Malta, seguiamo nella nostra attività, nello spirito dell'Ordine, i principi della fede cattolica; le nostre attività sono tuttavia aperte a tutti coloro che vogliono creare con noi condizioni migliori per le persone che aiutiamo. Allo stesso modo, secondo la tradizione dell'Ordine di Malta, il nostro aiuto è offerto a tutti senza distinzione.</p>\n<p>Il nostro scopo principale è organizzare attività ricreative e altre attività caritative per i giovani con disabilità, per altre persone nel bisogno e per i volontari che li aiutano.</p>\n<p>Tra le attività principali vi sono l'organizzazione regolare di gite, escursioni ed eventi spirituali, sportivi e culturali, e la partecipazione di giovani con disabilità al campo estivo internazionale «Malta Camp».</p>\n<p>Parte integrante del nostro lavoro è la formazione dei volontari, come pure l'organizzazione di eventi per raccogliere fondi a sostegno della nostra attività.</p>"
+ },
+ "/nase-aktivity/": {
+  "url": "/it/attivita/",
+  "title": "Le nostre attività",
+  "description": "Che cosa fa la Gioventù maltese ceca: gite, fine settimana sull'acqua, Malta Camp, vendita benefica di punch, concerti e formazione dei volontari.",
+  "body": "<ul>\n<li>Gite regolari per i giovani con disabilità</li>\n<li>«Společně na vodu» (Insieme sull'acqua)</li>\n<li>Malta Camp</li>\n<li>Vendita benefica del punch maltese</li>\n<li>Concerti di beneficenza regolari e altri eventi culturali</li>\n<li>Formazione dei volontari, incontri spirituali dei volontari, laboratori</li>\n<li>Altri progetti</li>\n</ul>"
+ },
+ "/kontakt/": {
+  "url": "/it/contatti/",
+  "title": "Contatti",
+  "description": "Contatti della Gioventù maltese ceca: indirizzo, e-mail, telefono, Facebook e conto bancario.",
+  "body": ""
+ },
+ "/ochrana-osobnich-udaju/": {
+  "url": "/it/privacy/",
+  "title": "Privacy",
+  "description": "Come il sito della Gioventù maltese ceca tratta i dati personali: nessun cookie e nessun tracciamento dei visitatori.",
+  "body": "<h2>Titolare del trattamento</h2>\n<p>Il titolare del trattamento è Česká maltézská mládež, z.s. (Gioventù maltese ceca), n. identificativo (IČO) 06519555, Velkopřevorské náměstí 485/4, Malá Strana, 118 00 Praga 1, Repubblica Ceca. Per domande e richieste scrivete a <a href=\"mailto:mladez@maltezskamladez.cz\">mladez@maltezskamladez.cz</a> o a questo indirizzo.</p>\n<h2>Cookie e statistiche</h2>\n<p>Questo sito non usa cookie né strumenti di analisi o pubblicità e non traccia i visitatori. Caratteri e immagini sono caricati da questo stesso sito.</p>\n<h2>Hosting</h2>\n<p>Il sito è ospitato sui server di Vercel Inc. (USA). A ogni visita questi trattano i dati necessari per fornire la pagina e proteggere il sito dagli abusi (indirizzo IP, ora e indirizzo della richiesta, dati del browser). La base giuridica è il nostro legittimo interesse a gestire il sito in sicurezza (art. 6, par. 1, lett. f) del GDPR). I trasferimenti verso gli USA si basano sul Data Privacy Framework UE–USA. Si veda l'<a href=\"https://vercel.com/legal/privacy-notice\">informativa sulla privacy di Vercel</a>.</p>\n<h2>Fotografie</h2>\n<p>Le notizie contengono fotografie dei nostri eventi. Se non desiderate che una fotografia vostra o di vostro figlio resti sul sito, scriveteci a <a href=\"mailto:mladez@maltezskamladez.cz\">mladez@maltezskamladez.cz</a> e la rimuoveremo.</p>\n<h2>I vostri diritti</h2>\n<p>Avete il diritto di accesso ai vostri dati, di rettifica, di cancellazione, di limitazione del trattamento e di portabilità, e il diritto di opporvi al trattamento fondato sul legittimo interesse. Potete presentare reclamo all'autorità ceca per la protezione dei dati, Úřad pro ochranu osobních údajů, <a href=\"https://uoou.gov.cz/\">uoou.gov.cz</a>.</p>\n<p>La <a href=\"/ochrana-osobnich-udaju/\" hreflang=\"cs\">versione ceca</a> di questa informativa è completa e fa fede.</p>"
+ }
+}
