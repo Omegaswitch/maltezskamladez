@@ -11,8 +11,8 @@ long; direction cap height 0.15x, indented Y from the rule start; red #e31818.
 
 Writes <lang>.svg (white lettering, for the banner photo) and <lang>-dark-text.svg (for light backgrounds); rename
 to cmm-<lang>*.svg as in docs/lockup-preview. Same method as maltezskyrad.cz tools/make_direction_lockup.py
-(Grand Priory lockup). The direction line must be set in Century Gothic Bold (licensed, not in the repository);
-the preview used URW Gothic Demi as a stand-in for that line only. The translated names in cmm-directions.json
+(Grand Priory lockup). The direction line is set in Century Gothic Bold (licensed copy supplied by the client, not stored
+in the repository), the font of lines 1-2. The translated names in cmm-directions.json
 are the site's own (content/site.json) and await confirmation by the Grand Priory.
 """
 import re, sys
