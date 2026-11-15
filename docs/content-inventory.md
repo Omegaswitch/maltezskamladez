@@ -12,7 +12,7 @@ Everything on the old WordPress site (`http://cmm.maltezskyrad.cz/`) on 15 Novem
 | `/mam-zajem-o-sluzby/` | Mám zájem o služby | same URL | existing |
 | `/chci-byt-dobrovolnikem/` | Chci být dobrovolníkem | same URL | existing |
 | `/jak-nas-podporit/` | Jak nás podpořit | same URL | existing |
-| `/granty-ceske-maltezske-mladeze/` | Granty | same URL; the acronym is written out in three places | existing |
+| `/granty-ceske-maltezske-mladeze/` | Granty | same URL; the acronym is written out | existing |
 | `/pravidla-pro-udelovani-grantu/` | Pravidla pro udělování grantů | same URL, under Granty in the menu | existing |
 | `/kontakt/` | Kontakt | same URL; the same details shown as a contact card from `content/site.json` | existing |
 | `/ochrana-osobnich-udaju/` | Ochrana soukromí | same URL; new privacy notice for this site (`privacy_html` in `build.py`) that keeps the old page's two links | needs approval |
@@ -28,7 +28,7 @@ Other old addresses: `/category/galerie/` → `/aktuality/galerie/`, other `/cat
 ## What the import changed
 
 - **Old logo and placeholder pictures left out.** Files named `logo…`, `cropped-logo…`, `Logo_800-570…` and `ples_logo.png` are not imported (`docs/brand-compliance.md`). Posts whose main picture was the logo placeholder have no main picture.
-- **Acronym written out** in post titles, summaries and on the grants page (the communications policy allows no entity acronym). Other carried-over texts keep their wording; `python3 check.py --verbose` lists the 10 pages that still use it, among them the grant rules and the 2022 appeal, where it is a defined term of a formal document. These need an editor's decision.
+- **Acronym written out** in post titles, summaries, bodies and on the grants and grant-rules pages (the communications policy allows no entity acronym): the full name in the right Czech case; defined terms ("dále jen ČMM") were removed. `check.py` fails on the acronym on any page.
 - **Photo galleries** became plain photos; two or more in a row are laid out as a grid and each opens its file.
 - **Links**: tracking parameters removed from Facebook links; links to the Grand Priory's old host `cvp.maltezskyrad.cz` point to `www.maltezskyrad.cz`; links to WordPress attachment pages removed.
 - **One photo was already missing on the old site** (`2025/04/IMG_8041-2.jpg`, in "Ohlédnutí za událostmi … roku 2024"); its reference is dropped.

@@ -16,11 +16,9 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 # Only these official emblem/brand files may appear; anything else under /img/ is a new, unapproved mark.
 BRAND_FILES = re.compile(r"^/img/(banner/banner-photo\.webp|og-(cs|en|fr|it|de)\.jpg|lockup/(cs|en|fr|it|de)\.svg|favicon/[\w.-]+)$")
-# The communications policy forbids acronyms, for the Order and for its entities (CP p. 25). New and reviewed
-# pages fail on either; carried-over texts (status "existing") are listed for the editorial review, not rewritten.
+# The communications policy forbids acronyms, for the Order and for its entities (CP p. 25). Every page fails on either.
 ACRONYM = re.compile(r"\bS\.?\s?M\.?\s?O\.?\s?M\b")
 ENTITY_ACRONYM = re.compile(r"\bČMM\b")
-LEGACY = re.compile(r'<main[^>]* data-status="existing"')
 
 
 class Page(HTMLParser):
@@ -71,7 +69,7 @@ def main():
     import import_wp
     import_wp._self_test()
 
-    sources, errors, legacy, pages = redirect_sources(), [], [], 0
+    sources, errors, pages = redirect_sources(), [], 0
     for f in DIST.rglob("news.json"):  # drafts and scheduled posts must not be listed in any public file (api/news.js lists them behind sign-in)
         errors.append(f"/{f.relative_to(DIST)}: a static list of posts could expose drafts")
     for f in sorted(DIST.rglob("*.html")):
@@ -104,7 +102,7 @@ def main():
         if ACRONYM.search(visible):
             errors.append(f"{rel}: forbidden acronym SMOM")
         if ENTITY_ACRONYM.search(visible):
-            (legacy if LEGACY.search(text) else errors).append(f"{rel}: entity acronym ČMM")
+            errors.append(f"{rel}: entity acronym ČMM")
 
     headers = (DIST / "_headers").read_text(encoding="utf-8") if (DIST / "_headers").exists() else ""
     widget = any("<addcal-calendar" in f.read_text(encoding="utf-8") for f in DIST.rglob("*.html"))
@@ -113,11 +111,6 @@ def main():
 
     for e in errors:
         print("FAIL", e)
-    if legacy:
-        print(f"note: {len(legacy)} carried-over pages still use the acronym ČMM (awaiting editorial review; --verbose lists them)")
-        if "--verbose" in sys.argv:
-            for e in legacy:
-                print("  legacy", e)
     print(f"checked {pages} pages: {len(errors)} problems")
     sys.exit(1 if errors else 0)
 

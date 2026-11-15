@@ -50,7 +50,7 @@ Until then the banner shows the existing Czech two-line shield lockup ("MALTÉZS
 | 3 | Font Asap; display serif | Theme | ⚠️ | Asap for interface and body text. Headings use EB Garamond, pending the same confirmation as on the Grand Priory's site (one token, `--display`). |
 | 4 | Full official name at first mention and in the banner | CP | ✅ | Banner and footer carry "Suverénní vojenský špitální řád svatého Jana Jeruzalémského, z Rhodu a z Malty". New texts then use "Suverénní maltézský řád" or "Maltézský řád". |
 | 5 | Never "Malta" alone | CP | ⚠️ | New texts comply. Carried-over posts name the international camp "Malta Camp", which is the event's own name. |
-| 6 | No acronyms, for the Order or for an entity | CP p. 25 | ⚠️ | `check.py` fails on "SMOM" anywhere and on the entity acronym on every new or reviewed page. Titles, summaries and the grants page have it written out. Ten carried-over pages still use it (`python3 check.py --verbose`), among them the grant rules and the 2022 appeal, where it is a defined term; they await the editorial review. |
+| 6 | No acronyms, for the Order or for an entity | CP p. 25 | ✅ | `check.py` fails on "SMOM" and on "ČMM" on every page. The carried-over texts now use the full name in the right case (the defined terms of the grant rules and the 2022 appeal are gone). |
 | 7 | Footer links to www.orderofmalta.int | CP | ✅ | Red footer band on every page, in the page's language; the Grand Priory's site is linked beside it. |
 | 8 | Only the two official emblems; none created, redrawn, recoloured or animated | CoA | ✅ | Only the official red shield appears (banner lockup, link-preview cards, favicons). The armorial bearing is not used: this is an activity, not an institution. `check.py` allows only the files in `docs/asset-manifest.md` under `/img/` and rejects the old logo under `/media/`. |
 | 9 | The cross only inside the shield, only in white | CP p. 19 | ✅ | See 8. The banner photograph (official asset) shows the Order's flag. |
@@ -66,6 +66,6 @@ Until then the banner shows the existing Czech two-line shield lockup ("MALTÉZS
 2. Retiring the old logo everywhere else too (Facebook, printed matter); what to do with the historical posters and PDFs that carry it.
 3. The translated names of the entity: "Czech Maltese Youth", "Jeunesse maltaise tchèque", "Gioventù maltese ceca", "Tschechische Malteserjugend".
 4. Native-speaker review of the EN, FR, IT and DE texts (`content/i18n.json`, `content/translations/`).
-5. Approval of the home page (marked "new") and the privacy notice (marked "approval"); editorial review of every page marked "existing", including the acronym (row 6) and the name "Suverénní řád maltézských rytířů" used in legacy texts.
+5. Approval of the home page (marked "new") and the privacy notice (marked "approval"); editorial review of every page marked "existing", including the name of the Order, which carried-over texts wrote as "Suverénní řád maltézských rytířů" (replaced by the official form; only the name of the nursing school in Ječná street, in the 2024 review post, was left as the school's own name).
 6. Photo consents (row 13).
 7. The red value and the heading serif (rows 2–3), as decided for the Grand Priory's site.
