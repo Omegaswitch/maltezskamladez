@@ -5,7 +5,8 @@
 // Who may do what: an editor changes their own posts, an admin or owner any post. Admins and owners must have
 // two-step sign-in switched on; until then every action here is refused ("2fa"). Every change is refused unless it
 // comes from this site's own pages (Origin). Who did what is kept twice: in the post's front matter ("audit") and
-// in the commit ("Audit-…" trailers).
+// in the commit ("Audit-…" trailers). The list of all posts, drafts included, is served only to a signed-in person
+// (GET ?list=1); no static file names a draft or a scheduled post.
 // Env: DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL (api/_auth.mjs)
 //      GITHUB_TOKEN fine-grained token, this repository only, Contents: read and write (docs/publishing.md)
 //      GITHUB_REPO  owner/name (default below), GITHUB_BRANCH (default main)
@@ -203,6 +204,21 @@ async function readNews(path) {
   return { meta: JSON.parse(meta), body: content, attachments };
 }
 
+// Every post in the repository, drafts and scheduled ones included, for the staff page's list (never a static file).
+async function listNews() {
+  const tree = await gh(`/git/trees/${env("GITHUB_BRANCH", "main")}?recursive=1`);
+  const paths = (tree.tree || []).map((f) => f.path).filter((p) => NEWS_PATH.test(p));
+  const posts = [];
+  for (let i = 0; i < paths.length; i += 8) {  // a few at a time
+    await Promise.all(paths.slice(i, i + 8).map(async (path) => {
+      const n = await readNews(path).catch(() => null);
+      if (n) posts.push({ path, url: n.meta.url, title: n.meta.title, date: String(n.meta.date || "").slice(0, 16), author: n.meta.author || null,
+        editedBy: n.meta.editedBy || null, authorId: n.meta.authorId || null, draft: !!n.meta.draft, pinned: !!n.meta.pinned });
+    }));
+  }
+  return [200, { posts: posts.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)) }];
+}
+
 async function load(body, user) {
   if (!NEWS_PATH.test(body.path || "")) return [400, { error: "path" }];
   const n = await readNews(body.path);
@@ -366,12 +382,14 @@ module.exports = async (req, res) => {
   // Every change must come from this site's own pages: a browser always sends Origin with such a POST, and the
   // session cookie is SameSite=Strict. A request with a foreign Origin, or with none, is refused.
   if (req.method === "POST" && !sameOrigin(req)) return send(403, { error: "origin" });
-  if (!configured() || (req.method === "POST" && !env("GITHUB_TOKEN"))) return req.method === "GET" ? send(200, { ...info(null), configured: false }) : send(503, { error: "config" });
+  const wantsList = req.method === "GET" && /[?&]list=1(?:&|$)/.test(req.url || "");
+  if (!configured() || ((req.method === "POST" || wantsList) && !env("GITHUB_TOKEN"))) return req.method === "GET" && !wantsList ? send(200, { ...info(null), configured: false }) : send(503, { error: "config" });
   try {
     const user = await session(req);
-    if (req.method === "GET") return send(200, info(user));
+    if (req.method === "GET" && !wantsList) return send(200, info(user));
     if (!user) return send(401, { error: "session" });
     if (user.needs2fa) return send(403, { error: "2fa" });  // admins and owners work only with two-step sign-in on
+    if (wantsList) return send(...(await listNews()));  // drafts and scheduled posts are listed only here, behind the session
     const body = await readJson(req);
     if (body.action === "upload") return send(...(await upload(body)));
     if (body.action === "publish") return send(...(await publish(body, user)));

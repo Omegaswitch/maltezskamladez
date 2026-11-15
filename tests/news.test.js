@@ -21,6 +21,7 @@ handler.useAuth(async () => ({ api: { getSession: async ({ headers }) => {
   const who = PEOPLE[((headers.get("cookie") || "").match(/(?:^|;\s*)s=(\w+)/) || [])[1]];
   return who ? { user: who, session: {} } : null;
 } } }));
+const NEWS_PATH_TEST = /^content\/news\/\d{4}\/\d{2}\/\d{2}\/[a-z0-9-]+\.html$/;
 const CAT = Object.keys(SITE.newsCategories)[0];
 
 const commits = [], messages = [];
@@ -34,6 +35,7 @@ global.fetch = async (url, opts = {}) => {
     if (stored[p]) return json(200, { content: Buffer.from(stored[p]).toString("base64") });
     return existing.has(p) ? json(200, {}) : json(404, {});
   }
+  if (u.pathname.endsWith("/git/trees/main")) return json(200, { tree: [...new Set([...Object.keys(stored), ...existing])].map((path) => ({ path, type: "blob" })) });
   if (u.pathname.endsWith("/git/blobs")) return json(201, { sha: "a".repeat(40) });
   if (u.pathname.endsWith("/git/ref/heads/main")) return json(200, { object: { sha: "c".repeat(40) } });
   if (/\/git\/commits\/c+$/.test(u.pathname)) return json(200, { tree: { sha: "t".repeat(40) } });
@@ -47,11 +49,11 @@ global.fetch = async (url, opts = {}) => {
   throw new Error("unexpected " + url);
 };
 
-function call(method, body, cookie, origin = `https://${HOST}`) {
+function call(method, body, cookie, origin = `https://${HOST}`, url = "/api/news") {
   return new Promise((done) => {
     const headers = { host: HOST, ...(origin ? { origin } : {}), ...(cookie ? { cookie } : {}) };
     const res = { statusCode: 200, h: {}, setHeader(k, v) { this.h[k.toLowerCase()] = v; }, end(s) { done({ status: this.statusCode, body: JSON.parse(s || "{}"), cookie: this.h["set-cookie"] }); } };
-    handler({ method, headers, body }, res);
+    handler({ method, headers, body, url }, res);
   });
 }
 const meta = (doc) => JSON.parse(doc.split("---\n")[1]);
@@ -171,6 +173,19 @@ const lastCommit = () => commits[commits.length - 1];
   const future = await call("POST", { action: "publish", title: "Za rok", date: "2099-01-01T08:00", body: "<p>Až za rok.</p>" }, E);
   assert.strictEqual(future.body.scheduled, true);
   assert.strictEqual(meta(lastCommit()[0].content).draft, undefined);
+
+  // ---- the list of all posts, drafts included, only behind the session
+  assert.strictEqual((await call("GET", null, null, undefined, "/api/news?list=1")).status, 401);
+  assert.strictEqual((await call("GET", null, "s=zakaz", undefined, "/api/news?list=1")).status, 401);
+  assert.strictEqual((await call("GET", null, "s=novy", undefined, "/api/news?list=1")).status, 403);  // an admin without two-step sign-in
+  const listed = await call("GET", null, E, undefined, "/api/news?list=1");
+  assert.strictEqual(listed.status, 200);
+  const byTitle = Object.fromEntries(listed.body.posts.map((p) => [p.title, p]));
+  assert.strictEqual(byTitle["Rozepsané"].draft, true);
+  assert.ok(byTitle["Za rok"].date.startsWith("2099"));  // a scheduled post
+  assert.strictEqual(byTitle["Rozepsané"].body, undefined);  // titles and dates only, not the text
+  assert.ok(listed.body.posts.every((p) => NEWS_PATH_TEST.test(p.path)));
+  assert.strictEqual((await call("GET", null, E)).body.posts, undefined);  // the plain GET stays the sign-in info
 
   // ---- editing: an editor only their own, an admin anything; the admin can pin
   const path = "content/news/2026/11/02/koncert-v-listopadu-2.html";

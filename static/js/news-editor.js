@@ -13,10 +13,10 @@
   var MAX = 3 * 1024 * 1024, DRAFT = "news-draft", GONE = "news-deleted";
   var PDF_SHRINK_FROM = 1024 * 1024, V = (document.currentScript && document.currentScript.src.split("?")[1]) || "";
 
-  function call(data, onProgress) {
+  function call(data, onProgress, query) {
     return new Promise(function (ok, fail) {
       var x = new XMLHttpRequest();
-      x.open(data ? "POST" : "GET", API);
+      x.open(data ? "POST" : "GET", API + (query || ""));
       x.setRequestHeader("Content-Type", "application/json");
       x.responseType = "json";
       if (onProgress) x.upload.onprogress = function (e) { if (e.lengthComputable) onProgress(e.loaded / e.total); };
@@ -188,13 +188,14 @@
     }, function () { ul.innerHTML = "<li>Seznam se nepodařilo načíst.</li>"; });
   }
 
-  // ---- the list of posts (written by the build; a minute behind after changes)
+  // ---- the list of posts, drafts included (read from the repository for the signed-in person; a minute behind after changes)
   var posts = null;
   function gone() { try { return JSON.parse(sessionStorage.getItem(GONE) || "[]"); } catch (e) { return []; } }
   function loadList() {
     if (posts) return render();
-    fetch("/pridat-aktualitu/news.json", { cache: "no-store" }).then(function (r) { return r.json(); })
-      .then(function (d) { posts = d; render(); }, function () { msg($("#ne-list-msg"), ERR[0], "error"); });
+    msg($("#ne-list-msg"), "Načítá se…");
+    call(null, null, "?list=1").then(function (r) { posts = r.body.posts || []; msg($("#ne-list-msg")); render(); },
+      function (r) { msg($("#ne-list-msg"), errorOf(r), "error"); signedOut(r); });
   }
   function fmt(d) { var p = d.slice(0, 10).split("-"); return +p[2] + ". " + +p[1] + ". " + p[0]; }
   function mine(p) { return state.role === "admin" || !p.author || p.author === state.user || p.editedBy === state.user; }

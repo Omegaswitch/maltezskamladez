@@ -18,6 +18,11 @@ global.fetch = async (url, opts = {}) => {
     const p = path.join(ROOT, decodeURIComponent(u.pathname.split("/contents/")[1]));
     return fs.existsSync(p) ? json(200, { content: fs.readFileSync(p).toString("base64") }) : json(404, {});
   }
+  if (u.pathname.endsWith("/git/trees/main")) {  // the posts on disk
+    const out = [], walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else out.push({ path: path.relative(ROOT, f).split(path.sep).join("/"), type: "blob" }); } };
+    walk(path.join(ROOT, "content/news"));
+    return json(200, { tree: out });
+  }
   if (u.pathname.endsWith("/git/blobs")) { const sha = crypto.createHash("sha1").update(body.content).digest("hex"); blobs[sha] = Buffer.from(body.content, "base64"); return json(201, { sha }); }
   if (u.pathname.endsWith("/git/ref/heads/main")) return json(200, { object: { sha: "0".repeat(40) } });
   if (/\/git\/commits\/0+$/.test(u.pathname)) return json(200, { tree: { sha: "1".repeat(40) } });

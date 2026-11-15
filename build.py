@@ -61,7 +61,7 @@ PAGES, NEWS = load_pages(), load_news()
 # Staff publish through /pridat-aktualitu/ (api/news.js). A post marked draft, or dated in the future, is kept in
 # the repository but not built until it is due; a post an admin pinned is shown as a notice on the home page and
 # the news listing; events live in content/events.json; a post with two or more photos is also in the gallery.
-ALL_NEWS = NEWS
+ALL_NEWS = NEWS  # drafts and scheduled posts must reach no static file: the staff page lists them from the API (api/news.js)
 try:
     from zoneinfo import ZoneInfo
     BUILD_TIME = datetime.now(ZoneInfo("Europe/Prague")).strftime("%Y-%m-%dT%H:%M")  # Vercel builds in UTC
@@ -996,10 +996,6 @@ def build():
     for y in sorted({n["date"][:4] for n in NEWS}):
         write(f"/aktuality/{y}/", render_news_index([n for n in NEWS if n["date"].startswith(y)], year=y, url=f"/aktuality/{y}/"))
     write(NEWS_EDITOR_URL, render_news_editor())
-    (DIST / NEWS_EDITOR_URL.strip("/") / "news.json").write_text(json.dumps(  # the editor's list of posts to edit or delete
-        [{"path": n["src"], "url": n["url"], "title": n["title"], "date": n["date"][:16], "author": n.get("author"), "editedBy": n.get("editedBy"),
-          "draft": bool(n.get("draft")), "pinned": bool(n.get("pinned"))} for n in ALL_NEWS],
-        ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     write("/ochrana-osobnich-udaju/", render_simple("/ochrana-osobnich-udaju/", "Ochrana osobních údajů", privacy_html(), status="approval",
                                                     description="Jak web České maltézské mládeže zachází s osobními údaji: bez cookies a bez sledování návštěvníků."))
     write("/404.html", render_simple("/404.html", I18N["cs"]["notFound"],

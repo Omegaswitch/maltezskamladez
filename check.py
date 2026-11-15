@@ -72,6 +72,8 @@ def main():
     import_wp._self_test()
 
     sources, errors, legacy, pages = redirect_sources(), [], [], 0
+    for f in DIST.rglob("news.json"):  # drafts and scheduled posts must not be listed in any public file (api/news.js lists them behind sign-in)
+        errors.append(f"/{f.relative_to(DIST)}: a static list of posts could expose drafts")
     for f in sorted(DIST.rglob("*.html")):
         rel = "/" + str(f.relative_to(DIST))
         page = Page()
