@@ -21,6 +21,10 @@ Everything on the old WordPress site (`http://cmm.maltezskyrad.cz/`) on 15 Novem
 
 Other old addresses: `/category/galerie/` → `/aktuality/galerie/`, other `/category/…` and `/author/…` → `/aktuality/`, `/feed/` → `/feed.xml`, `/wp-content/uploads/…` → `/media/…` (all in `vercel.json`).
 
+## Withdrawn
+
+- **Pánský čundr** (`content/news/2018/10/09/pansky-cundr.html`): **withdrawn pending editorial review (child safeguarding).** The post names a minor from a youth care facility and describes his drug history. It is taken off the site with the repository's own draft mechanism (`"draft": true` in the front matter, and `"imported": false` so a re-import does not bring it back): it is not built, so it is gone from the post page, the listings, the archives, the gallery, the sitemap and the feed. The old address now answers 404; nothing on the site linked to it. Staff see it in the editor's list as a draft. Reinstating it needs an editor's decision after the text has been rewritten without the identifying details. The text remains in the repository and its history, so it stays readable there while the repository is public (`docs/security-audit.md`, A2).
+
 ## What the import changed
 
 - **Old logo and placeholder pictures left out.** Files named `logo…`, `cropped-logo…`, `Logo_800-570…` and `ples_logo.png` are not imported (`docs/brand-compliance.md`). Posts whose main picture was the logo placeholder have no main picture.
@@ -84,4 +88,4 @@ All keep their old URL `/YYYY/MM/DD/slug/`.
 | 2018-10-10 | Podzimní výlet do Břeclavi | `/2018/10/10/podzimni-vylet-do-breclavi/` | 0 |
 | 2018-10-10 | Malta Camp 2018 | `/2018/10/10/malta-camp-2018/` | 4 |
 | 2018-10-09 | Společně na vodu | `/2018/10/09/spolecne-na-vodu/` | 0 |
-| 2018-10-09 | Pánský čundr | `/2018/10/09/pansky-cundr/` | 0 |
+| 2018-10-09 | Pánský čundr | withdrawn, see below (was `/2018/10/09/pansky-cundr/`) | 0 |

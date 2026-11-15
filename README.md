@@ -36,6 +36,10 @@ Add `--offline` to skip fetching the Grand Magistry news feed. CI (`.github/work
 - Edit its file. Set `"imported": false` in the front matter so a re-import never overwrites it.
 - `"status"` shows the review state in preview builds: `existing` (carried over, not yet reviewed), `new` (new text awaiting approval), `approval` (needs sign-off). Remove the field once the page is approved.
 
+**Photographs awaiting consent**
+- A post whose front matter has `"photos": "consent-pending"` is built without any `<img>` from its body and without its main and link-preview image; the text stays. All posts in the list in `docs/asset-manifest.md` ("Photographs: consent") carry it. Remove the flag from a post once consent for its photographs is confirmed (and drop the post from that list). The media files stay in the repository and, unlinked, in `dist/media/`; delete a file from `static/media/` to withdraw it completely.
+- `"draft": true` takes a post off the site entirely (see "Withdrawn" in `docs/content-inventory.md`).
+
 **News from co-workers (no GitHub needed)**
 - Staff publish at `/pridat-aktualitu/` (not linked from the site, not indexed, behind sign-in): text editor limited to what the site styles, date, categories, summary, main photo, attachments, drafts, scheduled posts, pinned notices, edit and delete.
 - Sign-in is by e-mail and password, with a code from an authenticator app as a second step: required for admins and owners, optional for editors. Wrong passwords lock the account for a while. Every change records who made it.

@@ -47,10 +47,20 @@ def load_pages():
     return pages
 
 
+def withhold_photos(body):
+    """Body without photographs, for a post flagged "photos": "consent-pending" (docs/asset-manifest.md). The text stays."""
+    body = re.sub(r"<figure\b.*?</figure>", lambda m: "" if "<img" in m.group(0) else m.group(0), body, flags=re.S)
+    body = re.sub(r"<a\b[^>]*>\s*<img\b[^>]*>\s*</a>", "", body)
+    body = re.sub(r"<img\b[^>]*>", "", body)
+    return re.sub(r"<p>\s*</p>\s*", "", body)
+
+
 def load_news():
     news = []
     for f in (CONTENT / "news").rglob("*.html"):
         meta, body = read_doc(f)
+        if meta.get("photos") == "consent-pending":  # no <img> from the body, no main or link-preview image, until consent is confirmed
+            meta["image"], body = None, withhold_photos(body)
         news.append({**meta, "body": body, "src": f.relative_to(ROOT).as_posix()})
     return sorted(news, key=lambda n: n["date"], reverse=True)
 

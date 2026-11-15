@@ -19,6 +19,8 @@ Not on the site, and not to be created: the old logo (`logo…`, `cropped-logo�
 
 The activities are for young people with disabilities from the age of 15, so **the photographs show identifiable people, some of them minors and many of them in a vulnerable group**. Publishing them needs consent (for minors, of their legal representative). The old site published them; we found no record of consent. Before production launch the client must confirm consent for each post below, or name the photographs to remove. A photograph is removed by deleting its `<img>` from the post and its file from `static/media/`.
 
+**Interim measure: the flag `"photos": "consent-pending"`.** Every post in the table below carries it in its front matter. `build.py` then builds the post without any `<img>` from its body (figures, captions and photo links included) and without its main picture and link-preview image, so the text stays but no photograph is shown, in the gallery either. Remove the flag from a post once consent for its photographs is confirmed; when every post is cleared, delete the table. The files stay in `static/media/` (they are not deleted), and because the build copies that folder they are still reachable at their addresses, unlinked: delete the file for a full withdrawal.
+
 | Date | Post | Photographs | Folder |
 |---|---|---|---|
 | 2025-04-20 | Ohlédnutí za událostmi České maltézské mládeže roku 2024 | 16 | `/media/2025/04/` |
