@@ -1,13 +1,13 @@
-// Publishing from /pridat-aktualitu/ without GitHub: staff sign in with a password, upload files one by one
-// (each request stays under Vercel's 4.5 MB body limit) and publish. An article is committed to the main branch
-// as content/news/YYYY/MM/DD/slug.html, its files to static/media/YYYY/MM/, events to content/events.json;
-// Vercel then rebuilds the site. The same file runs on every Order of Malta site (only the three constants below differ).
+// Publishing from /pridat-aktualitu/ without GitHub: staff sign in (Better Auth, api/_auth.mjs), upload files one by
+// one (each request stays under Vercel's 4.5 MB body limit) and publish. An article is committed to the main branch
+// as content/news/YYYY/MM/DD/slug.html, its files to static/media/YYYY/MM/; Vercel then rebuilds the site.
 //
-// Sign-in: Better Auth (api/_auth.mjs) when DATABASE_URL is set; otherwise the older NEWS_USERS list below.
-// Env: NEWS_USERS   one "Name:password" or "Name:password:admin" per line (or separated by ";"), one per co-worker;
-//                   without ":admin" the person is an editor (writes and edits their own posts and events)
-//      NEWS_SECRET  long random string that signs the sign-in cookie
-//      GITHUB_TOKEN fine-grained token, this repository only, Contents: read and write
+// Who may do what: an editor changes their own posts, an admin or owner any post. Admins and owners must have
+// two-step sign-in switched on; until then every action here is refused ("2fa"). Every change is refused unless it
+// comes from this site's own pages (Origin). Who did what is kept twice: in the post's front matter ("audit") and
+// in the commit ("Audit-…" trailers).
+// Env: DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL (api/_auth.mjs)
+//      GITHUB_TOKEN fine-grained token, this repository only, Contents: read and write (docs/publishing.md)
 //      GITHUB_REPO  owner/name (default below), GITHUB_BRANCH (default main)
 //      optional: RESEND_API_KEY, NEWS_NOTIFY (who is emailed about each change), MAIL_FROM
 const crypto = require("crypto");
@@ -17,8 +17,6 @@ const DEFAULT_REPO = "Omegaswitch/maltezskamladez";
 const DEFAULT_CATEGORY = SITE.defaultCategory;
 const FEATURES = {"events": false, "pin": true};  // events: the calendar of events; pin: a notice pinned to the home page
 
-const COOKIE = "news_session";
-const SESSION_HOURS = 12;
 const MAX_FILE = 3 * 1024 * 1024; // after the browser has shrunk photos; base64 in JSON keeps the request under 4.5 MB
 const MAX_TEXT = 200000;
 const TYPES = { "application/pdf": "pdf", "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
@@ -29,60 +27,29 @@ const CATEGORIES = Object.keys(SITE.newsCategories).filter((c) => !HIDDEN_CATEGO
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const env = (k, d = "") => process.env[k] || d;
-const ROLES = ["editor", "admin"];
 
 // ---------------------------------------------------------------- sign-in and roles
 
-function users() {
-  const out = {};
-  for (const line of env("NEWS_USERS").split(/[\n;]/)) {
-    const i = line.indexOf(":");
-    if (i <= 0) continue;
-    let password = line.slice(i + 1).trim(), role = "editor";
-    const m = password.match(/^(.*):(editor|admin)$/);
-    if (m) { password = m[1]; role = m[2]; }
-    if (password) out[line.slice(0, i).trim()] = { password, role };
-  }
-  return out;
-}
-const authRoles = {}, owners = {};  // name -> role of people signed in through Better Auth
-const roleOf = (name) => authRoles[name] || (users()[name] || {}).role || "editor";
-const betterAuth = () => !!env("DATABASE_URL");
+let loadAuth = async () => (await import("./_auth.mjs")).getAuth();  // tests put a stand-in here (module.exports.useAuth)
+const configured = () => !!(env("DATABASE_URL") && env("BETTER_AUTH_SECRET"));
 
-const same = (a, b) => {
-  const x = crypto.createHash("sha256").update(String(a)).digest(), y = crypto.createHash("sha256").update(String(b)).digest();
-  return crypto.timingSafeEqual(x, y);
-};
-const sign = (v) => crypto.createHmac("sha256", env("NEWS_SECRET")).update(v).digest("base64url");
-
+// The signed-in person, or null: { id, name, role: "editor" | "admin", owner, twoFactor, needs2fa }
 async function session(req) {
-  if (betterAuth()) {
-    const { auth } = await import("./_auth.mjs");
-    const s = await auth.api.getSession({ headers: new Headers(Object.entries(req.headers).map(([k, v]) => [k, String(v)])) });
-    if (!s || s.user.banned) return null;
-    authRoles[s.user.name] = s.user.role === "admin" || s.user.role === "owner" ? "admin" : "editor";
-    owners[s.user.name] = s.user.role === "owner";
-    return s.user.name;
-  }
-  const m = (req.headers.cookie || "").match(new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`));
-  if (!m || !env("NEWS_SECRET")) return null;
-  const [name, exp, mac] = decodeURIComponent(m[1]).split("|");
-  if (!name || !mac || !same(mac, sign(`${name}|${exp}`)) || Date.now() > Number(exp)) return null;
-  return name in users() ? name : null;  // removing someone from NEWS_USERS signs them out
-}
-
-function setCookie(res, value, maxAge) {
-  res.setHeader("Set-Cookie", `${COOKIE}=${encodeURIComponent(value)}; Path=/api/news; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAge}`);
-}
-
-const failures = new Map(); // per instance: a few wrong passwords slow the next attempt down
-async function throttle(ip) {
-  const n = failures.get(ip) || 0;
-  if (n) await new Promise((r) => setTimeout(r, Math.min(8000, 500 * 2 ** n)));
+  const auth = await loadAuth();
+  const s = await auth.api.getSession({ headers: new Headers(Object.entries(req.headers).map(([k, v]) => [k, String(v)])) });
+  if (!s || !s.user || s.user.banned) return null;
+  const admin = s.user.role === "admin" || s.user.role === "owner", twoFactor = !!s.user.twoFactorEnabled;
+  return { id: s.user.id, name: s.user.name, role: admin ? "admin" : "editor", storedRole: s.user.role || "editor", owner: s.user.role === "owner", twoFactor, needs2fa: admin && !twoFactor };
 }
 
 // An editor may change what they wrote (or what nobody signed: imported posts); an admin may change anything.
-const mayChange = (user, meta) => roleOf(user) === "admin" || !meta.author || meta.author === user || meta.editedBy === user;
+// Posts written here carry the author's account id; a name alone decides only for posts that have none.
+const mayChange = (user, meta) => user.role === "admin" || !meta.author ||
+  (meta.authorId ? meta.authorId === user.id : meta.author === user.name || meta.editedBy === user.name);
+
+// Who did what, for the post's front matter (the last 50 steps) and for the commit message.
+const auditEntry = (user, action) => ({ at: localNow(), by: user.name, id: user.id, role: user.storedRole, action });
+const trailers = (user, action) => `\n\nAudit-Action: ${action}\nAudit-User: ${oneLine(user.name, 100)} (${user.id})\nAudit-Role: ${user.storedRole}`;
 
 // ---------------------------------------------------------------- content
 
@@ -168,7 +135,9 @@ async function readFile(path) {
   return r ? Buffer.from(r.content, "base64").toString("utf8") : null;
 }
 
-async function commit(files, message, author) {
+async function commit(files, message, user, action) {
+  const author = user.name;
+  message += trailers(user, action);
   // files: [{path, content} | {path, sha} | {path, delete}]; one commit on top of the branch, retried once if someone else pushed meanwhile
   const branch = env("GITHUB_BRANCH", "main");
   for (let attempt = 0; ; attempt++) {
@@ -241,8 +210,8 @@ async function remove(body, user) {
   const n = await readNews(body.path);
   if (!n) return [404, { error: "gone" }];
   if (!mayChange(user, n.meta)) return [403, { error: "forbidden" }];
-  await commit([{ path: body.path, delete: true }], `Smazána aktualita: ${n.meta.title} (${user})`, user);
-  await notify(`Smazaná aktualita: ${n.meta.title}`, `<p>${esc(user)} smazal(a) aktualitu <b>${esc(n.meta.title)}</b> (${esc(n.meta.url)}).</p>`);
+  await commit([{ path: body.path, delete: true }], `Smazána aktualita: ${n.meta.title} (${user.name})`, user, "delete");
+  await notify(`Smazaná aktualita: ${n.meta.title}`, `<p>${esc(user.name)} smazal(a) aktualitu <b>${esc(n.meta.title)}</b> (${esc(n.meta.url)}).</p>`);
   return [200, { url: n.meta.url }];
 }
 
@@ -284,19 +253,22 @@ async function publish(body, user) {
   }
   const excerpt = oneLine(body.excerpt, 300) || excerptOf(plain(html));
   const meta = { ...(old ? old.meta : {}), title, url, date, categories: cats.length ? cats : [DEFAULT_CATEGORY],
-    image: image ? image.url : null, excerpt, author: (old && old.meta.author) || user, imported: false };
+    image: image ? image.url : null, excerpt, author: (old && old.meta.author) || user.name, imported: false };
+  if (!editing) meta.authorId = user.id;
   // a draft is kept in the repository but not built; a future date is built once it has come (scheduled)
   if (body.draft) meta.draft = true; else delete meta.draft;
   // pinning a notice to the home page is the admins' call; an editor's save keeps whatever an admin set
-  if (FEATURES.pin && roleOf(user) === "admin" && body.pinned != null) { if (body.pinned) meta.pinned = true; else delete meta.pinned; }
-  if (editing) { meta.editedBy = user; delete meta.status; }  // edited by staff: no longer an unreviewed import
+  if (FEATURES.pin && user.role === "admin" && body.pinned != null) { if (body.pinned) meta.pinned = true; else delete meta.pinned; }
+  if (editing) { meta.editedBy = user.name; delete meta.status; }  // edited by staff: no longer an unreviewed import
+  const action = meta.draft ? "draft" : editing ? "edit" : "publish";
+  meta.audit = [...(Array.isArray(meta.audit) ? meta.audit : []), auditEntry(user, action)].slice(-50);
   const text = keep ? html : html.replace(/<\/(p|h2|h3|ul|ol|blockquote)>/g, "</$1>\n").trim();
   const doc = `---\n${JSON.stringify(meta, null, 1)}\n---\n${text}${attachments ? "\n" + attachments : ""}\n`;
 
   const what = meta.draft ? "Koncept aktuality" : date > localNow() ? "Naplánována aktualita" : editing ? "Upravena aktualita" : "Aktualita";
-  await commit([{ path, content: doc }, ...added.map((f) => ({ path: f.path, sha: f.sha }))], `${what}: ${title} (${user})`, user);
+  await commit([{ path, content: doc }, ...added.map((f) => ({ path: f.path, sha: f.sha }))], `${what}: ${title} (${user.name})`, user, action);
   if (!meta.draft) await notify(`${editing ? "Upravená" : "Nová"} aktualita: ${title}`,
-    `<p>${esc(user)} ${editing ? "upravil(a)" : "zveřejnil(a)"} aktualitu <b>${esc(title)}</b>.</p><p><a href="${SITE.baseUrl}${url}">${SITE.baseUrl}${url}</a> (na webu asi za minutu${date > localNow() ? ", po uvedeném datu" : ""})</p>`);
+    `<p>${esc(user.name)} ${editing ? "upravil(a)" : "zveřejnil(a)"} aktualitu <b>${esc(title)}</b>.</p><p><a href="${SITE.baseUrl}${url}">${SITE.baseUrl}${url}</a> (na webu asi za minutu${date > localNow() ? ", po uvedeném datu" : ""})</p>`);
   return [200, { url, path, draft: !!meta.draft, scheduled: date.slice(0, 10) > localNow().slice(0, 10) }];
 }
 
@@ -337,12 +309,12 @@ async function saveEvent(body, user) {
   if (i >= 0 && !mayChange(user, list[i])) return [403, { error: "forbidden" }];
   let url = i >= 0 ? list[i].url : `/udalost/${eventSlug(title, start)}/`;
   for (let n = 2; i < 0 && list.some((e) => e.url === url); n++) url = `/udalost/${eventSlug(title, start)}-${n}/`;
-  const event = { ...(i >= 0 ? list[i] : { author: user }), title, start, end, allDay: !!body.allDay, url, description, ...(place ? { place } : {}) };
+  const event = { ...(i >= 0 ? list[i] : { author: user.name, authorId: user.id }), title, start, end, allDay: !!body.allDay, url, description, ...(place ? { place } : {}) };
   if (!place) delete event.place;
-  if (i >= 0) { event.editedBy = user; list[i] = event; } else list.push(event);
+  if (i >= 0) { event.editedBy = user.name; list[i] = event; } else list.push(event);
   list.sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
-  await commit([{ path: EVENTS_PATH, content: JSON.stringify(list, null, 1) + "\n" }], `${i >= 0 ? "Upravena událost" : "Událost"}: ${title} (${user})`, user);
-  await notify(`${i >= 0 ? "Upravená" : "Nová"} událost: ${title}`, `<p>${esc(user)} ${i >= 0 ? "upravil(a)" : "přidal(a)"} událost <b>${esc(title)}</b> (${esc(start)}).</p>`);
+  await commit([{ path: EVENTS_PATH, content: JSON.stringify(list, null, 1) + "\n" }], `${i >= 0 ? "Upravena událost" : "Událost"}: ${title} (${user.name})`, user, i >= 0 ? "event-edit" : "event");
+  await notify(`${i >= 0 ? "Upravená" : "Nová"} událost: ${title}`, `<p>${esc(user.name)} ${i >= 0 ? "upravil(a)" : "přidal(a)"} událost <b>${esc(title)}</b> (${esc(start)}).</p>`);
   return [200, { url, event }];
 }
 
@@ -352,8 +324,8 @@ async function removeEvent(body, user) {
   if (i < 0) return [404, { error: "gone" }];
   if (!mayChange(user, list[i])) return [403, { error: "forbidden" }];
   const [gone] = list.splice(i, 1);
-  await commit([{ path: EVENTS_PATH, content: JSON.stringify(list, null, 1) + "\n" }], `Smazána událost: ${gone.title} (${user})`, user);
-  await notify(`Smazaná událost: ${gone.title}`, `<p>${esc(user)} smazal(a) událost <b>${esc(gone.title)}</b> (${esc(gone.start)}).</p>`);
+  await commit([{ path: EVENTS_PATH, content: JSON.stringify(list, null, 1) + "\n" }], `Smazána událost: ${gone.title} (${user.name})`, user, "event-delete");
+  await notify(`Smazaná událost: ${gone.title}`, `<p>${esc(user.name)} smazal(a) událost <b>${esc(gone.title)}</b> (${esc(gone.start)}).</p>`);
   return [200, { url: gone.url }];
 }
 
@@ -366,32 +338,26 @@ async function readJson(req) {
   try { return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}"); } catch { return {}; }
 }
 
+const sameOrigin = (req) => {
+  try { return !!req.headers.origin && new URL(req.headers.origin).host === req.headers.host; } catch { return false; }
+};
+
 module.exports = async (req, res) => {
   const send = (status, data) => { res.statusCode = status; res.setHeader("Content-Type", "application/json; charset=utf-8"); res.setHeader("Cache-Control", "no-store"); res.end(JSON.stringify(data)); };
-  const info = (user) => ({ user, role: user ? roleOf(user) : null, categories: CATEGORIES.map((c) => [c, SITE.newsCategories[c]]), allCategories: SITE.newsCategories,
-    defaultCategory: DEFAULT_CATEGORY, auth: betterAuth() ? "better-auth" : "password", owner: !!owners[user], features: { events: !!FEATURES.events, pin: !!FEATURES.pin && !!user && roleOf(user) === "admin" } });
-  if (req.method === "GET") return send(200, info(await session(req)));
-  if (req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return send(405, { error: "method" }); }
-  const origin = req.headers.origin;
-  if (origin && new URL(origin).host !== req.headers.host) return send(403, { error: "origin" });  // with SameSite=Strict: no cross-site posts
-  if (!env("GITHUB_TOKEN") || (!betterAuth() && (!env("NEWS_SECRET") || !Object.keys(users()).length))) return send(503, { error: "config" });
-
-  const body = await readJson(req);
+  const info = (user) => ({ user: user ? user.name : null, role: user ? user.role : null, owner: !!(user && user.owner), twoFactor: !!(user && user.twoFactor), needs2fa: !!(user && user.needs2fa),
+    categories: CATEGORIES.map((c) => [c, SITE.newsCategories[c]]), allCategories: SITE.newsCategories, defaultCategory: DEFAULT_CATEGORY,
+    features: { events: !!FEATURES.events, pin: !!FEATURES.pin && !!user && user.role === "admin" && !user.needs2fa } });
+  if (req.method !== "GET" && req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return send(405, { error: "method" }); }
+  // Every change must come from this site's own pages: a browser always sends Origin with such a POST, and the
+  // session cookie is SameSite=Strict. A request with a foreign Origin, or with none, is refused.
+  if (req.method === "POST" && !sameOrigin(req)) return send(403, { error: "origin" });
+  if (!configured() || (req.method === "POST" && !env("GITHUB_TOKEN"))) return req.method === "GET" ? send(200, { ...info(null), configured: false }) : send(503, { error: "config" });
   try {
-    if (body.action === "login" && !betterAuth()) {
-      const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0] || "?";
-      await throttle(ip);
-      const all = users();
-      const name = Object.keys(all).find((u) => u.toLowerCase() === String(body.name || "").trim().toLowerCase());
-      if (!name || !same(all[name].password, String(body.password || ""))) { failures.set(ip, (failures.get(ip) || 0) + 1); return send(401, { error: "login" }); }
-      failures.delete(ip);
-      const exp = Date.now() + SESSION_HOURS * 3600e3;
-      setCookie(res, `${name}|${exp}|${sign(`${name}|${exp}`)}`, SESSION_HOURS * 3600);
-      return send(200, info(name));
-    }
-    if (body.action === "logout") { setCookie(res, "", 0); return send(200, { user: null }); }
     const user = await session(req);
+    if (req.method === "GET") return send(200, info(user));
     if (!user) return send(401, { error: "session" });
+    if (user.needs2fa) return send(403, { error: "2fa" });  // admins and owners work only with two-step sign-in on
+    const body = await readJson(req);
     if (body.action === "upload") return send(...(await upload(body)));
     if (body.action === "publish") return send(...(await publish(body, user)));
     if (body.action === "load") return send(...(await load(body, user)));
@@ -410,4 +376,4 @@ module.exports = async (req, res) => {
 
 module.exports.sanitise = sanitise;
 module.exports.slugify = slugify;
-module.exports.users = users;
+module.exports.useAuth = (loader) => { loadAuth = loader; };

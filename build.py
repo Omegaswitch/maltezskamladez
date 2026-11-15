@@ -818,10 +818,17 @@ def render_news_editor():
  <noscript><p class="ne-msg ne-msg--error">Formulář potřebuje zapnutý JavaScript.</p></noscript>
  <form id="ne-login" class="ne-card" hidden>
   <h2 class="display-s">Přihlášení</h2>
-  <label class="ne-field"><span>Jméno</span><input name="name" autocomplete="username" required></label>
+  <label class="ne-field"><span>E-mail</span><input name="name" type="email" autocomplete="username" required></label>
   <label class="ne-field"><span>Heslo</span><input name="password" type="password" autocomplete="current-password" required></label>
   <p class="ne-msg" id="ne-login-msg" role="alert" hidden></p>
   <p><button class="btn" type="submit">Přihlásit se</button></p>
+ </form>
+ <form id="ne-2fa" class="ne-card" hidden>
+  <h2 class="display-s">Druhý krok přihlášení</h2>
+  <label class="ne-field"><span>Kód z ověřovací aplikace</span><input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="20" required></label>
+  <label class="ne-check"><input name="backup" type="checkbox"> Zadávám záložní kód <small>(když nemáte telefon po ruce; každý platí jednou)</small></label>
+  <p class="ne-msg" id="ne-2fa-msg" role="alert" hidden></p>
+  <p><button class="btn" type="submit">Potvrdit</button> <button type="button" class="link-btn" id="ne-2fa-back">Zpět</button></p>
  </form>
  <div id="ne-app" hidden>
  <p class="ne-who">Přihlášen(a): <b id="ne-user"></b> · <button type="button" class="link-btn" id="ne-logout">Odhlásit</button></p>
@@ -838,10 +845,30 @@ def render_news_editor():
   <p class="ne-msg" id="ne-list-msg" role="alert" hidden></p>
  </section>
  <section id="ne-users" role="tabpanel" aria-labelledby="ne-tab-users" hidden>
+  <p class="ne-msg ne-msg--error" id="ne-2fa-needed" hidden>Správci musí mít zapnuté dvoufázové přihlášení. Dokud ho nezapnete, nelze aktuality ani uživatele spravovat.</p>
+  <div class="ne-card" id="ne-2fa-card">
+   <h2 class="display-s">Dvoufázové přihlášení</h2>
+   <p>Po zadání hesla opíšete ještě šestimístný kód z ověřovací aplikace v telefonu (například Google Authenticator, Microsoft Authenticator nebo Aegis). <b id="ne-2fa-state"></b></p>
+   <form id="ne-2fa-on" hidden>
+    <label class="ne-field"><span>Vaše heslo</span><input name="password" type="password" autocomplete="current-password" required></label>
+    <p><button class="btn" type="submit">Zapnout</button></p>
+   </form>
+   <form id="ne-2fa-confirm" hidden>
+    <p>1. V aplikaci přidejte nový účet a zadejte tento klíč (typ „podle času“): <code id="ne-2fa-key"></code><br>Na telefonu můžete klíč předat aplikaci i <a id="ne-2fa-link">tímto odkazem</a>.</p>
+    <label class="ne-field"><span>2. Opište kód, který aplikace ukazuje</span><input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required></label>
+    <p><button class="btn" type="submit">Potvrdit a zapnout</button></p>
+   </form>
+   <div id="ne-2fa-codes" hidden><p><b>Záložní kódy.</b> Uložte si je na bezpečné místo; každý jde použít jednou místo kódu z aplikace. Znovu se už nezobrazí.</p><pre id="ne-2fa-codes-list"></pre></div>
+   <form id="ne-2fa-off" hidden>
+    <label class="ne-field"><span>Vypnout: vaše heslo</span><input name="password" type="password" autocomplete="current-password" required></label>
+    <p><button class="btn btn--ghost" type="submit">Vypnout dvoufázové přihlášení</button></p>
+   </form>
+   <p class="ne-msg" id="ne-2fa-card-msg" role="alert" hidden></p>
+  </div>
   <form id="ne-pw-form" class="ne-card">
    <h2 class="display-s">Změnit moje heslo</h2>
    <label class="ne-field"><span>Současné heslo</span><input name="current" type="password" autocomplete="current-password" required></label>
-   <label class="ne-field"><span>Nové heslo <small>(nejméně 10 znaků)</small></span><input name="next" type="password" autocomplete="new-password" minlength="10" required></label>
+   <label class="ne-field"><span>Nové heslo <small>(nejméně 12 znaků)</small></span><input name="next" type="password" autocomplete="new-password" minlength="12" required></label>
    <p class="ne-msg" id="ne-pw-msg" role="alert" hidden></p>
    <p><button class="btn" type="submit">Změnit heslo</button></p>
   </form>
@@ -850,8 +877,8 @@ def render_news_editor():
     <h2 class="display-s">Přidat uživatele</h2>
     <label class="ne-field"><span>Jméno a příjmení</span><input name="name" maxlength="100" required></label>
     <label class="ne-field"><span>E-mail</span><input name="email" type="email" autocomplete="off" required></label>
-    <label class="ne-field"><span>Heslo <small>(nejméně 10 znaků; sdělte ho osobně, uživatel si ho pak změní)</small></span><input name="password" type="text" autocomplete="off" minlength="10" required></label>
-    <label class="ne-field"><span>Role</span><select name="role"><option value="editor">Redaktor – píše a upravuje své aktuality</option><option value="admin">Správce – upravuje všechny aktuality</option><option value="owner">Hlavní správce – navíc přidává a odebírá uživatele</option></select></label>
+    <label class="ne-field"><span>Heslo <small>(nejméně 12 znaků; sdělte ho osobně, uživatel si ho pak změní)</small></span><input name="password" type="text" autocomplete="off" minlength="12" required></label>
+    <label class="ne-field"><span>Role</span><select name="role"><option value="editor">Redaktor – píše a upravuje své aktuality</option><option value="admin">Správce – upravuje všechny aktuality (musí si zapnout dvoufázové přihlášení)</option><option value="owner">Hlavní správce – navíc přidává a odebírá uživatele (musí si zapnout dvoufázové přihlášení)</option></select></label>
     <p class="ne-msg" id="ne-user-msg" role="alert" hidden></p>
     <p><button class="btn" type="submit">Přidat</button></p>
    </form>

@@ -1,16 +1,29 @@
-// Checks api/news.js with GitHub stubbed: sign-in and roles, file checks, cleaning of the text, the committed
-// article, drafts and scheduling, pinning, events, and what an editor may not do. Runs on every Order of Malta site.
+// Checks api/news.js with GitHub and the sign-in stubbed: roles, the two-step rule for admins, the origin check,
+// file checks, cleaning of the text, the committed article and its audit trail, drafts and scheduling, pinning,
+// events, and what an editor may not do. The sign-in itself is checked in tests/auth.test.js.
 //   node tests/news.test.js
 const assert = require("assert");
-process.env.NEWS_USERS = "Lenka:tajne-heslo-1:admin\nPetr:jine-heslo-2\nOta:treti:heslo";  // a password may hold a colon
-process.env.NEWS_SECRET = "test-secret";
+process.env.DATABASE_URL = "postgres://stub";
+process.env.BETTER_AUTH_SECRET = "test-secret";
 process.env.GITHUB_TOKEN = "test-token";
 const SITE = require("../content/site.json");
 const handler = require("../api/news.js");
 const HOST = new URL(SITE.baseUrl).host;
+// the people Better Auth would know, by session cookie
+const PEOPLE = {
+  lenka: { id: "u-lenka", name: "Lenka", role: "owner", twoFactorEnabled: true },
+  petr: { id: "u-petr", name: "Petr", role: "editor", twoFactorEnabled: false },
+  ota: { id: "u-ota", name: "Ota", role: "editor", twoFactorEnabled: true },
+  novy: { id: "u-novy", name: "Nový správce", role: "admin", twoFactorEnabled: false },  // has not switched two-step sign-in on yet
+  zakaz: { id: "u-zakaz", name: "Zakázaný", role: "editor", banned: true },
+};
+handler.useAuth(async () => ({ api: { getSession: async ({ headers }) => {
+  const who = PEOPLE[((headers.get("cookie") || "").match(/(?:^|;\s*)s=(\w+)/) || [])[1]];
+  return who ? { user: who, session: {} } : null;
+} } }));
 const CAT = Object.keys(SITE.newsCategories)[0];
 
-const commits = [];
+const commits = [], messages = [];
 let existing = new Set();
 const stored = {};  // files the stubbed repository returns by path
 global.fetch = async (url, opts = {}) => {
@@ -29,14 +42,14 @@ global.fetch = async (url, opts = {}) => {
     for (const f of body.tree) if (f.content != null) stored[f.path] = f.content; else if (f.sha === null) delete stored[f.path];  // the stub keeps the repository's state
     return json(201, { sha: "n".repeat(40) });
   }
-  if (u.pathname.endsWith("/git/commits")) return json(201, { sha: "d".repeat(40) });
+  if (u.pathname.endsWith("/git/commits")) { messages.push(body.message); return json(201, { sha: "d".repeat(40) }); }
   if (u.pathname.endsWith("/git/refs/heads/main")) return json(200, {});
   throw new Error("unexpected " + url);
 };
 
-function call(method, body, cookie) {
+function call(method, body, cookie, origin = `https://${HOST}`) {
   return new Promise((done) => {
-    const headers = { host: HOST, origin: `https://${HOST}`, ...(cookie ? { cookie } : {}) };
+    const headers = { host: HOST, ...(origin ? { origin } : {}), ...(cookie ? { cookie } : {}) };
     const res = { statusCode: 200, h: {}, setHeader(k, v) { this.h[k.toLowerCase()] = v; }, end(s) { done({ status: this.statusCode, body: JSON.parse(s || "{}"), cookie: this.h["set-cookie"] }); } };
     handler({ method, headers, body }, res);
   });
@@ -45,31 +58,50 @@ const meta = (doc) => JSON.parse(doc.split("---\n")[1]);
 const lastCommit = () => commits[commits.length - 1];
 
 (async () => {
-  const { sanitise, slugify, users } = handler;
+  const { sanitise, slugify } = handler;
   assert.strictEqual(sanitise('<p onclick="x()">A <b>B</b><script>evil()</script></p>'), "<p>A <strong>B</strong></p>");
   assert.strictEqual(sanitise('<p><a href="javascript:alert(1)">x</a> <a href="https://a.cz/" target="_blank">y</a></p>'), '<p>x <a href="https://a.cz/">y</a></p>');
   assert.strictEqual(sanitise('<h1 style="font-size:90px">T</h1><p><img src="data:x"><img src="/media/2026/10/a-1.webp" onerror="x"></p>'), '<h2>T</h2><p><img src="/media/2026/10/a-1.webp" alt=""></p>');
   assert.strictEqual(sanitise("<p>1 < 2 &amp; 3&nbsp;4</p><p></p><p><br></p>"), "<p>1 &lt; 2 &amp; 3 4</p>");
   assert.match(sanitise("<ul><li>a<li>b</ul><p>c"), /<\/ul><p>c<\/p>$/);  // unclosed tags are closed
   assert.strictEqual(slugify("Koncert duchovní hudby – říjen 2026!"), "koncert-duchovni-hudby-rijen-2026");
-  assert.deepStrictEqual(users(), { Lenka: { password: "tajne-heslo-1", role: "admin" }, Petr: { password: "jine-heslo-2", role: "editor" }, Ota: { password: "treti:heslo", role: "editor" } });
 
-  // ---- sign-in
+  // ---- who is signed in, and what the role allows
   const info = await call("GET", null);
   assert.strictEqual(info.body.user, null);
   assert.strictEqual(info.body.features.pin, false);  // nobody signed in: no pinning
-  assert.strictEqual((await call("POST", { action: "login", name: "Lenka", password: "spatne" })).status, 401);
   assert.strictEqual((await call("POST", { action: "publish" })).status, 401);
-  const admin = await call("POST", { action: "login", name: "lenka", password: "tajne-heslo-1" });
-  assert.strictEqual(admin.status, 200);
+  assert.strictEqual((await call("POST", { action: "publish" }, "s=nikdo")).status, 401);  // an unknown session
+  assert.strictEqual((await call("POST", { action: "publish" }, "s=zakaz")).status, 401);  // a banned person
+  assert.strictEqual((await call("POST", { action: "login", name: "Lenka", password: "x" })).status, 401);  // the old password sign-in is gone
+  const A = "s=lenka", E = "s=petr", O = "s=ota";
+  const admin = await call("GET", null, A);
+  assert.strictEqual(admin.body.user, "Lenka");
   assert.strictEqual(admin.body.role, "admin");
-  assert.match(admin.cookie, /HttpOnly; Secure; SameSite=Strict/);
-  const A = admin.cookie.split(";")[0];
-  const editor = await call("POST", { action: "login", name: "Petr", password: "jine-heslo-2" });
+  assert.strictEqual(admin.body.owner, true);
+  assert.strictEqual(admin.body.features.pin, true);
+  const editor = await call("GET", null, E);
   assert.strictEqual(editor.body.role, "editor");
-  const E = editor.cookie.split(";")[0];
-  assert.strictEqual((await call("GET", null, E)).body.features.pin, false);  // an editor is not offered pinning
-  assert.strictEqual((await call("POST", { action: "publish" }, "news_session=Lenka|9999999999999|forged")).status, 401);
+  assert.strictEqual(editor.body.needs2fa, false);  // two-step sign-in is optional for editors
+  assert.strictEqual(editor.body.features.pin, false);  // an editor is not offered pinning
+
+  // ---- an admin without two-step sign-in can do nothing until it is switched on
+  const N = "s=novy";
+  const fresh = await call("GET", null, N);
+  assert.strictEqual(fresh.body.needs2fa, true);
+  assert.strictEqual(fresh.body.features.pin, false);
+  for (const action of ["upload", "publish", "load", "delete"]) {
+    const r = await call("POST", { action, path: "content/news/2026/11/02/x.html" }, N);
+    assert.strictEqual(r.status, 403);
+    assert.strictEqual(r.body.error, "2fa");
+  }
+
+  // ---- every change must come from this site's own pages
+  assert.strictEqual((await call("POST", { action: "publish" }, A, "https://evil.example")).status, 403);
+  assert.strictEqual((await call("POST", { action: "publish" }, A, null)).status, 403);  // no Origin at all
+  assert.strictEqual((await call("POST", { action: "publish" }, A, "null")).status, 403);
+  assert.strictEqual((await call("PUT", {}, A)).status, 405);
+  const commitsBefore = commits.length;
 
   // ---- uploads: the content must be what it claims
   const png = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.alloc(20)]).toString("base64");
@@ -92,6 +124,11 @@ const lastCommit = () => commits[commits.length - 1];
   const m = meta(doc);
   assert.deepStrictEqual(m.categories, [CAT]);
   assert.strictEqual(m.author, "Petr");
+  assert.strictEqual(m.authorId, "u-petr");
+  assert.strictEqual(commits.length, commitsBefore + 1);  // nothing refused above reached the repository
+  assert.deepStrictEqual(m.audit.map((a) => [a.by, a.id, a.role, a.action]), [["Petr", "u-petr", "editor", "publish"]]);
+  assert.match(m.audit[0].at, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
+  assert.match(messages[messages.length - 1], /^Aktualita: Koncert v listopadu \(Petr\)\n\nAudit-Action: publish\nAudit-User: Petr \(u-petr\)\nAudit-Role: editor$/);
   assert.strictEqual(m.pinned, undefined);  // an editor cannot pin
   assert.strictEqual(m.draft, undefined);
   assert.strictEqual(m.image, up.body.url);
@@ -116,8 +153,6 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(loaded.status, 200);
   assert.strictEqual(loaded.body.mayChange, true);
   assert.strictEqual(loaded.body.pinned, false);
-  const otherEditor = await call("POST", { action: "login", name: "Ota", password: "treti:heslo" });
-  const O = otherEditor.cookie.split(";")[0];
   assert.strictEqual((await call("POST", { action: "load", path }, O)).body.mayChange, false);
   assert.strictEqual((await call("POST", { action: "publish", path, title: "Ukradeno", date: "2026-11-02T10:30", body: "<p>x</p>" }, O)).status, 403);
   assert.strictEqual((await call("POST", { action: "delete", path }, O)).status, 403);
@@ -129,6 +164,12 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(pm.pinned, true);
   assert.strictEqual(pm.author, "Petr");  // the author stays
   assert.strictEqual(pm.editedBy, "Lenka");
+  assert.strictEqual(pm.authorId, "u-petr");
+  assert.deepStrictEqual(pm.audit.map((a) => [a.by, a.role, a.action]), [["Petr", "editor", "publish"], ["Lenka", "owner", "edit"]]);
+  assert.match(messages[messages.length - 1], /Audit-Action: edit\nAudit-User: Lenka \(u-lenka\)\nAudit-Role: owner$/);
+  // a namesake with another account is not the author
+  PEOPLE.petr2 = { id: "u-petr-2", name: "Petr", role: "editor" };
+  assert.strictEqual((await call("POST", { action: "delete", path }, "s=petr2")).status, 403);
   // the editor's later save keeps the admin's pin
   await call("POST", { action: "publish", path, title: "Koncert v listopadu (upraveno)", date: "2026-11-02T10:30", body: "<p>Ještě novější.</p>", categories: [CAT], pinned: false }, E);
   pm = meta(lastCommit()[0].content);
@@ -151,6 +192,7 @@ const lastCommit = () => commits[commits.length - 1];
   const del = await call("POST", { action: "delete", path }, E);
   assert.strictEqual(del.status, 200);
   assert.deepStrictEqual(lastCommit(), [{ path, mode: "100644", type: "blob", sha: null }]);
+  assert.match(messages[messages.length - 1], /Audit-Action: delete\nAudit-User: Petr \(u-petr\)/);
 
   // ---- events (where the site has a calendar)
   const features = (await call("GET", null, A)).body.features;
@@ -160,7 +202,7 @@ const lastCommit = () => commits[commits.length - 1];
     assert.strictEqual(ev.status, 200, JSON.stringify(ev.body));
     assert.strictEqual(ev.body.url, "/udalost/den-otevrenych-dveri-2027-01-20/");
     let list = JSON.parse(stored["content/events.json"]);
-    assert.deepStrictEqual(list, [{ author: "Petr", title: "Den otevřených dveří", start: "2027-01-20 16:00", end: "2027-01-20 18:00", allDay: false, url: ev.body.url, description: "<p>Přijďte.</p>", place: "Aula" }]);
+    assert.deepStrictEqual(list, [{ author: "Petr", authorId: "u-petr", title: "Den otevřených dveří", start: "2027-01-20 16:00", end: "2027-01-20 18:00", allDay: false, url: ev.body.url, description: "<p>Přijďte.</p>", place: "Aula" }]);
     assert.strictEqual((await call("POST", { action: "event", title: "x", start: "2027-01-20 16:00", end: "2027-01-19 18:00" }, E)).status, 400);  // ends before it starts
     assert.strictEqual((await call("POST", { action: "event", title: "x", start: "zítra" }, E)).status, 400);
     const ev2 = await call("POST", { action: "event", title: "Den otevřených dveří", start: "2027-01-20 10:00", end: "2027-01-20 12:00" }, A);
@@ -181,11 +223,20 @@ const lastCommit = () => commits[commits.length - 1];
     assert.strictEqual((await call("POST", { action: "events" }, A)).status, 400);
   }
 
-  // ---- no cross-site posts, no publishing without configuration
-  const evil = await new Promise((done) => handler({ method: "POST", headers: { host: HOST, origin: "https://evil.example" }, body: {} },
-    { statusCode: 200, setHeader() {}, end(s) { done({ status: this.statusCode, body: JSON.parse(s) }); } }));
-  assert.strictEqual(evil.status, 403);
+  // ---- no publishing without configuration
   process.env.GITHUB_TOKEN = "";
-  assert.strictEqual((await call("POST", { action: "login", name: "Lenka", password: "tajne-heslo-1" })).status, 503);
+  assert.strictEqual((await call("POST", { action: "publish" }, A)).status, 503);
+  process.env.DATABASE_URL = "";
+  assert.strictEqual((await call("GET", null, A)).body.user, null);  // no database: nobody is signed in
+
+  // ---- the daily rebuild answers only Vercel's cron call
+  const rebuild = require("../api/rebuild.js");
+  const cron = (authorization) => new Promise((done) => rebuild({ headers: authorization ? { authorization } : {} }, { status(c) { return { json: (b) => done([c, b]) }; } }));
+  delete process.env.CRON_SECRET; delete process.env.DEPLOY_HOOK_URL;
+  assert.strictEqual((await cron())[0], 401);  // no secret set: nobody may start builds
+  assert.strictEqual((await cron("Bearer undefined"))[0], 401);
+  process.env.CRON_SECRET = "cron-secret";
+  assert.strictEqual((await cron("Bearer wrong-secret"))[0], 401);
+  assert.deepStrictEqual(await cron("Bearer cron-secret"), [200, { rebuilt: false, reason: "DEPLOY_HOOK_URL is not set" }]);
   console.log("news ok");
 })().catch((e) => { console.error(e); process.exit(1); });

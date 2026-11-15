@@ -25,15 +25,15 @@
       x.send(data ? JSON.stringify(data) : null);
     });
   }
-  // Better Auth (/api/auth/*) when the server uses it; otherwise the older name + password sign-in in /api/news
-  function authCall(path, data) {
-    return fetch("/api/auth/" + path, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data || {}) })
-      .then(function (r) { return r.ok ? r : Promise.reject({ status: r.status === 401 ? 401 : r.status, body: { error: r.status === 401 || r.status === 400 ? "login" : r.status === 429 ? "busy" : "server" } }); },
-        function () { return Promise.reject({ status: 0, body: {} }); });
+  // Better Auth's endpoints (/api/auth/*): sign-in, the second step, the own password, people
+  function authJson(path, data) {
+    return fetch("/api/auth/" + path, data ? { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) } : { credentials: "same-origin" })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { return r.ok ? (b || {}) : Promise.reject((b && (b.code || b.message)) || r.status); }); },
+        function () { return Promise.reject(0); });
   }
   function msg(el, text, kind) { el.textContent = text || ""; el.hidden = !text; el.className = "ne-msg" + (kind ? " ne-msg--" + kind : ""); }
   var ERR = {
-    login: "E-mail (jméno) nebo heslo nesouhlasí.", busy: "Příliš mnoho pokusů. Zkuste to prosím za minutu.", session: "Přihlášení vypršelo. Přihlaste se prosím znovu.",
+    "2fa": "Správci musí mít zapnuté dvoufázové přihlášení. Zapněte ho prosím na kartě Účet a uživatelé.", origin: "Požadavek nepřišel z tohoto webu.", session: "Přihlášení vypršelo. Přihlaste se prosím znovu.",
     type: "Lze nahrát jen fotografie (JPG, PNG, WebP) a PDF.", size: "Soubor je i po zmenšení příliš velký (nejvýše 3 MB). PDF prosím rozdělte nebo zmenšete jeho obrázky.",
     missing: "Vyplňte prosím titulek, datum a text.", config: "Formulář ještě není nastavený (chybí přístupové údaje na serveru).",
     gone: "Tato položka už neexistuje (možná ji mezitím někdo smazal).",
@@ -45,36 +45,86 @@
   function today() { return now().slice(0, 10); }
   function now() { var n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset()); return n.toISOString().slice(0, 16); }
 
-  // ---- sign-in
+  // ---- sign-in: e-mail and password, then (when the account has it on) a code from the authenticator app
+  var AUTH_ERR = { INVALID_EMAIL_OR_PASSWORD: "E-mail nebo heslo nesouhlasí.", INVALID_EMAIL: "E-mail nebo heslo nesouhlasí.", INVALID_PASSWORD: "Heslo nesouhlasí.",
+    ACCOUNT_LOCKED: "Účet je po několika chybných pokusech dočasně zamčený. Zkuste to prosím později (nejdéle za 15 minut).", 429: "Příliš mnoho pokusů. Zkuste to prosím za minutu.",
+    INVALID_CODE: "Kód nesouhlasí. Zadejte aktuální kód z aplikace.", INVALID_BACKUP_CODE: "Záložní kód nesouhlasí nebo už byl použit.", INVALID_TWO_FACTOR_COOKIE: "Přihlášení vypršelo. Zadejte prosím znovu e-mail a heslo.",
+    TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE: "Příliš mnoho chybných kódů. Zkuste to prosím později.", ACCOUNT_TEMPORARILY_LOCKED: "Příliš mnoho chybných kódů. Účet je dočasně zamčený.",
+    PASSWORD_TOO_SHORT: "Heslo je příliš krátké (nejméně 12 znaků).", TWO_FACTOR_REQUIRED: ERR["2fa"],
+    USER_ALREADY_EXISTS: "Uživatel s tímto e-mailem už existuje.", USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL: "Uživatel s tímto e-mailem už existuje.", 0: ERR[0] };
+  var authErr = function (e) { return AUTH_ERR[e] || (typeof e === "string" && /password/i.test(e) ? AUTH_ERR.INVALID_PASSWORD : typeof e === "string" && /code|otp/i.test(e) ? AUTH_ERR.INVALID_CODE : ERR.server); };
+  var second = $("#ne-2fa");
   function show(user, info) {
-    login.hidden = !!user; app.hidden = !user; done.hidden = true;
+    login.hidden = !!user; second.hidden = true; app.hidden = !user; done.hidden = true;
     if (!user) return;
     state.user = user;
     if (info) {
       state.names = info.allCategories || {}; state.defaultCategory = info.defaultCategory || ""; state.role = info.role; state.features = info.features || {};
+      state.owner = !!info.owner; state.twoFactor = !!info.twoFactor; state.needs2fa = !!info.needs2fa;
       categories(info.categories || []);
     }
     $("#ne-user").textContent = user + (state.role === "admin" ? " (správce)" : "");
     $("#ne-pin-field").hidden = !state.features.pin;
-    $("#ne-tab-events").hidden = !state.features.events;
-    $("#ne-tab-users").hidden = state.auth !== "better-auth"; state.owner = !!(info && info.owner); $("#ne-admin-users").hidden = !state.owner;
+    $("#ne-tab-events").hidden = !state.features.events || state.needs2fa;
+    $("#ne-tab-new").hidden = $("#ne-tab-list").hidden = state.needs2fa;  // an admin without the second step may only switch it on
+    $("#ne-tab-users").hidden = false; $("#ne-admin-users").hidden = !state.owner || state.needs2fa;
+    $("#ne-2fa-needed").hidden = !state.needs2fa;
+    twoFactorCard();
+    if (state.needs2fa) return tab("users");
     setup(); tab("new");
   }
+  function refresh() { return call().then(function (r) { show(r.body.user, r.body); }); }
   call().then(function (r) {
-    state.auth = r.body.auth;
-    if (state.auth === "better-auth") { var f = login.name; f.type = "email"; f.autocomplete = "email"; f.previousElementSibling.textContent = "E-mail"; }
+    if (r.body.configured === false) msg($("#ne-login-msg"), ERR.config, "error");
     show(r.body.user, r.body);
   }, function () { show(null); });
   login.addEventListener("submit", function (e) {
     e.preventDefault();
     var b = login.querySelector("button"); b.disabled = true; msg($("#ne-login-msg"));
-    (state.auth === "better-auth"
-      ? authCall("sign-in/email", { email: login.name.value.trim(), password: login.password.value }).then(function () { return call(); })
-      : call({ action: "login", name: login.name.value, password: login.password.value })).then(function (r) {
-      login.password.value = ""; show(r.body.user, r.body);
-    }, function (r) { msg($("#ne-login-msg"), errorOf(r), "error"); }).then(function () { b.disabled = false; });
+    authJson("sign-in/email", { email: login.name.value.trim().toLowerCase(), password: login.password.value }).then(function (r) {
+      login.password.value = "";
+      if (r.twoFactorRedirect) { login.hidden = true; second.hidden = false; second.reset(); msg($("#ne-2fa-msg")); second.code.focus(); return; }
+      return refresh();
+    }).catch(function (er) { msg($("#ne-login-msg"), authErr(er), "error"); }).then(function () { b.disabled = false; });
   });
-  $("#ne-logout").addEventListener("click", function () { (state.auth === "better-auth" ? authCall("sign-out") : call({ action: "logout" })).then(function () { location.reload(); }); });
+  second.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var b = second.querySelector("button"), code = second.code.value.replace(/\s+/g, ""), backup = second.backup.checked; b.disabled = true; msg($("#ne-2fa-msg"));
+    authJson(backup ? "two-factor/verify-backup-code" : "two-factor/verify-totp", { code: code }).then(refresh)
+      .catch(function (er) { msg($("#ne-2fa-msg"), authErr(er), "error"); if (er === "INVALID_TWO_FACTOR_COOKIE") show(null); }).then(function () { b.disabled = false; });
+  });
+  $("#ne-2fa-back").addEventListener("click", function () { show(null); });
+  $("#ne-logout").addEventListener("click", function () { authJson("sign-out", {}).then(function () { location.reload(); }, function () { location.reload(); }); });
+
+  // ---- two-step sign-in on the account card: switch on (password, then a code proves the app works), or off (editors)
+  function twoFactorCard() {
+    $("#ne-2fa-state").textContent = state.twoFactor ? "Zapnuto. Při přihlášení zadáváte kód z aplikace." : (state.role === "admin" ? "Vypnuto. Pro správce je povinné." : "Vypnuto. Doporučujeme ho zapnout.");
+    $("#ne-2fa-on").hidden = state.twoFactor; $("#ne-2fa-confirm").hidden = true; $("#ne-2fa-codes").hidden = true;
+    $("#ne-2fa-off").hidden = !state.twoFactor || state.role === "admin";
+  }
+  $("#ne-2fa-on").addEventListener("submit", function (e) {
+    e.preventDefault(); var f = e.target, m = $("#ne-2fa-card-msg"); msg(m);
+    authJson("two-factor/enable", { password: f.password.value }).then(function (r) {
+      f.reset(); f.hidden = true;
+      var key = (/[?&]secret=([^&]+)/.exec(r.totpURI) || [])[1] || "";
+      $("#ne-2fa-key").textContent = key.replace(/(.{4})/g, "$1 ").trim();
+      $("#ne-2fa-link").href = r.totpURI;
+      state.backupCodes = r.backupCodes || [];
+      $("#ne-2fa-confirm").hidden = false; $("#ne-2fa-confirm").code.focus();
+    }, function (er) { msg(m, authErr(er), "error"); });
+  });
+  $("#ne-2fa-confirm").addEventListener("submit", function (e) {
+    e.preventDefault(); var f = e.target, m = $("#ne-2fa-card-msg"); msg(m);
+    authJson("two-factor/verify-totp", { code: f.code.value.replace(/\s+/g, "") }).then(function () {
+      f.reset(); var codes = state.backupCodes; state.backupCodes = null;
+      return refresh().then(function () { tab("users"); $("#ne-2fa-codes").hidden = false; $("#ne-2fa-codes-list").textContent = codes.join("\n"); msg(m, "Dvoufázové přihlášení je zapnuté."); });
+    }).catch(function (er) { msg(m, authErr(er), "error"); });
+  });
+  $("#ne-2fa-off").addEventListener("submit", function (e) {
+    e.preventDefault(); var f = e.target, m = $("#ne-2fa-card-msg"); msg(m);
+    authJson("two-factor/disable", { password: f.password.value }).then(function () { f.reset(); return refresh().then(function () { tab("users"); msg(m, "Dvoufázové přihlášení je vypnuté."); }); })
+      .catch(function (er) { msg(m, authErr(er), "error"); });
+  });
 
   function categories(cats) {
     var box = $("#ne-cats");
@@ -97,7 +147,7 @@
   function tab(which) {
     ["new", "list", "events", "users"].forEach(function (t) { $("#ne-tab-" + t).setAttribute("aria-selected", String(t === which)); });
     editor.hidden = which !== "new"; manage.hidden = which !== "list"; events.hidden = which !== "events"; $("#ne-users").hidden = which !== "users";
-    if (which === "users" && state.owner) loadUsers();
+    if (which === "users" && state.owner && !state.needs2fa) loadUsers();
     if (which === "list") loadList();
     if (which === "events") loadEvents();
   }
@@ -106,14 +156,7 @@
   $("#ne-tab-events").addEventListener("click", function () { tab("events"); });
   $("#ne-tab-users").addEventListener("click", function () { tab("users"); });
 
-  // ---- own password and (admins) the people who may sign in: Better Auth's /api/auth/* endpoints
-  function authJson(path, data) {
-    return fetch("/api/auth/" + path, data ? { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) } : { credentials: "same-origin" })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { return r.ok ? b : Promise.reject(b.message || b.code || r.status); }); });
-  }
-  var AUTH_ERR = { INVALID_PASSWORD: "Současné heslo nesouhlasí.", PASSWORD_TOO_SHORT: "Heslo je příliš krátké (nejméně 10 znaků).",
-    USER_ALREADY_EXISTS: "Uživatel s tímto e-mailem už existuje.", USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL: "Uživatel s tímto e-mailem už existuje." };
-  var authErr = function (e) { return AUTH_ERR[e] || (typeof e === "string" && /password/i.test(e) ? AUTH_ERR.INVALID_PASSWORD : ERR.server); };
+  // ---- own password and (owners) the people who may sign in
   $("#ne-pw-form").addEventListener("submit", function (e) {
     e.preventDefault(); var f = e.target, m = $("#ne-pw-msg");
     authJson("change-password", { currentPassword: f.current.value, newPassword: f.next.value, revokeOtherSessions: true })
@@ -131,10 +174,10 @@
       (r.users || []).forEach(function (u) {
         var li = document.createElement("li"), me = u.name === state.user;
         li.innerHTML = "<span><b></b> <small></small></span> ";
-        li.querySelector("b").textContent = u.name; li.querySelector("small").textContent = u.email + ({ owner: " · hlavní správce", admin: " · správce" }[u.role] || "");
+        li.querySelector("b").textContent = u.name; li.querySelector("small").textContent = u.email + ({ owner: " · hlavní správce", admin: " · správce" }[u.role] || "") + (u.twoFactorEnabled ? " · dvoufázové přihlášení" : "");
         if (!me) {
           var reset = document.createElement("button"); reset.type = "button"; reset.className = "link-btn"; reset.textContent = "Nové heslo";
-          reset.onclick = function () { var pw = prompt("Nové heslo pro " + u.name + " (nejméně 10 znaků):"); if (pw) authJson("admin/set-user-password", { userId: u.id, newPassword: pw }).then(function () { alert("Heslo změněno."); }, function (er) { alert(authErr(er)); }); };
+          reset.onclick = function () { var pw = prompt("Nové heslo pro " + u.name + " (nejméně 12 znaků):"); if (pw) authJson("admin/set-user-password", { userId: u.id, newPassword: pw }).then(function () { alert("Heslo změněno."); }, function (er) { alert(authErr(er)); }); };
           var del = document.createElement("button"); del.type = "button"; del.className = "link-btn"; del.textContent = "Odebrat";
           del.onclick = function () { if (confirm("Odebrat uživatele " + u.name + "? Jeho aktuality zůstanou.")) authJson("admin/remove-user", { userId: u.id }).then(loadUsers, function (er) { alert(authErr(er)); }); };
           li.append(reset, " · ", del);
