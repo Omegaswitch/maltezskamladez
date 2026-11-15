@@ -37,7 +37,7 @@ Add `--offline` to skip fetching the Grand Magistry news feed. CI (`.github/work
 - `"status"` shows the review state in preview builds: `existing` (carried over, not yet reviewed), `new` (new text awaiting approval), `approval` (needs sign-off). Remove the field once the page is approved.
 
 **Photographs awaiting consent**
-- A post whose front matter has `"photos": "consent-pending"` is built without any `<img>` from its body and without its main and link-preview image; the text stays. All posts in the list in `docs/asset-manifest.md` ("Photographs: consent") carry it. Remove the flag from a post once consent for its photographs is confirmed (and drop the post from that list). The media files stay in the repository and, unlinked, in `dist/media/`; delete a file from `static/media/` to withdraw it completely.
+- A post whose front matter has `"photos": "consent-pending"` is built without any `<img>` from its body and without its main and link-preview image; the text stays. All posts in the list in `docs/asset-manifest.md` ("Photographs: consent") carry it. Remove the flag from a post once consent for its photographs is confirmed (and drop the post from that list). The photographs stay in `static/media/` in the repository but are not deployed: the build leaves out every image file such a post no longer shows (and every file that only a draft, scheduled or withdrawn post uses) unless a published page or post still shows it, and `check.py` fails if one is in `dist/media/` (the old `/wp-content/uploads/…` redirect then ends in a 404). Remove the flag and rebuild to deploy them again.
 - `"draft": true` takes a post off the site entirely (see "Withdrawn" in `docs/content-inventory.md`).
 
 **News from co-workers (no GitHub needed)**

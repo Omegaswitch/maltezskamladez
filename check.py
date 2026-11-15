@@ -67,9 +67,14 @@ def main():
     if not (DIST / "index.html").exists():
         sys.exit("dist/ is empty; run build.py first")
     import import_wp
+    sys.path.insert(0, str(ROOT))
+    import build  # the list of media that must not be deployed comes from the build's own reading of content/
     import_wp._self_test()
 
     sources, errors, pages = redirect_sources(), [], 0
+    leaked = [m for m in build.withheld_media() if (DIST / m.lstrip("/")).exists()]
+    for m in leaked:  # photographs awaiting consent, and media of drafts and withdrawn posts, stay out of dist/
+        errors.append(f"{m}: withheld media (consent pending, draft or withdrawn post) is in dist/")
     for f in DIST.rglob("news.json"):  # drafts and scheduled posts must not be listed in any public file (api/news.js lists them behind sign-in)
         errors.append(f"/{f.relative_to(DIST)}: a static list of posts could expose drafts")
     for f in sorted(DIST.rglob("*.html")):

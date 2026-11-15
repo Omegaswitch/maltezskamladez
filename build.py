@@ -13,6 +13,7 @@ import shutil
 import struct
 import sys
 import urllib.request
+from urllib.parse import unquote
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
@@ -47,6 +48,11 @@ def load_pages():
     return pages
 
 
+def media_refs(text):
+    """Media files a text points to (src, href, srcset, front-matter image), as /media/... paths without percent-encoding."""
+    return {unquote(m) for m in re.findall(r"/media/[^\s\"',<>)]+", text or "")}
+
+
 def withhold_photos(body):
     """Body without photographs, for a post flagged "photos": "consent-pending" (docs/asset-manifest.md). The text stays."""
     body = re.sub(r"<figure\b.*?</figure>", lambda m: "" if "<img" in m.group(0) else m.group(0), body, flags=re.S)
@@ -59,9 +65,10 @@ def load_news():
     news = []
     for f in (CONTENT / "news").rglob("*.html"):
         meta, body = read_doc(f)
+        every = media_refs(body) | media_refs(meta.get("image"))
         if meta.get("photos") == "consent-pending":  # no <img> from the body, no main or link-preview image, until consent is confirmed
             meta["image"], body = None, withhold_photos(body)
-        news.append({**meta, "body": body, "src": f.relative_to(ROOT).as_posix()})
+        news.append({**meta, "body": body, "src": f.relative_to(ROOT).as_posix(), "_media": every, "_shown": media_refs(body) | media_refs(meta.get("image"))})
     return sorted(news, key=lambda n: n["date"], reverse=True)
 
 
@@ -79,6 +86,21 @@ except Exception:
     BUILD_TIME = datetime.now().strftime("%Y-%m-%dT%H:%M")
 NEWS = [n for n in ALL_NEWS if not n.get("draft") and str(n.get("date", ""))[:10] <= BUILD_TIME[:10]]  # a scheduled post goes out on its day
 PINNED = [n for n in NEWS if n.get("pinned")]
+
+
+def withheld_media():
+    """Media files that must not be deployed: those a post no longer shows (photographs of a post flagged "photos":
+    "consent-pending") and everything a draft, scheduled or withdrawn post points to, unless a published page or post
+    still shows the file. They stay in the repository (static/media/), not in dist/."""
+    published = {id(n) for n in NEWS}
+    hidden = set()
+    for n in ALL_NEWS:
+        hidden |= n["_media"] if id(n) not in published else n["_media"] - n["_shown"]
+    shown = set().union(*(n["_shown"] for n in NEWS))
+    for f in list((CONTENT / "pages").rglob("*.html")) + list((CONTENT / "translations").glob("*.json")) + [CONTENT / "site.json", CONTENT / "i18n.json", CONTENT / "events.json"]:
+        if f.exists():
+            shown |= media_refs(f.read_text(encoding="utf-8"))
+    return {m for m in hidden - shown if (STATIC / m.lstrip("/")).is_file()}
 EVENTS_FILE = CONTENT / "events.json"
 EVENTS = sorted(json.loads(EVENTS_FILE.read_text(encoding="utf-8")), key=lambda e: e["start"]) if EVENTS_FILE.exists() else []
 if "MONTHS_SHORT" not in globals():
@@ -984,6 +1006,8 @@ def build():
     if DIST.exists():
         shutil.rmtree(DIST)
     shutil.copytree(STATIC, DIST)
+    for m in withheld_media():  # consent pending, draft or withdrawn: kept in the repository, not deployed
+        (DIST / m.lstrip("/")).unlink(missing_ok=True)
     for lang in LANGS:
         write(home_url(lang), render_home(lang))
         if HAS_CAL:
