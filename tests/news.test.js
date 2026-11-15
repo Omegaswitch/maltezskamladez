@@ -238,6 +238,24 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(om.status, undefined);
   assert.strictEqual(om.editedBy, "Ota");
   assert.match(lastCommit()[0].content, /<figcaption>Popisek<\/figcaption>/);  // the old text is kept as it was
+  assert.strictEqual(om.author, "Ota");
+  assert.strictEqual(om.authorId, "u-ota");  // editing an import claims it with the editor's account id
+  stored["content/news/2018/09/14/stary.html"] = lastCommit()[0].content;
+  assert.strictEqual((await call("POST", { action: "load", path: "content/news/2018/09/14/stary.html" }, E)).body.mayChange, false);  // it is Ota's now
+  // a namesake of the author, with another account id, is not the author (names no longer decide for posts with an id)
+  PEOPLE.ota2 = { id: "u-ota-2", name: "Ota", role: "editor" };
+  assert.strictEqual((await call("POST", { action: "load", path: "content/news/2018/09/14/stary.html" }, "s=ota2")).body.mayChange, false);
+  assert.strictEqual((await call("POST", { action: "publish", path: "content/news/2018/09/14/stary.html", title: "Přepsáno", date: "2018-09-14T10:00", body: "<p>x</p>" }, "s=ota2")).status, 403);
+  // an older post with a name but no id still goes by name until someone edits it
+  stored["content/news/2018/09/15/stary2.html"] = `---\n${JSON.stringify({ title: "Starý 2", url: "/2018/09/15/stary2/", date: "2018-09-15T10:00", categories: [CAT], author: "Petr", imported: true }, null, 1)}\n---\n<p>Text.</p>\n`;
+  assert.strictEqual((await call("POST", { action: "load", path: "content/news/2018/09/15/stary2.html" }, O)).body.mayChange, false);
+  await call("POST", { action: "publish", path: "content/news/2018/09/15/stary2.html", title: "Starý 2 (opraveno)", date: "2018-09-15T10:00", body: "<p>Text.</p>" }, E);
+  assert.strictEqual(meta(lastCommit()[0].content).authorId, "u-petr");
+  // an admin editing a post that names another author does not take it over
+  stored["content/news/2018/09/16/stary3.html"] = `---\n${JSON.stringify({ title: "Starý 3", url: "/2018/09/16/stary3/", date: "2018-09-16T10:00", categories: [CAT], author: "Jana", imported: true }, null, 1)}\n---\n<p>Text.</p>\n`;
+  await call("POST", { action: "publish", path: "content/news/2018/09/16/stary3.html", title: "Starý 3 (opraveno)", date: "2018-09-16T10:00", body: "<p>Text.</p>" }, A);
+  assert.strictEqual(meta(lastCommit()[0].content).authorId, undefined);
+  assert.strictEqual(meta(lastCommit()[0].content).author, "Jana");
 
   // ---- deleting: the author or an admin
   assert.strictEqual((await call("POST", { action: "delete", path: "../../.env" }, A)).status, 400);

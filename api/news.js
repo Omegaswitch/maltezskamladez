@@ -44,9 +44,10 @@ async function session(req) {
 }
 
 // An editor may change what they wrote (or what nobody signed: imported posts); an admin may change anything.
-// Posts written here carry the author's account id; a name alone decides only for posts that have none.
-const mayChange = (user, meta) => user.role === "admin" || !meta.author ||
-  (meta.authorId ? meta.authorId === user.id : meta.author === user.name || meta.editedBy === user.name);
+// Posts written here carry the author's account id, and that alone decides; a name counts only for older posts
+// that have no id, until someone edits them (which records the editor's id).
+const mayChange = (user, meta) => user.role === "admin" ||
+  (meta.authorId ? meta.authorId === user.id : !meta.author || meta.author === user.name || meta.editedBy === user.name);
 
 // Who did what, for the post's front matter (the last 50 steps) and for the commit message.
 const auditEntry = (user, action) => ({ at: localNow(), by: user.name, id: user.id, role: user.storedRole, action });
@@ -285,7 +286,8 @@ async function publish(body, user) {
   const excerpt = oneLine(body.excerpt, 300) || excerptOf(plain(html));
   const meta = { ...(old ? old.meta : {}), title, url, date, categories: cats.length ? cats : [DEFAULT_CATEGORY],
     image: image ? image.url : null, excerpt, author: (old && old.meta.author) || user.name, imported: false };
-  if (!editing) meta.authorId = user.id;
+  // a new post, or an older one without an account id, is claimed by whoever saves it (an admin does not take over a named author's post)
+  if (!meta.authorId && (!editing || user.role !== "admin" || !old.meta.author)) meta.authorId = user.id;
   // a draft is kept in the repository but not built; a future date is built once it has come (scheduled)
   if (body.draft) meta.draft = true; else delete meta.draft;
   // pinning a notice to the home page is the admins' call; an editor's save keeps whatever an admin set
@@ -375,7 +377,7 @@ const sameOrigin = (req) => {
 
 module.exports = async (req, res) => {
   const send = (status, data) => { res.statusCode = status; res.setHeader("Content-Type", "application/json; charset=utf-8"); res.setHeader("Cache-Control", "no-store"); res.end(JSON.stringify(data)); };
-  const info = (user) => ({ user: user ? user.name : null, role: user ? user.role : null, owner: !!(user && user.owner), twoFactor: !!(user && user.twoFactor), needs2fa: !!(user && user.needs2fa),
+  const info = (user) => ({ user: user ? user.name : null, id: user ? user.id : null, role: user ? user.role : null, owner: !!(user && user.owner), twoFactor: !!(user && user.twoFactor), needs2fa: !!(user && user.needs2fa),
     categories: CATEGORIES.map((c) => [c, SITE.newsCategories[c]]), allCategories: SITE.newsCategories, defaultCategory: DEFAULT_CATEGORY,
     features: { events: !!FEATURES.events, pin: !!FEATURES.pin && !!user && user.role === "admin" && !user.needs2fa } });
   if (req.method !== "GET" && req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return send(405, { error: "method" }); }

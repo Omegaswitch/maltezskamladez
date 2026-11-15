@@ -163,6 +163,24 @@ function totp(uri, at = Date.now()) {
   assert.strictEqual((await post("/admin/remove-user", { userId: db.user[0].id }, eva2.jar)).status, 403);
   assert.strictEqual(db.user.length, 4);
 
+  // ---- nobody renames themselves; an owner can rename people
+  const evaId = db.user.find((u) => u.email === "eva@cmm.test").id;
+  const eva3 = await signIn("eva@cmm.test", PASSWORD);
+  const rename = await post("/update-user", { name: "Olga Ownerová" }, eva3.jar);
+  assert.strictEqual(rename.status, 403);
+  assert.strictEqual(rename.body.code, "NAME_CHANGE_FORBIDDEN");
+  assert.strictEqual((await post("/update-user", { name: "Olga Ownerová", image: "x" }, adam.jar)).status, 403);  // an admin neither
+  assert.strictEqual(db.user.find((u) => u.id === evaId).name, "Eva Editorová");
+  assert.strictEqual((await post("/admin/update-user", { userId: evaId, data: { name: "Eva Nová" } }, eva3.jar)).status, 403);  // not through the admin API either
+  assert.strictEqual((await post("/admin/update-user", { userId: evaId, data: { name: "Eva Nová" } }, adam.jar)).status, 403);
+  assert.strictEqual(db.user.find((u) => u.id === evaId).name, "Eva Editorová");
+  await add("Druhý Owner", "owner2@cmm.test", "owner");  // Olga's second step is locked by the wrong codes above
+  const olga2 = await signIn("owner2@cmm.test", PASSWORD);
+  const owner2fa = await post("/two-factor/enable", { password: PASSWORD }, olga2.jar);
+  await post("/two-factor/verify-totp", { code: totp(owner2fa.body.totpURI) }, olga2.jar);
+  assert.strictEqual((await post("/admin/update-user", { userId: evaId, data: { name: "Eva Nová" } }, olga2.jar)).status, 200);
+  assert.strictEqual(db.user.find((u) => u.id === evaId).name, "Eva Nová");
+
   // ---- signing out ends the session
   assert.strictEqual((await post("/sign-out", {}, eva2.jar)).status, 200);
   assert.strictEqual((await get("/get-session", eva2.jar)).body.user, undefined);

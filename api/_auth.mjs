@@ -4,6 +4,8 @@
 //
 // Rules (tests/auth.test.mjs):
 // - Nobody can sign themselves up: an owner adds co-workers (the staff page, or `npm run auth:user`).
+// - Nobody renames themselves (/update-user with a name is refused): names appear as authors and in the audit trail.
+//   An owner renames people through /admin/update-user.
 // - Roles: "owner" may also add, remove and reset people; "admin" may change any post; "editor" their own.
 // - Two-step sign-in (an authenticator app) is required for admin and owner: until it is on they can sign in but
 //   nothing except switching it on is allowed (here for /admin/*, in api/news.js for publishing). Optional for editors.
@@ -71,6 +73,9 @@ export function createAuth({ database, attempts, secret, baseURL, rateLimit = tr
             audit("sign-in-locked", { key: keyOf(ctx.body?.email).slice(0, 12) });
             throw new APIError("TOO_MANY_REQUESTS", { message: "Account temporarily locked", code: "ACCOUNT_LOCKED" });
           }
+        }
+        if (ctx.path === "/update-user" && ctx.body && "name" in ctx.body) {  // a display name is shown as the author: only an owner changes it, through the admin API
+          throw new APIError("FORBIDDEN", { message: "Names are changed by an owner", code: "NAME_CHANGE_FORBIDDEN" });
         }
         if (ctx.path === "/admin/create-user" || ctx.path === "/admin/set-user-password") {  // the admin plugin does not apply the length rule itself
           const pw = String(ctx.body?.password ?? ctx.body?.newPassword ?? "");

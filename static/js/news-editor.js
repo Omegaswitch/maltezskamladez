@@ -61,7 +61,7 @@
     state.user = user;
     if (info) {
       state.names = info.allCategories || {}; state.defaultCategory = info.defaultCategory || ""; state.role = info.role; state.features = info.features || {};
-      state.owner = !!info.owner; state.twoFactor = !!info.twoFactor; state.needs2fa = !!info.needs2fa;
+      state.id = info.id; state.owner = !!info.owner; state.twoFactor = !!info.twoFactor; state.needs2fa = !!info.needs2fa;
       categories(info.categories || []);
     }
     $("#ne-user").textContent = user + (state.role === "admin" ? " (správce)" : "");
@@ -198,7 +198,7 @@
       function (r) { msg($("#ne-list-msg"), errorOf(r), "error"); signedOut(r); });
   }
   function fmt(d) { var p = d.slice(0, 10).split("-"); return +p[2] + ". " + +p[1] + ". " + p[0]; }
-  function mine(p) { return state.role === "admin" || !p.author || p.author === state.user || p.editedBy === state.user; }
+  function mine(p) { return state.role === "admin" || (p.authorId ? p.authorId === state.id : !p.author || p.author === state.user || p.editedBy === state.user); }
   function render() {
     var q = $("#ne-search").value.trim().toLowerCase(), hidden = gone(), ul = $("#ne-list");
     var items = posts.filter(function (p) { return hidden.indexOf(p.path) < 0 && (!q || (p.title + " " + p.date).toLowerCase().indexOf(q) >= 0); });
