@@ -37,7 +37,7 @@ The current site's logo (`/wp-content/uploads/2019/09/cropped-logo_new_1-2-2.png
 - Proportions, the Y spacing between shield and text and the clear space: as on CoA pp. 54–55.
 - Colours: shield and the direction line red; the other text black. On a red background the lockup sits in a white box.
 
-`tools/make_lockup.py` builds lines 1–2 from the licensed font. Line 3 needs the licensed Century Gothic Bold, which is not in the repository, so it has not been produced: no substitute font was used. **Pending asset `LCK-02`**: have the three-line lockup produced with the licensed font, or request it from the Grand Magistry or the Grand Priory.
+`tools/make_lockup.py` builds lines 1–2 from the licensed font. Line 3 needs the licensed Century Gothic Bold, which is not in the repository, so the final version has not been produced. A preview exists in `docs/lockup-preview/` (built by `tools/make_cmm_lockup.py` with a stand-in font, URW Gothic Demi; it is not used on the site and is not a substitute for the final file). **Pending asset `LCK-02`**: the final version needs the licensed font and approval: have the three-line lockup produced with the licensed font, or request it from the Grand Magistry or the Grand Priory.
 
 Until then the banner shows the existing Czech two-line shield lockup ("MALTÉZSKÝ ŘÁD / ČESKÁ REPUBLIKA") with the full name of the Order and "Česká maltézská mládež" as live text beside it, the same way the Grand Priory's site sets its entity name.
 
@@ -55,14 +55,14 @@ Until then the banner shows the existing Czech two-line shield lockup ("MALTÉZS
 | 8 | Only the two official emblems; none created, redrawn, recoloured or animated | CoA | ✅ | Only the official red shield appears (banner lockup, link-preview cards, favicons). The armorial bearing is not used: this is an activity, not an institution. `check.py` allows only the files in `docs/asset-manifest.md` under `/img/` and rejects the old logo under `/media/`. |
 | 9 | The cross only inside the shield, only in white | CP p. 19 | ✅ | See 8. The banner photograph (official asset) shows the Order's flag. |
 | 10 | Activities use the shield with the Order's name in the local language | CoA | ✅ | The Czech lockup reads "MALTÉZSKÝ ŘÁD / ČESKÁ REPUBLIKA"; other languages use their own lockup. |
-| 11 | The activity's own lockup ("Directions") | CoA pp. 53–56, 60 | ⚠️ | Not yet produced (`LCK-02`, above). |
+| 11 | The activity's own lockup ("Directions") | CoA pp. 53–56, 60 | ⚠️ | Preview only in `docs/lockup-preview/`; final version pending the licensed font and approval (`LCK-02`, above). |
 | 12 | Apolitical, no invented facts or figures | CP | ✅ | New texts (home page, privacy notice, translations) state only what the existing site states. They are labelled "new", "approval" or "translation" until approved. |
 | 13 | Photographs: rights and consent, especially of minors | CP | ⚠️ | All photographs come from the existing site. Consent is not documented anywhere we could see; see `docs/asset-manifest.md`, `PH-*`. |
 | 14 | Social links | CP | ✅ | One plain link to the Facebook page of Česká maltézská mládež. No Facebook script, pixel or embed. |
 
 ## Open approvals (for the Grand Magistry, the Grand Priory or the client)
 
-1. The three-line lockup `LCK-02`: who produces it, and its approval.
+1. The three-line lockup `LCK-02`: a preview exists (`docs/lockup-preview/`); who produces the final version with the licensed font, and its approval.
 2. Retiring the old logo everywhere else too (Facebook, printed matter); what to do with the historical posters and PDFs that carry it.
 3. The translated names of the entity: "Czech Maltese Youth", "Jeunesse maltaise tchèque", "Gioventù maltese ceca", "Tschechische Malteserjugend".
 4. Native-speaker review of the EN, FR, IT and DE texts (`content/i18n.json`, `content/translations/`).
