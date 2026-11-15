@@ -8,7 +8,7 @@
   var API = "/api/news";
   var $ = function (s) { return root.querySelector(s); };
   var login = $("#ne-login"), app = $("#ne-app"), editor = $("#ne-editor"), manage = $("#ne-manage"), done = $("#ne-done"), events = $("#ne-events");
-  // files: {sha, path, url, role, label} for new uploads, {url, role, label, ext} for files already on the site
+  // files: {sha, path, url, type, token, role, label} for new uploads, {url, role, label, ext} for files already on the site
   var state = { files: [], blobs: {}, editing: null, names: {}, defaultCategory: "", role: null, features: {}, user: null, event: null };
   var MAX = 3 * 1024 * 1024, DRAFT = "news-draft", GONE = "news-deleted";
   var PDF_SHRINK_FROM = 1024 * 1024, V = (document.currentScript && document.currentScript.src.split("?")[1]) || "";
@@ -36,6 +36,7 @@
     "2fa": "Správci musí mít zapnuté dvoufázové přihlášení. Zapněte ho prosím na kartě Účet a uživatelé.", origin: "Požadavek nepřišel z tohoto webu.", session: "Přihlášení vypršelo. Přihlaste se prosím znovu.",
     type: "Lze nahrát jen fotografie (JPG, PNG, WebP) a PDF.", size: "Soubor je i po zmenšení příliš velký (nejvýše 3 MB). PDF prosím rozdělte nebo zmenšete jeho obrázky.",
     missing: "Vyplňte prosím titulek, datum a text.", config: "Formulář ještě není nastavený (chybí přístupové údaje na serveru).",
+    files: "Soubor se nepodařilo ověřit. Nahrajte ho prosím znovu.", exists: "Soubor s touto adresou už na webu je. Nahrajte ho prosím znovu.",
     gone: "Tato položka už neexistuje (možná ji mezitím někdo smazal).",
     forbidden: "Tuto položku může upravit nebo smazat jen ten, kdo ji napsal, nebo správce webu.",
     server: "Něco se nepovedlo na straně serveru. Zkuste to prosím za chvíli znovu.", 0: "Spojení se nezdařilo. Zkontrolujte připojení k internetu."
@@ -304,7 +305,7 @@
         return call({ action: "upload", name: f.name, type: f.type, data: data }, function (p) { if (bar) bar.value = p * 100; });
       });
     }).then(function (r) {
-      var item = { sha: r.body.sha, path: r.body.path, url: r.body.url, role: role, label: file.name.replace(/\.\w+$/, "") };
+      var item = { sha: r.body.sha, path: r.body.path, url: r.body.url, type: r.body.type, token: r.body.token, role: role, label: file.name.replace(/\.\w+$/, "") };
       state.files.push(item);
       if (bar) bar.value = 100;
       if (note) note.textContent = "Nahráno";

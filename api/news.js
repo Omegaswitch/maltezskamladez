@@ -175,7 +175,15 @@ async function upload(body) {
   const stem = slugify(String(body.name || "").replace(/\.[^.]*$/, "")).slice(0, 50);
   const path = `static/media/${y}/${m}/${stem}-${crypto.randomBytes(4).toString("hex")}.${TYPES[type]}`;  // never the uploader's own name alone
   const blob = await gh("/git/blobs", { method: "POST", body: JSON.stringify({ content: buf.toString("base64"), encoding: "base64" }) });
-  return [200, { sha: blob.sha, path, url: path.replace(/^static/, ""), size: buf.length, type }];
+  return [200, { sha: blob.sha, path, url: path.replace(/^static/, ""), size: buf.length, type, token: uploadToken(blob.sha, path, type) }];
+}
+
+// Proof that "upload" made this blob for this path and type: publish accepts a new file only with it, so a staff
+// member cannot commit an arbitrary blob, or any other path, through "publish".
+const uploadToken = (sha, path, type) => crypto.createHmac("sha256", env("BETTER_AUTH_SECRET")).update(`${sha}|${path}|${type}`).digest("hex");
+function validToken(f) {
+  const a = Buffer.from(uploadToken(f.sha, f.path, f.type), "hex"), b = Buffer.from(String(f.token || ""), "hex");
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 // ---------------------------------------------------------------- news
@@ -232,8 +240,15 @@ async function publish(body, user) {
   // new uploads come with the blob made by "upload"; files already on the site only by their address
   const bad = (f) => !["image", "attachment", "inline"].includes(f.role) || (f.sha
     ? !/^[0-9a-f]{40}$/.test(f.sha) || !/^static\/media\/\d{4}\/\d{2}\/[a-z0-9-]+\.(pdf|jpg|png|webp)$/.test(f.path || "")
+      || !TYPES[f.type] || f.path.split(".").pop() !== TYPES[f.type] || !validToken(f)  // the extension must match the sniffed type
     : !MEDIA_URL.test(f.url || ""));
   if (files.some(bad)) return [400, { error: "files" }];
+  // a new upload never replaces a file already in the repository, except the same, unchanged file of the post being edited
+  const had = old ? [old.meta.image, ...old.attachments.map((a) => a.url)] : [];
+  for (const f of files.filter((f) => f.sha)) {
+    const url = f.path.replace(/^static/, ""), there = await gh(contentsPath(f.path), { allow404: true });
+    if (there && !(there.sha === f.sha && (had.includes(url) || old.body.includes(url)))) return [409, { error: "exists" }];
+  }
 
   const media = files.map((f) => ({ ...f, url: f.sha ? f.path.replace(/^static/, "") : f.url }));
   const image = media.find((f) => f.role === "image");

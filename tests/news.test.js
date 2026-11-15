@@ -111,11 +111,16 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual((await call("POST", { action: "upload", name: "x.pdf", type: "application/pdf", data: png }, E)).status, 400);
   assert.strictEqual((await call("POST", { action: "upload", name: "x.exe", type: "application/octet-stream", data: png }, E)).status, 400);
 
+  const pdfUp = await call("POST", { action: "upload", name: "Program.pdf", type: "application/pdf", data: Buffer.from("%PDF-1.4 test").toString("base64") }, E);
+  assert.strictEqual(pdfUp.status, 200);
+  assert.match(pdfUp.body.token, /^[0-9a-f]{64}$/);
+  const file = (u, role, extra = {}) => ({ sha: u.sha, path: u.path, url: u.url, type: u.type, token: u.token, role, ...extra });
+
   // ---- a new post by the editor
   existing = new Set(["content/news/2026/11/02/koncert-v-listopadu.html"]);
   const pub = await call("POST", { action: "publish", title: "Koncert v listopadu", date: "2026-11-02T10:30", categories: [CAT, "bogus"],
     body: '<p>Přijďte <b>všichni</b>.</p><p><img src="blob:x"><img src="/media/2026/10/a-1.webp"></p><script>x</script>', excerpt: "  Krátce  ",
-    files: [{ sha: up.body.sha, path: up.body.path, url: up.body.url, role: "image" }, { sha: "b".repeat(40), path: "static/media/2026/10/program-1a2b3c4d.pdf", role: "attachment", label: "Program <PDF>", ext: "pdf" }],
+    files: [file(up.body, "image"), file(pdfUp.body, "attachment", { label: "Program <PDF>", ext: "pdf" })],
     pinned: true }, E);
   assert.strictEqual(pub.status, 200, JSON.stringify(pub.body));
   assert.strictEqual(pub.body.url, "/2026/11/02/koncert-v-listopadu-2/");  // the slug was taken
@@ -133,9 +138,29 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(m.draft, undefined);
   assert.strictEqual(m.image, up.body.url);
   assert.strictEqual(m.excerpt, "Krátce");
-  assert.match(doc, /<p>Přijďte <strong>všichni<\/strong>\.<\/p>\n<p><img src="\/media\/2026\/10\/a-1\.webp" alt=""><\/p>\n<p class="file"><a href="\/media\/2026\/10\/program-1a2b3c4d\.pdf">Program &lt;PDF&gt;<\/a> \(PDF\)<\/p>/);
+  assert.match(doc, /<p>Přijďte <strong>všichni<\/strong>\.<\/p>\n<p><img src="\/media\/2026\/10\/a-1\.webp" alt=""><\/p>\n/);
+  assert.ok(doc.includes(`<p class="file"><a href="${pdfUp.body.url}">Program &lt;PDF&gt;</a> (PDF)</p>`));
   assert.ok(tree.some((f) => f.path === up.body.path && f.sha === up.body.sha));
   assert.strictEqual((await call("POST", { action: "publish", title: "x", date: "2026-11-02T10:30", body: "<p>a</p>", files: [{ url: "https://evil/x.png", role: "image" }] }, E)).status, 400);
+  // ---- new files need the token "upload" issued; nothing else may be committed through "publish"
+  const attempt = (f, as = E) => call("POST", { action: "publish", title: "Soubor", date: "2026-11-04T10:00", body: "<p>a</p>", files: [f] }, as);
+  const before = commits.length;
+  assert.strictEqual((await attempt({ sha: "b".repeat(40), path: "static/media/2026/10/program-1a2b3c4d.pdf", type: "application/pdf", role: "attachment" })).status, 400);  // no token
+  assert.strictEqual((await attempt(file({ ...up.body, token: "0".repeat(64) }, "image"))).status, 400);  // wrong token
+  assert.strictEqual((await attempt(file({ ...up.body, token: "zz" }, "image"))).status, 400);
+  assert.strictEqual((await attempt(file({ ...up.body, sha: "b".repeat(40) }, "image"))).status, 400);  // another blob
+  assert.strictEqual((await attempt(file({ ...up.body, path: "static/media/2026/10/jina-1a2b3c4d.png" }, "image"))).status, 400);  // another path
+  assert.strictEqual((await attempt(file({ ...up.body, type: "image/jpeg" }, "image"))).status, 400);  // another type
+  const jpgPath = up.body.path.replace(/\.png$/, ".jpg");  // a token for a path whose extension does not match the type
+  assert.strictEqual((await attempt({ ...file(up.body, "image"), path: jpgPath, token: require("crypto").createHmac("sha256", "test-secret").update(`${up.body.sha}|${jpgPath}|image/png`).digest("hex") })).status, 400);
+  assert.strictEqual(commits.length, before);
+  // a path that is already in the repository is refused, even with a valid token
+  existing.add(up.body.path);
+  const taken = await attempt(file(up.body, "image"));
+  assert.strictEqual(taken.status, 409);
+  assert.strictEqual(taken.body.error, "exists");
+  assert.strictEqual(commits.length, before);
+  existing.delete(up.body.path);
   assert.strictEqual((await call("POST", { action: "publish", title: "x", date: "2026-11-02T10:30", body: "<p>a</p>", files: [{ sha: "zz", path: "../../etc/passwd", role: "image" }] }, E)).status, 400);
   assert.strictEqual((await call("POST", { action: "publish", title: "x", date: "2026-11-02", body: "<p>a</p>" }, E)).status, 400);  // date without time
 
@@ -175,6 +200,19 @@ const lastCommit = () => commits[commits.length - 1];
   pm = meta(lastCommit()[0].content);
   assert.strictEqual(pm.pinned, true);
   assert.strictEqual(pm.title, "Koncert v listopadu (upraveno)");
+  // the same, unchanged file of the post being edited may be sent again; a different file at that path may not
+  const keepPath = pinned.body.path;
+  const withPhoto = (f) => call("POST", { action: "publish", path: keepPath, title: "Koncert", date: "2026-11-02T10:30", body: `<p>Nový text.</p><p><img src="${up.body.url}"></p>`, categories: [CAT], files: [f] }, E);
+  assert.strictEqual((await withPhoto(file(up.body, "inline"))).status, 200);  // first save: the post gets the photo
+  existing.add(up.body.path);
+  const origFetch = global.fetch;
+  global.fetch = async (url, opts) => { const u = new URL(url); return u.pathname.endsWith("/contents/" + up.body.path) ? { ok: true, status: 200, json: async () => ({ sha: up.body.sha }) } : origFetch(url, opts); };
+  assert.strictEqual((await withPhoto(file(up.body, "inline"))).status, 200);  // the same, unchanged file again
+  const other = await call("POST", { action: "upload", name: "Jiny.png", type: "image/png", data: png }, E);
+  other.body.path = up.body.path; other.body.sha = "f".repeat(40);
+  other.body.token = require("crypto").createHmac("sha256", "test-secret").update(`${other.body.sha}|${other.body.path}|image/png`).digest("hex");
+  assert.strictEqual((await withPhoto(file(other.body, "inline"))).status, 409);
+  global.fetch = origFetch; existing.delete(up.body.path); delete stored[up.body.path];
   // an imported post (no author) stays editable by any editor, and loses its "unreviewed" status when saved
   stored["content/news/2018/09/14/stary.html"] = `---\n${JSON.stringify({ title: "Starý", url: "/2018/09/14/stary/", date: "2018-09-14T10:00", categories: [CAT], image: "/media/2018/06/koncert.jpg", excerpt: "Starý", status: "existing", imported: true }, null, 1)}\n---\n<p>Starý text.</p>\n<figure><img src="/media/2018/06/koncert.jpg"><figcaption>Popisek</figcaption></figure>\n`;
   const old = await call("POST", { action: "load", path: "content/news/2018/09/14/stary.html" }, O);
