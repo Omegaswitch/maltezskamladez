@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-off migration of maltezskyrad.cz (WordPress) into content/ files.
+"""One-off migration of cmm.maltezskyrad.cz (WordPress) into content/ files.
 
 Standard library only. Reads the public WordPress REST API, sanitises every
 page and post through an allowlist HTML parser, mirrors only the media the
@@ -21,8 +21,10 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-API = "https://www.maltezskyrad.cz/wp-json/wp/v2"
-OLD_HOSTS = ("cvp.maltezskyrad.cz", "www.maltezskyrad.cz", "maltezskyrad.cz")
+# The old site answers over plain HTTP only: its HTTPS certificate does not cover the name (docs/security-audit.md, L1).
+ORIGIN = "http://cmm.maltezskyrad.cz"
+API = ORIGIN + "/wp-json/wp/v2"
+OLD_HOSTS = ("cmm.maltezskyrad.cz", "www.cmm.maltezskyrad.cz")
 UPLOADS = "/wp-content/uploads/"
 MAX_IMG_W = 1200
 
@@ -33,7 +35,9 @@ ALLOWED = {"p", "h2", "h3", "h4", "ul", "ol", "li", "a", "strong", "em", "br", "
 RENAME = {"b": "strong", "i": "em", "h1": "h2", "h5": "h4", "h6": "h4"}
 VOID = {"br", "img", "hr"}
 # legacy emblem renditions on the old site; replaced by official originals (see docs/asset-manifest.md)
-LEGACY_EMBLEMS = re.compile(r"/(znak(-\d+)?|logo[^/]*)\.(png|jpe?g|gif|svg)$", re.I)
+# the old logo (a figure with a wheelchair whose wheel is a cross in a red circle) is not an emblem of the Order and
+# is never imported, nor are the placeholder pictures built from it; see docs/brand-compliance.md
+LEGACY_EMBLEMS = re.compile(r"/((cropped-)?logo[^/]*|ples_logo|author)\.(png|jpe?g|gif|svg)$", re.I)
 DROP_WITH_CONTENT = {"script", "style", "noscript", "object", "svg", "form", "button", "select", "textarea"}
 ATTRS = {"a": {"href"}, "img": {"src", "alt", "srcset"}, "td": {"colspan", "rowspan"}, "th": {"colspan", "rowspan"}}
 
@@ -159,7 +163,7 @@ def download(url, dest):
     if dest.exists():
         return True
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fetch = url.replace("://cvp.maltezskyrad.cz", "://www.maltezskyrad.cz").replace("http://", "https://")
+    fetch = url.replace("https://cmm.maltezskyrad.cz", ORIGIN)
     try:
         with urllib.request.urlopen(urllib.parse.quote(fetch, safe=":/%?=&"), timeout=120) as r:
             dest.write_bytes(r.read())
@@ -195,17 +199,16 @@ class Media:
         dest = ROOT / "static" / "media" / rel
         if not download(url, dest):
             self.missing.append(url)
+            return None  # already gone on the old site: the reference is dropped, not carried over broken
         return "/media/" + urllib.parse.quote(rel)
 
     def featured(self, media_id):
         m = self.by_id.get(media_id)
-        return self.local(m["source_url"]) if m else None
+        return self.local(m["source_url"]) if m and not LEGACY_EMBLEMS.search(m["source_url"]) else None
 
 
 def _norm(u):
     u = u.replace("http://", "https://")
-    for h in OLD_HOSTS:
-        u = u.replace(f"https://{h}", "https://www.maltezskyrad.cz")
     return u
 
 
@@ -226,15 +229,16 @@ def make_url_map(media):
         host = parsed.netloc.lower()
         if host in OLD_HOSTS or not host:
             if UPLOADS in parsed.path:
-                return media.local(u if host else "https://www.maltezskyrad.cz" + parsed.path)
-            if parsed.path.startswith("/downloads/") or parsed.path.startswith("/obrazky/"):
-                return None  # files from the pre-2018 site; no longer served
+                return None if LEGACY_EMBLEMS.search(parsed.path) else media.local(u if host else ORIGIN + parsed.path)
             path = parsed.path or "/"
             if not path.endswith("/") and "." not in path.rsplit("/", 1)[-1]:
                 path += "/"
             return path + (f"#{parsed.fragment}" if parsed.fragment else "")
         if parsed.scheme == "http":
             u = "https://" + u[len("http://"):]
+        u = u.replace("https://cvp.maltezskyrad.cz/", "https://www.maltezskyrad.cz/")  # the Grand Priory's old host name; its certificate is not valid
+        if host.endswith("facebook.com"):
+            u = u.split("?", 1)[0]  # tracking parameters pasted with the link
         yt = re.match(r"https://www\.youtube(?:-nocookie)?\.com/embed/([\w-]{6,})", u)
         if yt:
             return f"https://www.youtube.com/watch?v={yt.group(1)}"
@@ -283,6 +287,37 @@ def tidy_files(clean):
     return FILE_BLOCK.sub(one, clean)
 
 
+def tidy_photos(clean):
+    """Gallery thumbnails linked to their own file become plain photos (the build links each photo to its file and
+    lays two or more in a row out as a grid)."""
+    clean = re.sub(r'<a href="/[^"]*">\s*(<img [^>]+>)\s*</a>', r"\1", clean)  # links to the photo's file or to its WordPress attachment page
+    return re.sub(r"(<img [^>]+>)\s*<br>", r"\1", clean)
+
+
+# The communications policy allows no acronym for an entity (CP p. 25). Titles, summaries and the grants page are
+# shown on new pages, so the acronym is written out there; other carried-over texts keep their wording and
+# check.py lists them for the editorial review. A new case fails the import instead of guessing the grammatical form.
+ACRONYM = "ČMM"
+EXPANSIONS = [
+    (" (ČMM)", ""),
+    ("ČMM podnikla", "Česká maltézská mládež podnikla"), ("ČMM bude", "Česká maltézská mládež bude"),
+    ("ČMM chce", "Česká maltézská mládež chce"), ("pro ČMM", "pro Českou maltézskou mládež"),
+    ("LETNÍ TÁBOR ČMM", "LETNÍ TÁBOR ČESKÉ MALTÉZSKÉ MLÁDEŽE"), ("pořádaných ČMM", "pořádaných Českou maltézskou mládeží"),
+    ("kterou ČMM poskytuje", "kterou Česká maltézská mládež poskytuje"),
+    ("ČMM", "České maltézské mládeže"),  # after a noun: tábor, akce, výzva, události, komise
+]
+GENITIVE_BEFORE = ("tábor ", "akce ", "Výzva ", "událostmi ", "komise ")
+
+
+def expand_acronym(text):
+    for old, new in EXPANSIONS[:-1]:
+        text = text.replace(old, new)
+    for noun in GENITIVE_BEFORE:
+        text = text.replace(noun + ACRONYM, noun + EXPANSIONS[-1][1])
+    assert ACRONYM not in text, f"acronym left in: {text}"
+    return text
+
+
 def text_excerpt(clean, n=200):
     clean = re.sub(r'<p class="file">.*?</p>', " ", clean)
     t = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", clean))).strip()
@@ -310,13 +345,16 @@ def main():
     url_map = make_url_map(media)
     cat_slug = {c["id"]: c["slug"] for c in cats}
 
-    # retired URLs (redirected in site.json) and the generated homepage are not imported again
-    retired = {"/"} | {r["source"] for r in json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))["redirects"]}
+    # retired URLs (redirected in vercel.json), the generated homepage and the privacy notice (written in build.py,
+    # which carries the old page's two links) are not imported
+    retired = {"/", "/ochrana-osobnich-udaju/"} | {r["source"] for r in json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))["redirects"]}
     for p in pages:
         path = urllib.parse.urlparse(p["link"]).path
         if path in retired:
             continue
         clean = tidy_files(sanitise(page_body(p["content"]["rendered"]), url_map))
+        if path == "/granty-ceske-maltezske-mladeze/":
+            clean = expand_acronym(clean)
         image, clean = lead_image(clean)
         rel = path.strip("/") or "index"
         write(ROOT / "content" / "pages" / rel / "index.html", {
@@ -326,10 +364,10 @@ def main():
 
     for p in posts:
         path = urllib.parse.urlparse(p["link"]).path  # /YYYY/MM/DD/slug/
-        clean = tidy_files(sanitise(p["content"]["rendered"], url_map))
-        excerpt = text_excerpt(clean)
+        clean = tidy_photos(tidy_files(sanitise(p["content"]["rendered"], url_map)))
+        excerpt = expand_acronym(text_excerpt(clean))
         write(ROOT / "content" / "news" / (path.strip("/") + ".html"), {
-            "title": html.unescape(p["title"]["rendered"]), "url": path, "wp_id": p["id"],
+            "title": expand_acronym(html.unescape(p["title"]["rendered"])).strip(), "url": path, "wp_id": p["id"],
             "date": p["date"][:16], "categories": [cat_slug[c] for c in p["categories"] if c in cat_slug],
             "image": media.featured(p["featured_media"]), "excerpt": excerpt, "status": "existing",
         }, clean)
