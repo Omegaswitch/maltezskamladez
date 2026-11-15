@@ -75,7 +75,13 @@
   }
  },
  "parent": {
-  "name": "České velkopřevorství",
+  "name": {
+   "cs": "České velkopřevorství",
+   "en": "Grand Priory of Bohemia",
+   "fr": "Grand Prieuré de Bohême",
+   "it": "Gran Priorato di Boemia",
+   "de": "Großpriorat Böhmen"
+  },
   "url": "https://www.maltezskyrad.cz/"
  },
  "gdpr": {

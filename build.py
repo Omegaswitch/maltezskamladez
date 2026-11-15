@@ -477,7 +477,7 @@ def layout(*, lang, url, title, body, description="", image=None, status=None, a
  </div></div>
  <div class="f-red"><div class="wrap">
   <p>{esc(names['orderShort'])}: <a href="{SITE['gm'].get(lang, SITE['gm']['en'])['home']}">www.orderofmalta.int</a></p>
-  <p>{esc(SITE['parent']['name'])}: <a href="{SITE['parent']['url']}">{SITE['parent']['url'].split('//')[1].strip('/')}</a></p>
+  <p>{esc(SITE['parent']['name'][lang])}: <a href="{SITE['parent']['url']}">{SITE['parent']['url'].split('//')[1].strip('/')}</a></p>
   <p><a href="{localized('/ochrana-osobnich-udaju/', lang)}">{esc(t['privacy'])}</a> · <a href="{SITE['gdpr']['consent']}"{' hreflang="cs"' if lang != 'cs' else ''}>{esc(t['gdpr'])}</a></p>
  </div></div>
 </footer>

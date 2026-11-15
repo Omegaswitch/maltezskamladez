@@ -266,6 +266,8 @@ html:active-view-transition-type(slide)::view-transition-new(page-main){animatio
 .facts dt{color:var(--muted)}
 .facts dd{margin:0;color:var(--ink-strong);font-weight:500}
 .facts dd a{color:inherit}
+.facts dd,.contact-card dd{min-width:0;overflow-wrap:anywhere}  /* a long e-mail address must not widen the page on a phone */
+.facts dd a{max-width:100%}
 .text-links{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5)}
 .text-links a{font-weight:600;text-decoration:none}
 .text-links a:hover{text-decoration:underline}
