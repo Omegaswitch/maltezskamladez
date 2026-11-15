@@ -969,6 +969,8 @@ REDIRECTS = [(r["source"].replace(":path*", "*").replace("(.*)", "*"), r["destin
 
 
 def build():
+    if HAS_CAL and "addcal.co" not in HEADERS:  # the CSP in vercel.json lists the AddCal hosts only while there is no calendar (README, docs/deployment.md)
+        sys.exit("content/site.json has an AddCal calendar, but the CSP in vercel.json lacks the AddCal hosts: see docs/deployment.md, \"Calendar and the CSP\"")
     if DIST.exists():
         shutil.rmtree(DIST)
     shutil.copytree(STATIC, DIST)

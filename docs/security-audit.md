@@ -30,7 +30,7 @@ Date: 15 November 2026. Scope: the live site (read-only observation; nothing was
 
 | Header | Value |
 |---|---|
-| `Content-Security-Policy` | `default-src 'self'`; scripts only from self and `https://cdn.addcal.co` (plus `'wasm-unsafe-eval'` for the PDF shrinker on the staff page); `object-src 'none'`; `base-uri 'self'`; `form-action 'self'`; `frame-ancestors 'none'`; `upgrade-insecure-requests` |
+| `Content-Security-Policy` | `default-src 'self'`; scripts only from self (plus `'wasm-unsafe-eval'` for the PDF shrinker on the staff page); the AddCal hosts are listed only when a calendar is set; `object-src 'none'`; `base-uri 'self'`; `form-action 'self'`; `frame-ancestors 'none'`; `upgrade-insecure-requests` |
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
@@ -43,7 +43,7 @@ Date: 15 November 2026. Scope: the live site (read-only observation; nothing was
 
 **Third parties**
 - None today. In a browser crawl of 29 pages at two widths, no request left the site's own origin.
-- The AddCal hosts stay in the CSP for the calendar, which is switched on by a setting (`content/site.json`). While no calendar is set, no page contains the widget and nothing is loaded from AddCal. If the calendar will never be used, remove the four `addcal.co` entries from the CSP.
+- The AddCal hosts are not in the CSP while no calendar is set (`content/site.json`): nothing can load from AddCal. When a calendar id is set they must be added (`docs/deployment.md`, "Calendar and the CSP"); the build stops and `check.py` fails if CSP and calendar disagree.
 - Facebook is a plain link: no SDK, pixel or embed. Fonts are self-hosted.
 - The Grand Magistry news list is fetched at build time, not in the visitor's browser; its links are restricted to `https://www.orderofmalta.int/`.
 

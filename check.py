@@ -106,6 +106,11 @@ def main():
         if ENTITY_ACRONYM.search(visible):
             (legacy if LEGACY.search(text) else errors).append(f"{rel}: entity acronym ČMM")
 
+    headers = (DIST / "_headers").read_text(encoding="utf-8") if (DIST / "_headers").exists() else ""
+    widget = any("<addcal-calendar" in f.read_text(encoding="utf-8") for f in DIST.rglob("*.html"))
+    if widget != ("addcal.co" in headers):  # the CSP names AddCal exactly when a page loads it
+        errors.append("CSP and calendar disagree: the AddCal hosts must be in vercel.json exactly when content/site.json has a calendar id (docs/deployment.md)")
+
     for e in errors:
         print("FAIL", e)
     if legacy:

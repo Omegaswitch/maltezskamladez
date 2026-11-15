@@ -26,6 +26,18 @@ Any static host works. Security headers and legacy redirects are defined once, i
 | Vercel (`vercel.json`) | ✅ from `vercel.json` | ✅ from `vercel.json` | The build command is `python3 build.py --production --offline`: indexable pages, `Allow: /` robots.txt with the sitemap, canonical URLs on `https://cmm.maltezskyrad.cz`. `--offline` keeps the Grand Magistry headlines off. |
 | nginx / Apache (own server) | translate | translate | See below. |
 
+### Calendar and the CSP
+
+`vercel.json` is static, so the Content-Security-Policy there allows only the site itself while `content/site.json` has no AddCal calendar id (`addcal.calendarUid` empty). When a calendar id is set, add these to the CSP value in `vercel.json` (one place; `dist/_headers` is copied from it) before building:
+
+- `script-src`: `https://cdn.addcal.co` (after `'self'`)
+- `img-src`: `https://cdn.addcal.co https://addcal.co`
+- `font-src`: `https://cdn.addcal.co`
+- `connect-src`: `https://addcal.co https://cdn.addcal.co`
+- `frame-src https://addcal.co` as a new directive (for example after `connect-src`)
+
+Keep `'wasm-unsafe-eval'` and `worker-src 'self'`; the staff page's PDF shrinker needs them. The build stops with a message if a calendar id is set and the CSP lacks the AddCal hosts, and `check.py` fails if the CSP names AddCal while no page has the widget (or the reverse). When the calendar is removed again, take the hosts out.
+
 ### nginx translation
 
 ```nginx

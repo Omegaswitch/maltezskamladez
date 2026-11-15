@@ -54,7 +54,7 @@ Environment variables (Vercel → Project → Settings → Environment Variables
 
 **Contacts, menu, calendar**
 - Edit `content/site.json`.
-- The calendar is an AddCal embed. Česká maltézská mládež has no AddCal calendar yet, so `addcal.calendarUid` and `addcal.publicUrl` are empty and the site shows no calendar: no widget, no page, no menu entry. Fill both in and rebuild; the calendar then appears on the home page and at `/kalendar/` in all five languages, with a loading skeleton and a plain link for visitors without JavaScript.
+- The calendar is an AddCal embed. Česká maltézská mládež has no AddCal calendar yet, so `addcal.calendarUid` and `addcal.publicUrl` are empty and the site shows no calendar: no widget, no page, no menu entry. Fill both in and rebuild; the calendar then appears on the home page and at `/kalendar/` in all five languages, with a loading skeleton and a plain link for visitors without JavaScript. The CSP in `vercel.json` allows AddCal's hosts only while there is no calendar: when you set the id, add them as listed in `docs/deployment.md` ("Calendar and the CSP"); the build stops and `check.py` fails if they do not match.
 
 **Languages**
 - The Czech site is the source. `content/translations/en.json` holds the main pages in English; `fr.json`, `it.json` and `de.json` hold About us, Our activities, Contact and a short privacy notice. The translated privacy notices do not describe the calendar: add that paragraph when a calendar is set. All of them are labelled "translation – awaiting review" in preview builds until a native speaker has checked them.
