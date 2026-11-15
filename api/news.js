@@ -45,9 +45,11 @@ async function session(req) {
 }
 
 // An editor may change what they wrote (or what nobody signed: imported posts); an admin may change anything.
-// Posts written here carry the author's account id, and that alone decides; a name counts only for older posts
-// that have no id, until someone edits them (which records the editor's id).
-const mayChange = (user, meta) => user.role === "admin" ||
+// An imported post carries the old site's id ("wp_id", which never changes): anyone on the staff may edit it, only an
+// admin or owner deletes it, and editing never gives it an owner. Posts written here carry the author's account id, and
+// that alone decides; a name counts only for older posts that have no id, until someone edits them.
+const isImport = (meta) => meta.wp_id != null;
+const mayChange = (user, meta) => user.role === "admin" || isImport(meta) ||
   (meta.authorId ? meta.authorId === user.id : !meta.author || meta.author === user.name || meta.editedBy === user.name);
 
 // Who did what, for the post's front matter (the last 50 steps) and for the commit message.
@@ -237,8 +239,8 @@ async function remove(body, user) {
   if (!NEWS_PATH.test(body.path || "")) return [400, { error: "path" }];
   const n = await readNews(body.path);
   if (!n) return [404, { error: "gone" }];
-  // an imported post has no author id: editing it is open to editors, deleting it only to admins and owners
-  if (!mayChange(user, n.meta) || (!n.meta.authorId && user.role !== "admin")) return [403, { error: "forbidden" }];
+  // an imported post: editing is open to editors, deleting only to admins and owners
+  if (!mayChange(user, n.meta) || (isImport(n.meta) && user.role !== "admin")) return [403, { error: "forbidden" }];
   await commit([{ path: body.path, delete: true }], `Smazána aktualita: ${n.meta.title} (${user.name})`, user, "delete");
   await notify(`Smazaná aktualita: ${n.meta.title}`, `<p>${esc(user.name)} smazal(a) aktualitu <b>${esc(n.meta.title)}</b> (${esc(n.meta.url)}).</p>`);
   return [200, { url: n.meta.url }];
@@ -289,14 +291,15 @@ async function publish(body, user) {
   }
   const excerpt = oneLine(body.excerpt, 300) || excerptOf(plain(html));
   const meta = { ...(old ? old.meta : {}), title, url, date, categories: cats.length ? cats : [DEFAULT_CATEGORY],
-    image: image ? image.url : null, excerpt, author: (old && old.meta.author) || user.name, imported: false };
-  // a new post, or an older one without an account id, is claimed by whoever saves it (an admin does not take over a named author's post)
-  if (!meta.authorId && (!editing || user.role !== "admin" || !old.meta.author)) meta.authorId = user.id;
+    image: image ? image.url : null, excerpt, imported: false };
+  if (!(old && isImport(old.meta))) meta.author = (old && old.meta.author) || user.name;  // an import stays unsigned: no author, no owner
+  // a new post, or an older one (not an import) without an account id, is claimed by whoever saves it (an admin does not take over a named author's post)
+  if (!meta.authorId && !(old && isImport(old.meta)) && (!editing || user.role !== "admin" || !old.meta.author)) meta.authorId = user.id;
   // a draft is kept in the repository but not built; a future date is built once it has come (scheduled)
   if (body.draft) meta.draft = true; else delete meta.draft;
   // pinning a notice to the home page is the admins' call; an editor's save keeps whatever an admin set
   if (FEATURES.pin && user.role === "admin" && body.pinned != null) { if (body.pinned) meta.pinned = true; else delete meta.pinned; }
-  if (editing) { meta.editedBy = user.name; delete meta.status; }  // edited by staff: no longer an unreviewed import
+  if (editing) { meta.editedBy = user.name; meta.editedById = user.id; delete meta.status; }  // edited by staff: no longer an unreviewed import
   const action = meta.draft ? "draft" : editing ? "edit" : "publish";
   meta.audit = [...(Array.isArray(meta.audit) ? meta.audit : []), auditEntry(user, action)].slice(-50);
   const text = keep ? html : html.replace(/<\/(p|h2|h3|ul|ol|blockquote)>/g, "</$1>\n").trim();

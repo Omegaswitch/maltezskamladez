@@ -229,7 +229,7 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual((await withPhoto(file(other.body, "inline"))).status, 409);
   global.fetch = origFetch; existing.delete(up.body.path); delete stored[up.body.path];
   // an imported post (no author) stays editable by any editor, and loses its "unreviewed" status when saved
-  stored["content/news/2018/09/14/stary.html"] = `---\n${JSON.stringify({ title: "Starý", url: "/2018/09/14/stary/", date: "2018-09-14T10:00", categories: [CAT], image: "/media/2018/06/koncert.jpg", excerpt: "Starý", status: "existing", imported: true }, null, 1)}\n---\n<p>Starý text.</p>\n<figure><img src="/media/2018/06/koncert.jpg"><figcaption>Popisek</figcaption></figure>\n`;
+  stored["content/news/2018/09/14/stary.html"] = `---\n${JSON.stringify({ title: "Starý", url: "/2018/09/14/stary/", date: "2018-09-14T10:00", categories: [CAT], image: "/media/2018/06/koncert.jpg", excerpt: "Starý", status: "existing", imported: true, wp_id: 153 }, null, 1)}\n---\n<p>Starý text.</p>\n<figure><img src="/media/2018/06/koncert.jpg"><figcaption>Popisek</figcaption></figure>\n`;
   const old = await call("POST", { action: "load", path: "content/news/2018/09/14/stary.html" }, O);
   assert.strictEqual(old.body.editable, false);
   assert.strictEqual(old.body.mayChange, true);
@@ -238,14 +238,22 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(om.status, undefined);
   assert.strictEqual(om.editedBy, "Ota");
   assert.match(lastCommit()[0].content, /<figcaption>Popisek<\/figcaption>/);  // the old text is kept as it was
-  assert.strictEqual(om.author, "Ota");
-  assert.strictEqual(om.authorId, "u-ota");  // editing an import claims it with the editor's account id
+  assert.strictEqual(om.author, undefined);  // editing an import gives it no author and no owner
+  assert.strictEqual(om.authorId, undefined);
+  assert.strictEqual(om.editedById, "u-ota");  // the last editor is tracked separately
+  assert.strictEqual(om.wp_id, 153);
   stored["content/news/2018/09/14/stary.html"] = lastCommit()[0].content;
-  assert.strictEqual((await call("POST", { action: "load", path: "content/news/2018/09/14/stary.html" }, E)).body.mayChange, false);  // it is Ota's now
-  // a namesake of the author, with another account id, is not the author (names no longer decide for posts with an id)
-  PEOPLE.ota2 = { id: "u-ota-2", name: "Ota", role: "editor" };
-  assert.strictEqual((await call("POST", { action: "load", path: "content/news/2018/09/14/stary.html" }, "s=ota2")).body.mayChange, false);
-  assert.strictEqual((await call("POST", { action: "publish", path: "content/news/2018/09/14/stary.html", title: "Přepsáno", date: "2018-09-14T10:00", body: "<p>x</p>" }, "s=ota2")).status, 403);
+  // two different editors can both edit the same import
+  assert.strictEqual((await call("POST", { action: "load", path: "content/news/2018/09/14/stary.html" }, E)).body.mayChange, true);
+  assert.strictEqual((await call("POST", { action: "publish", path: "content/news/2018/09/14/stary.html", title: "Starý (podruhé)", date: "2018-09-14T10:00", body: "", categories: [CAT], files: [{ url: "/media/2018/06/koncert.jpg", role: "image" }] }, E)).status, 200);
+  assert.strictEqual(meta(lastCommit()[0].content).editedById, "u-petr");
+  assert.strictEqual(meta(lastCommit()[0].content).authorId, undefined);
+  stored["content/news/2018/09/14/stary.html"] = lastCommit()[0].content;
+  assert.strictEqual((await call("POST", { action: "publish", path: "content/news/2018/09/14/stary.html", title: "Starý (potřetí)", date: "2018-09-14T10:00", body: "", categories: [CAT], files: [{ url: "/media/2018/06/koncert.jpg", role: "image" }] }, O)).status, 200);
+  // but saving it does not let an editor delete it
+  assert.strictEqual((await call("POST", { action: "delete", path: "content/news/2018/09/14/stary.html" }, O)).status, 403);
+  assert.strictEqual((await call("POST", { action: "delete", path: "content/news/2018/09/14/stary.html" }, E)).status, 403);
+  assert.ok(stored["content/news/2018/09/14/stary.html"]);
   // an older post with a name but no id still goes by name until someone edits it
   stored["content/news/2018/09/15/stary2.html"] = `---\n${JSON.stringify({ title: "Starý 2", url: "/2018/09/15/stary2/", date: "2018-09-15T10:00", categories: [CAT], author: "Petr", imported: true }, null, 1)}\n---\n<p>Text.</p>\n`;
   assert.strictEqual((await call("POST", { action: "load", path: "content/news/2018/09/15/stary2.html" }, O)).body.mayChange, false);
@@ -258,7 +266,7 @@ const lastCommit = () => commits[commits.length - 1];
   assert.strictEqual(meta(lastCommit()[0].content).author, "Jana");
 
   // a body with a line ending in --- is not cut short
-  stored["content/news/2018/09/17/pomlcky.html"] = `---\n${JSON.stringify({ title: "Pomlčky", url: "/2018/09/17/pomlcky/", date: "2018-09-17T10:00", categories: [CAT], excerpt: "x", imported: true }, null, 1)}\n---\n<p>ok ---\nafter</p>\n<p>Konec.</p>\n`;
+  stored["content/news/2018/09/17/pomlcky.html"] = `---\n${JSON.stringify({ title: "Pomlčky", url: "/2018/09/17/pomlcky/", date: "2018-09-17T10:00", categories: [CAT], excerpt: "x", imported: true, wp_id: 154 }, null, 1)}\n---\n<p>ok ---\nafter</p>\n<p>Konec.</p>\n`;
   const dashed = await call("POST", { action: "load", path: "content/news/2018/09/17/pomlcky.html" }, O);
   assert.strictEqual(dashed.status, 200);
   assert.strictEqual(dashed.body.body, "<p>ok ---\nafter</p>\n<p>Konec.</p>");
