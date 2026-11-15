@@ -7,8 +7,8 @@ specify), keeping the official shield exactly as it is in the current files.
 The font is licensed (Monotype) and is not stored in the repository; only the letter outlines go into the SVGs.
 Proportions from the guidelines' master lockup (pp. 53-56), x = shield height (126 units): line 1 cap height 0.186x,
 aligned to the shield top; text 0.077x right of the shield; line 2 cap height 0.127x, its cap top 0.053x below line 1;
-tracking -10 (thousandths of an em). Text white, for the banner photograph. The same files are used by
-lurdy.eu and velkoprevorskypalac.eu.
+tracking -10 (thousandths of an em). Text white, for the banner photograph. The files come from the Grand Priory's site; the
+three-line lockup of Česká maltézská mládež (docs/brand-compliance.md, LCK-02) is not built here yet.
 """
 import re
 import sys

@@ -95,6 +95,8 @@ def main():
                 errors.append(f"{rel}: broken link {ref}")
             if u.path.startswith("/img/") and not BRAND_FILES.match(u.path):
                 errors.append(f"{rel}: unapproved brand asset {u.path}")
+            if u.path.startswith("/media/") and import_wp.LEGACY_EMBLEMS.search(u.path):
+                errors.append(f"{rel}: old logo {u.path} (not an emblem of the Order; docs/brand-compliance.md)")
         body = re.sub(r"<(script|style)\b.*?</\1>", "", text, flags=re.S)
         visible = re.sub(r"<[^>]+>", " ", body)
         if ACRONYM.search(visible):
