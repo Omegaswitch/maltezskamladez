@@ -11,16 +11,17 @@ const sign = (lat, lon) => crypto.createHmac("sha256", process.env.BETTER_AUTH_S
 const CRC = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
 const crc = (b) => { let c = 0xffffffff; for (const x of b) c = CRC[(c ^ x) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
 
-function decode(buf) {  // → { w, h, rgb } for 8-bit grey/RGB/palette/RGBA tiles
-  let p = 8, w, h, type, pal, idat = [];
+function decode(buf) {  // → { w, h, rgb } for grey/RGB/palette/RGBA tiles, 1–16 bits (CARTO packs sparse tiles into 1–4-bit palettes)
+  let p = 8, w, h, depth, type, pal, idat = [];
   while (p < buf.length) {
     const len = buf.readUInt32BE(p), t = buf.toString("latin1", p + 4, p + 8), d = buf.subarray(p + 8, p + 8 + len);
-    if (t === "IHDR") { w = d.readUInt32BE(0); h = d.readUInt32BE(4); type = d[9]; if (d[8] !== 8 || d[12]) throw new Error("png format"); }
+    if (t === "IHDR") { w = d.readUInt32BE(0); h = d.readUInt32BE(4); depth = d[8]; type = d[9]; if (d[12]) throw new Error("png interlaced"); }
     else if (t === "PLTE") pal = d;
     else if (t === "IDAT") idat.push(d);
     p += 12 + len;
   }
-  const bpp = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[type], raw = zlib.inflateSync(Buffer.concat(idat)), stride = w * bpp;
+  const ch = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[type], bpp = Math.max(1, (ch * depth) >> 3), stride = Math.ceil((w * ch * depth) / 8);
+  const raw = zlib.inflateSync(Buffer.concat(idat));
   const px = Buffer.alloc(h * stride);
   for (let y = 0; y < h; y++) {
     const f = raw[y * (stride + 1)], src = y * (stride + 1) + 1, row = y * stride;
@@ -30,10 +31,17 @@ function decode(buf) {  // → { w, h, rgb } for 8-bit grey/RGB/palette/RGBA til
       px[row + i] = (raw[src + i] + [0, a, b, (a + b) >> 1, pa <= pb && pa <= pc ? a : pb <= pc ? b : c][f]) & 255;
     }
   }
+  // sample k of pixel i as 0–255 (a palette index stays an index)
+  const at = (i, k) => {
+    if (depth === 8) return px[Math.floor(i / w) * stride + (i % w) * ch + k];
+    if (depth === 16) return px[Math.floor(i / w) * stride + ((i % w) * ch + k) * 2];
+    const y = Math.floor(i / w), bit = ((i % w) * ch + k) * depth, v = (px[y * stride + (bit >> 3)] >> (8 - depth - (bit & 7))) & ((1 << depth) - 1);
+    return type === 3 ? v : Math.round((v * 255) / ((1 << depth) - 1));
+  };
   const rgb = Buffer.alloc(w * h * 3);
   for (let i = 0; i < w * h; i++) {
-    const s = i * bpp;
-    const [r, g, b] = type === 3 ? [pal[px[s] * 3], pal[px[s] * 3 + 1], pal[px[s] * 3 + 2]] : type === 0 || type === 4 ? [px[s], px[s], px[s]] : [px[s], px[s + 1], px[s + 2]];
+    const v = at(i, 0);
+    const [r, g, b] = type === 3 ? [pal[v * 3], pal[v * 3 + 1], pal[v * 3 + 2]] : type === 0 || type === 4 ? [v, v, v] : [v, at(i, 1), at(i, 2)];
     rgb[i * 3] = r; rgb[i * 3 + 1] = g; rgb[i * 3 + 2] = b;
   }
   return { w, h, rgb };
