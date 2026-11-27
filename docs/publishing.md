@@ -17,29 +17,16 @@ People sign in with their e-mail address and a password (Better Auth, `api/_auth
 | delete an imported post (carries the old site's `wp_id`) | ❌ | ✅ | ✅ |
 | pin a notice to the home page | – | ✅ | ✅ |
 | add and remove people, set a new password for someone | – | – | ✅ |
-| two-step sign-in (code from an authenticator app) | optional | **required** | **required** |
-
 The editor shows a person only what their role allows; the API checks the role again on every request.
 
-**Two-step sign-in.** An admin or owner who has not switched it on can sign in, but the site refuses everything except switching it on (card *Dvoufázové přihlášení* on the tab *Účet a uživatelé*): password, then the key typed into the app, then a code from the app. Ten backup codes are shown once; each works once instead of a code. An editor can switch it on and off the same way.
+**Accounts are shared with the main site** (www.orderofmalta.cz, repository `maltezskyrad`): one database, the same login code (`api/_auth.mjs`, `_authlog.mjs`, `_sessions.mjs`, `_mail.js`, `map.js`, `_sites.js`) and the same editor script (`static/js/news-editor.js`). These files are copies: change them in both repositories.
 
-**Lost phone.** Use a backup code. If there is none, someone with access to the database runs, for that person's e-mail address:
+- **Sign-in:** e-mail and password. On a new device or browser a six-digit code arrives by e-mail; that browser is then trusted for 30 days. Admins and owners must sign in this way before they may publish.
+- **Passwords:** at least 10 characters with a lowercase and a capital letter, a digit and a symbol; checked live in the form and again on the server. Forgotten password: the link under the sign-in form.
+- **Safety:** a sign-in from a new address e-mails the person (with a map and a "that wasn't me" button); everyone sees their signed-in devices and can sign them out, and can change language and that alert under *Účet a uživatelé → Nastavení*.
+- **People:** invited and managed by the Hlavní správce in the main site's /sprava/ → Přístupy. "Aktuality: Maltézská mládež" (or "Oba weby") lets someone publish here; others are sent to their own editor. Invitations for Mládež carry its own letterhead.
 
-```sql
-delete from "twoFactor" where "userId" = (select "id" from "user" where "email" = 'jana@example.cz');
-update "user" set "twoFactorEnabled" = false where "email" = 'jana@example.cz';
-```
-
-The person then switches it on again at the next sign-in.
-
-**Wrong passwords.** Five wrong passwords in a row lock the account for 1 minute, each further one for twice as long, up to 15 minutes; the right password does not help while it is locked. The count is kept per e-mail address, so it does not matter where the attempts come from. Five wrong codes in the second step lock it for 15 minutes. On top of that every address may try to sign in 5 times a minute.
-
-**First set-up** (once):
-
-1. Create a Postgres database (for example Neon) and run `scripts/auth-schema.sql` in its SQL editor.
-2. Set the environment variables below in Vercel and redeploy.
-3. Add the first owner: `node scripts/user-sql.mjs "Jméno Příjmení" jmeno@example.cz 'heslo-aspon-12-znaku' owner` prints two SQL lines to paste into the SQL editor (or, with the variables set locally, `npm run auth:user -- "Jméno" e-mail heslo owner`).
-4. The owner signs in, switches two-step sign-in on, changes the password and adds the others on the staff page.
+**First set-up** is done: the Mládež project in Vercel is connected to the main site's database (Storage), with `RESEND_API_KEY`, `GITHUB_TOKEN` and `BETTER_AUTH_URL=https://cmm.orderofmalta.cz`.
 
 ## What can be published
 
@@ -104,7 +91,6 @@ Without `DATABASE_URL` and `BETTER_AUTH_SECRET` nobody can sign in and the staff
 ## Testing
 
 - `node tests/news.test.js` — the API with GitHub and the sign-in stubbed: roles, the two-step rule for admins, origin check, drafts, scheduling, pinning, file checks, sanitiser, edit, delete, the audit trail.
-- `node tests/auth.test.js` — the sign-in rules against the real Better Auth with a database in memory: no self sign-up, cookie attributes, lockout and backoff, the second step and backup codes, roles, origin check. Needs `npm ci`.
-- `node tests/news.local.js` — a local stand-in of the hosting: serves `dist/` with the site's security headers, the API with GitHub replaced by this checkout and the real sign-in on a database in memory, so the whole flow can be tried in a browser at `http://localhost:8090/pridat-aktualitu/` (accounts at the top of the file; build first with `python3 build.py`). Posts land in `content/`, where `git status` shows them; discard them when done.
+- The shared sign-in is tested in the main site's repository (`tests/admin.test.js`: Better Auth hooks, sign-in, the code by e-mail, reset, per-site access).
 
-Verified on 15 November 2026 (`docs/qa-report.md`): the schema and the sign-in against a local PostgreSQL 16, and in Chromium against the stand-in: wrong password refused → owner signs in → only the two-step card is offered → switched on with a code → backup codes shown → sign-out → sign-in asks for the code → wrong code refused → post published with its audit entry. No page errors, no CSP violations.
+Earlier check, before the accounts were shared (15 November 2026, `docs/qa-report.md`): the schema and the sign-in against a local PostgreSQL 16, and in Chromium against the stand-in: wrong password refused → owner signs in → only the two-step card is offered → switched on with a code → backup codes shown → sign-out → sign-in asks for the code → wrong code refused → post published with its audit entry. No page errors, no CSP violations.
