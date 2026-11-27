@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
   const p = (u.searchParams.get("__p") ?? u.pathname.replace(/^\/api\/auth\/?/, "")).replace(/^\/+|\/+$/g, "");
   u.searchParams.delete("__p");
   req.url = "/api/auth/" + p + u.search;
-  const [{ getAuth }, { toNodeHandler }] = await Promise.all([import("./_auth.mjs"), import("better-auth/node")]);
-  return toNodeHandler(await getAuth())(req, res);
+  const [{ auth }, { toNodeHandler }] = await Promise.all([import("./_auth.mjs"), import("better-auth/node")]);  // shared with the main site (api/_sites.js)
+  return toNodeHandler(auth)(req, res);
 };
 module.exports.sameOrigin = sameOrigin;

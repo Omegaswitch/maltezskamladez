@@ -42,19 +42,20 @@ Add `--offline` to skip fetching the Grand Magistry news feed. CI (`.github/work
 
 **News from co-workers (no GitHub needed)**
 - Staff publish at `/pridat-aktualitu/` (not linked from the site, not indexed, behind sign-in): text editor limited to what the site styles, date, categories, summary, main photo, attachments, drafts, scheduled posts, pinned notices, edit and delete.
-- Sign-in is by e-mail and password, with a code from an authenticator app as a second step: required for admins and owners, optional for editors. Wrong passwords lock the account for a while. Every change records who made it.
+- Sign-in uses the **same accounts as the main site** (www.orderofmalta.cz, repo `maltezskyrad`): one database, the same `api/_auth.mjs`, `_authlog.mjs`, `_sessions.mjs`, `_mail.js`, `map.js`, `_sites.js` and `static/js/news-editor.js` (copied; keep them identical). E-mail and password, a code by e-mail on a new device, password rules, sign-in alerts from new addresses, signed-in devices. People are invited and their news site chosen (Hlavní web / Maltézská mládež / Oba weby) in the main site's /sprava/ → Přístupy; only those set to Maltézská mládež or both may publish here. Every change records who made it.
 - Everything about roles, set-up, the environment variables and the GitHub token is in `docs/publishing.md`.
 
 Environment variables (Vercel → Project → Settings → Environment Variables; never in the repository):
 
 | Variable | Value |
 |---|---|
-| `DATABASE_URL` | Postgres database with the accounts (`scripts/auth-schema.sql` creates the tables) |
+| `DATABASE_URL` | the **main site's** Postgres database (Vercel → Storage: connect the same Neon database), which holds the shared accounts |
 | `BETTER_AUTH_SECRET` | long random string, e.g. `openssl rand -base64 32` |
-| `BETTER_AUTH_URL` | the site's origin, e.g. `https://cmm.maltezskyrad.cz` |
+| `BETTER_AUTH_URL` | the site's origin: `https://cmm.orderofmalta.cz` now, `https://cmm.maltezskyrad.cz` after the handover |
 | `GITHUB_TOKEN` | fine-grained token: repository `Omegaswitch/maltezskamladez` only, Contents: Read and write |
 | `DEPLOY_HOOK_URL`, `CRON_SECRET` | daily rebuild so scheduled posts go out on their day |
-| `NEWS_NOTIFY`, `RESEND_API_KEY`, `MAIL_FROM` | optional: e-mail about every new post |
+| `RESEND_API_KEY` | needed: sign-in codes, invitations, password links, alerts (sent from web@orderofmalta.cz) |
+| `NEWS_NOTIFY`, `MAIL_FROM` | optional: e-mail about every new post; sender override |
 
 **Contacts, menu, calendar**
 - Edit `content/site.json`.

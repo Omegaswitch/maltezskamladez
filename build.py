@@ -845,124 +845,152 @@ def render_news_editor():
     """Staff page for publishing news and events (api/news.js); not linked, not indexed, behind a password."""
     body = f"""
 <div class="wrap page page--simple ne" id="news-app">
- <header class="page-head"><h1 class="display">Přidat aktualitu</h1>
-  <p class="lead-s">Aktualita se po zveřejnění objeví na webu v sekci <a href="/aktuality/">Aktuality</a> asi za minutu.</p></header>
+ <header class="page-head"><h1 class="display" data-i18n="page.title">Přidat aktualitu</h1>
+  <div class="ne-lang" id="ne-lang" role="group" aria-label="Jazyk" data-i18n-aria="lang.label"></div>
+  <p class="lead-s" data-i18n-html="page.lead">Aktualita se po zveřejnění objeví na webu v sekci <a href="/aktuality/">Aktuality</a> asi za minutu.</p></header>
  <noscript><p class="ne-msg ne-msg--error">Formulář potřebuje zapnutý JavaScript.</p></noscript>
  <form id="ne-login" class="ne-card" hidden>
-  <h2 class="display-s">Přihlášení</h2>
-  <label class="ne-field"><span>E-mail</span><input name="name" type="email" autocomplete="username" required></label>
-  <label class="ne-field"><span>Heslo</span><input name="password" type="password" autocomplete="current-password" required></label>
+  <h2 class="display-s" data-i18n="login.title">Přihlášení</h2>
+  <label class="ne-field"><span data-i18n="login.name">Jméno</span><input name="name" autocomplete="username" required></label>
+  <label class="ne-field"><span data-i18n="login.password">Heslo</span><input name="password" type="password" autocomplete="current-password" required></label>
   <p class="ne-msg" id="ne-login-msg" role="alert" hidden></p>
-  <p><button class="btn" type="submit">Přihlásit se</button></p>
+  <p><button class="btn" type="submit" data-i18n="login.submit">Přihlásit se</button></p>
+  <p id="ne-forgot-link" hidden><button type="button" class="link-btn" id="ne-forgot-open" data-i18n="login.forgot">Nemám heslo nebo jsem ho zapomněl(a)</button></p>
  </form>
- <form id="ne-2fa" class="ne-card" hidden>
-  <h2 class="display-s">Druhý krok přihlášení</h2>
-  <label class="ne-field"><span>Kód z ověřovací aplikace</span><input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="20" required></label>
-  <label class="ne-check"><input name="backup" type="checkbox"> Zadávám záložní kód <small>(když nemáte telefon po ruce; každý platí jednou)</small></label>
-  <p class="ne-msg" id="ne-2fa-msg" role="alert" hidden></p>
-  <p><button class="btn" type="submit">Potvrdit</button> <button type="button" class="link-btn" id="ne-2fa-back">Zpět</button></p>
+ <form id="ne-code" class="ne-card" hidden>
+  <h2 class="display-s" data-i18n="code.title">Kód z e-mailu</h2>
+  <p data-i18n="code.text">Přihlašujete se na tomto zařízení nebo v tomto prohlížeči poprvé. Na váš e-mail jsme poslali šestimístný kód (platí 10 minut).</p>
+  <label class="ne-field"><span data-i18n="code.label">Kód</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{{6}}" maxlength="6" required></label>
+  <p class="ne-msg" id="ne-code-msg" role="alert" hidden></p>
+  <p><button class="btn" type="submit" data-i18n="code.verify">Ověřit</button> <button type="button" class="link-btn" id="ne-code-again" data-i18n="code.again">Poslat nový kód</button></p>
+ </form>
+ <form id="ne-forgot" class="ne-card" hidden>
+  <h2 class="display-s" data-i18n="forgot.title">Nastavení hesla</h2>
+  <p data-i18n="forgot.text">Zadejte e-mail, který vám správce webu zapsal. Pošleme na něj odkaz, kterým si heslo nastavíte.</p>
+  <label class="ne-field"><span data-i18n="login.email">E-mail</span><input name="email" type="email" autocomplete="email" required></label>
+  <p class="ne-msg" id="ne-forgot-msg" role="alert" hidden></p>
+  <p><button class="btn" type="submit" data-i18n="forgot.send">Poslat odkaz</button> <button type="button" class="link-btn" id="ne-forgot-back" data-i18n="forgot.back">Zpět na přihlášení</button></p>
+ </form>
+ <form id="ne-reset" class="ne-card" hidden>
+  <h2 class="display-s" data-i18n="reset.title">Nové heslo</h2>
+  <label class="ne-field"><span data-i18n-html="pw.next">Nové heslo <small>(nejméně 10 znaků)</small></span><input name="next" type="password" autocomplete="new-password" minlength="10" required></label>
+  <label class="ne-field"><span data-i18n="pw.confirm">Nové heslo znovu</span><input name="confirm" type="password" autocomplete="new-password" minlength="10" required></label>
+  <p class="ne-msg" id="ne-reset-msg" role="alert" hidden></p>
+  <p><button class="btn" type="submit" data-i18n="reset.save">Uložit heslo</button></p>
  </form>
  <div id="ne-app" hidden>
- <p class="ne-who">Přihlášen(a): <b id="ne-user"></b> · <button type="button" class="link-btn" id="ne-logout">Odhlásit</button></p>
- <div class="ne-tabs" role="tablist" aria-label="Co chcete udělat">
-  <button type="button" role="tab" id="ne-tab-new" aria-selected="true" aria-controls="ne-editor">Nová aktualita</button>
-  <button type="button" role="tab" id="ne-tab-list" aria-selected="false" aria-controls="ne-manage">Upravit nebo smazat</button>
-  <button type="button" role="tab" id="ne-tab-events" aria-selected="false" aria-controls="ne-events" hidden>Události</button>
-  <button type="button" role="tab" id="ne-tab-users" aria-selected="false" aria-controls="ne-users" hidden>Účet a uživatelé</button>
+ <div class="ne-bar"><p class="ne-who"><span data-i18n="who.in">Přihlášen(a):</span> <b id="ne-user"></b> · <button type="button" class="link-btn" id="ne-logout" data-i18n="who.out">Odhlásit</button></p>
+ <a href="https://www.orderofmalta.cz/sprava/" id="ne-sprava" class="btn ne-small ne-members-link" hidden><span data-i18n="who.members">Členská databáze</span> <span aria-hidden="true">→</span></a></div>
+ <details id="ne-help" class="ne-help">
+  <summary data-i18n-html="help.summary">Jak přidat aktualitu <small>– krátký návod</small></summary>
+  <ol>
+   <li><h3 data-i18n="help.s1.t">Titulek, datum a kategorie</h3><p data-i18n-html="help.s1.p">Napište titulek, zkontrolujte datum a zaškrtněte kategorii. S budoucím datem se aktualita zveřejní sama až ten den. <b>Koncept</b> ji uloží, ale nezveřejní.</p>
+    <img src="/media/napoveda/1-zaklad.webp" width="1179" height="678" loading="lazy" alt="Formulář s titulkem, datem zveřejnění, kategoriemi a volbou Koncept" data-i18n-alt="help.s1.a"></li>
+   <li><h3 data-i18n="help.s2.t">Text a fotografie</h3><p data-i18n-html="help.s2.p">Text se skládá z oddílů. Tlačítky <b>＋ Text</b> a <b>＋ Fotografie</b> přidáte další oddíl, šipkami změníte pořadí. V liště nad textem je nadpis, tučné písmo, kurzíva, seznamy, citace a odkaz.</p>
+    <img src="/media/napoveda/2-text.webp" width="1179" height="636" loading="lazy" alt="Editor textu s lištou formátování a tlačítky pro přidání textu a fotografie" data-i18n-alt="help.s2.a"></li>
+   <li><h3 data-i18n="help.s3.t">Hlavní fotografie, přílohy a zveřejnění</h3><p data-i18n-html="help.s3.p">Můžete přidat hlavní fotografii a přílohy ke stažení (PDF, fotografie); zmenší se samy. Tlačítkem <b>Zveřejnit</b> aktualitu odešlete. Na webu se objeví asi za minutu.</p>
+    <img src="/media/napoveda/3-prilohy.webp" width="1179" height="752" loading="lazy" alt="Pole Perex, výběr hlavní fotografie, přílohy ke stažení a tlačítko Zveřejnit" data-i18n-alt="help.s3.a"></li>
+   <li><h3 data-i18n="help.s4.t">Úprava a smazání</h3><p data-i18n-html="help.s4.p">Na kartě <b>Upravit nebo smazat</b> najdete všechny aktuality. Upravit a smazat můžete své vlastní; správce všechny. Změna se na webu projeví asi za minutu.</p>
+    <img src="/media/napoveda/4-upravit.webp" width="1179" height="681" loading="lazy" alt="Seznam aktualit s hledáním a tlačítky Upravit a Smazat" data-i18n-alt="help.s4.a"></li>
+  </ol>
+  <p class="ne-hint" data-i18n-html="help.note">Rozepsaný text se průběžně ukládá v tomto prohlížeči, takže o něj nepřijdete, ani když stránku zavřete. Na kartě <b>Účet a uživatelé</b> si změníte heslo. Návod zavřete kliknutím na jeho nadpis; kdykoli ho tak znovu otevřete.</p>
+ </details>
+ <div class="ne-tabs" role="tablist" aria-label="Co chcete udělat" data-i18n-aria="tabs.label">
+  <button type="button" role="tab" id="ne-tab-new" aria-selected="true" aria-controls="ne-editor" data-i18n="tab.new">Nová aktualita</button>
+  <button type="button" role="tab" id="ne-tab-list" aria-selected="false" aria-controls="ne-manage" data-i18n="tab.list">Upravit nebo smazat</button>
+  <button type="button" role="tab" id="ne-tab-events" aria-selected="false" aria-controls="ne-events" hidden data-i18n="tab.events">Události</button>
+  <button type="button" role="tab" id="ne-tab-users" aria-selected="false" aria-controls="ne-users" hidden data-i18n="tab.users">Účet a uživatelé</button>
  </div>
  <section id="ne-manage" role="tabpanel" aria-labelledby="ne-tab-list" hidden>
-  <label class="ne-field"><span>Hledat aktualitu</span><input id="ne-search" type="search" placeholder="Část titulku nebo rok…"></label>
+  <label class="ne-field"><span data-i18n="list.search">Hledat aktualitu</span><input id="ne-search" type="search" placeholder="Část titulku nebo rok…" data-i18n-ph="list.searchPh"></label>
   <ul id="ne-list" class="ne-list"></ul>
-  <p class="ne-hint">Nové a upravené aktuality se v seznamu objeví asi za minutu, až se web znovu sestaví. Koncepty a naplánované aktuality jsou označené; smazat lze jen vlastní aktuality (správce všechny).</p>
+  <p class="ne-hint" data-i18n="list.hint">Nové a upravené aktuality se v seznamu objeví asi za minutu, až se web znovu sestaví. Koncepty a naplánované aktuality jsou označené; smazat lze jen vlastní aktuality (správce všechny).</p>
   <p class="ne-msg" id="ne-list-msg" role="alert" hidden></p>
  </section>
  <section id="ne-users" role="tabpanel" aria-labelledby="ne-tab-users" hidden>
-  <p class="ne-msg ne-msg--error" id="ne-2fa-needed" hidden>Správci musí mít zapnuté dvoufázové přihlášení. Dokud ho nezapnete, nelze aktuality ani uživatele spravovat.</p>
-  <div class="ne-card" id="ne-2fa-card">
-   <h2 class="display-s">Dvoufázové přihlášení</h2>
-   <p>Po zadání hesla opíšete ještě šestimístný kód z ověřovací aplikace v telefonu (například Google Authenticator, Microsoft Authenticator nebo Aegis). <b id="ne-2fa-state"></b></p>
-   <form id="ne-2fa-on" hidden>
-    <label class="ne-field"><span>Vaše heslo</span><input name="password" type="password" autocomplete="current-password" required></label>
-    <p><button class="btn" type="submit">Zapnout</button></p>
-   </form>
-   <form id="ne-2fa-confirm" hidden>
-    <p>1. V aplikaci přidejte nový účet a zadejte tento klíč (typ „podle času“): <code id="ne-2fa-key"></code><br>Na telefonu můžete klíč předat aplikaci i <a id="ne-2fa-link">tímto odkazem</a>.</p>
-    <label class="ne-field"><span>2. Opište kód, který aplikace ukazuje</span><input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required></label>
-    <p><button class="btn" type="submit">Potvrdit a zapnout</button></p>
-   </form>
-   <div id="ne-2fa-codes" hidden><p><b>Záložní kódy.</b> Uložte si je na bezpečné místo; každý jde použít jednou místo kódu z aplikace. Znovu se už nezobrazí.</p><pre id="ne-2fa-codes-list"></pre></div>
-   <form id="ne-2fa-off" hidden>
-    <label class="ne-field"><span>Vypnout: vaše heslo</span><input name="password" type="password" autocomplete="current-password" required></label>
-    <p><button class="btn btn--ghost" type="submit">Vypnout dvoufázové přihlášení</button></p>
-   </form>
-   <p class="ne-msg" id="ne-2fa-card-msg" role="alert" hidden></p>
-  </div>
   <form id="ne-pw-form" class="ne-card">
-   <h2 class="display-s">Změnit moje heslo</h2>
-   <label class="ne-field"><span>Současné heslo</span><input name="current" type="password" autocomplete="current-password" required></label>
-   <label class="ne-field"><span>Nové heslo <small>(nejméně 12 znaků)</small></span><input name="next" type="password" autocomplete="new-password" minlength="12" required></label>
+   <h2 class="display-s" data-i18n="pwf.title">Změnit moje heslo</h2>
+   <label class="ne-field"><span data-i18n="pwf.current">Současné heslo</span><input name="current" type="password" autocomplete="current-password" required></label>
+   <label class="ne-field"><span data-i18n-html="pw.next">Nové heslo <small>(nejméně 10 znaků)</small></span><input name="next" type="password" autocomplete="new-password" minlength="10" required></label>
+  <label class="ne-field"><span data-i18n="pw.confirm">Nové heslo znovu</span><input name="confirm" type="password" autocomplete="new-password" minlength="10" required></label>
    <p class="ne-msg" id="ne-pw-msg" role="alert" hidden></p>
-   <p><button class="btn" type="submit">Změnit heslo</button></p>
+   <p><button class="btn" type="submit" data-i18n="pwf.submit">Změnit heslo</button></p>
   </form>
+  <section id="ne-settings" class="ne-card">
+   <h2 class="display-s" data-i18n="set.title">Nastavení</h2>
+   <label class="ne-field"><span data-i18n="set.lang">Jazyk</span><select id="ne-set-lang"><option value="cs">Čeština</option><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="it">Italiano</option></select></label>
+   <p class="ne-hint" data-i18n="set.langNote">Jazyk Správy i e-mailů, které Vám web posílá (pozvánky, kódy, upozornění).</p>
+   <label class="ne-check"><input type="checkbox" id="ne-set-alerts" checked> <span data-i18n="set.alerts">Upozornit mě e-mailem na přihlášení z nové adresy</span></label>
+   <p class="ne-msg" id="ne-set-msg" role="status" hidden></p>
+  </section>
+  <section id="ne-sessions" class="ne-card">
+   <h2 class="display-s" data-i18n="ses.title">Přihlášená zařízení</h2>
+   <p class="ne-hint" data-i18n="ses.text">Zařízení, na kterých jste právě přihlášen(a). Neznámé zařízení odhlaste a změňte si heslo.</p>
+   <ul id="ne-ses-list" class="ne-ses"></ul>
+   <p class="ne-msg" id="ne-ses-msg" role="alert" hidden></p>
+   <p><button type="button" class="btn ne-small" id="ne-ses-others" data-i18n="ses.others">Odhlásit všechna ostatní zařízení</button></p>
+  </section>
+  <p id="ne-users-elsewhere" class="ne-card" hidden><span data-i18n="users.elsewhere">Uživatele přidáváte a jejich přístupy měníte ve Správě → Přístupy (stejné účty jako na hlavním webu).</span> <a href="https://www.orderofmalta.cz/sprava/#/pristupy" data-i18n="users.elsewhereLink">Ve Správě → Přístupy</a></p>
   <div id="ne-admin-users" hidden>
    <form id="ne-user-form" class="ne-card">
-    <h2 class="display-s">Přidat uživatele</h2>
-    <label class="ne-field"><span>Jméno a příjmení</span><input name="name" maxlength="100" required></label>
-    <label class="ne-field"><span>E-mail</span><input name="email" type="email" autocomplete="off" required></label>
-    <label class="ne-field"><span>Heslo <small>(nejméně 12 znaků; sdělte ho osobně, uživatel si ho pak změní)</small></span><input name="password" type="text" autocomplete="off" minlength="12" required></label>
-    <label class="ne-field"><span>Role</span><select name="role"><option value="editor">Redaktor – píše a upravuje své aktuality</option><option value="admin">Správce – upravuje všechny aktuality (musí si zapnout dvoufázové přihlášení)</option><option value="owner">Hlavní správce – navíc přidává a odebírá uživatele (musí si zapnout dvoufázové přihlášení)</option></select></label>
+    <h2 class="display-s" data-i18n="uf.title">Přidat uživatele</h2>
+    <label class="ne-field"><span data-i18n="uf.name">Jméno a příjmení</span><input name="name" maxlength="100" required></label>
+    <label class="ne-field"><span data-i18n="login.email">E-mail</span><input name="email" type="email" autocomplete="off" required></label>
+    <label class="ne-field"><span data-i18n-html="uf.password">Heslo <small>(nechte prázdné: uživatel dostane e-mailem odkaz a heslo si nastaví sám)</small></span><input name="password" type="text" autocomplete="off" minlength="10"></label>
+    <label class="ne-field"><span data-i18n="uf.role">Role</span><select name="role"><option value="editor" data-i18n="role.editor">Redaktor – píše a upravuje své aktuality</option><option value="admin" data-i18n="role.admin">Správce – upravuje všechny aktuality</option><option value="owner" data-i18n="role.owner">Hlavní správce – navíc přidává a odebírá uživatele</option><option value="members" data-i18n="role.members">Jen členská databáze – bez aktualit</option></select></label>
+    <label class="ne-field"><span data-i18n="uf.lang">Jazyk pozvánky a e-mailů</span><select name="lang"><option value="cs">Čeština</option><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="it">Italiano</option></select></label>
     <p class="ne-msg" id="ne-user-msg" role="alert" hidden></p>
-    <p><button class="btn" type="submit">Přidat</button></p>
+    <p><button class="btn" type="submit" data-i18n="uf.add">Přidat</button></p>
    </form>
-   <h2 class="display-s">Uživatelé</h2>
+   <h2 class="display-s" data-i18n="uf.list">Uživatelé</h2>
    <ul id="ne-user-list" class="ne-list"></ul>
   </div>
  </section>
  <section id="ne-events" role="tabpanel" aria-labelledby="ne-tab-events" hidden>
   <form id="ne-event-form" class="ne-card">
-   <h2 class="display-s">Událost v kalendáři</h2>
-   <div class="ne-editing" id="ne-ev-editing" hidden><p>Upravujete: <b id="ne-ev-editing-title"></b></p><button type="button" class="link-btn" id="ne-ev-cancel">Zrušit úpravy</button></div>
-   <label class="ne-field"><span>Název <i aria-hidden="true">*</i></span><input id="ne-ev-title" maxlength="200" required></label>
+   <h2 class="display-s" data-i18n="ev.title">Událost v kalendáři</h2>
+   <div class="ne-editing" id="ne-ev-editing" hidden><p><span data-i18n="ev.editing" data-i18n="ed.editing">Upravujete:</span> <b id="ne-ev-editing-title"></b></p><button type="button" class="link-btn" id="ne-ev-cancel" data-i18n="ev.cancel">Zrušit úpravy</button></div>
+   <label class="ne-field"><span data-i18n-html="ev.name">Název <i aria-hidden="true">*</i></span><input id="ne-ev-title" maxlength="200" required></label>
    <div class="ne-row">
-    <label class="ne-field"><span>Začátek <i aria-hidden="true">*</i></span><input id="ne-ev-start" type="datetime-local" required></label>
-    <label class="ne-field"><span>Konec <small>(nepovinné)</small></span><input id="ne-ev-end" type="datetime-local"></label>
-    <label class="ne-check"><input id="ne-ev-allday" type="checkbox"> Celý den</label>
+    <label class="ne-field"><span data-i18n-html="ev.start">Začátek <i aria-hidden="true">*</i></span><input id="ne-ev-start" type="datetime-local" required></label>
+    <label class="ne-field"><span data-i18n-html="ev.end">Konec <small>(nepovinné)</small></span><input id="ne-ev-end" type="datetime-local"></label>
+    <label class="ne-check"><input id="ne-ev-allday" type="checkbox"> <span data-i18n="ev.allday">Celý den</span></label>
    </div>
-   <label class="ne-field"><span>Místo <small>(nepovinné)</small></span><input id="ne-ev-place" maxlength="120"></label>
-   <label class="ne-field"><span>Popis <small>(nepovinné; prázdný řádek odděluje odstavce)</small></span><textarea id="ne-ev-desc" rows="4"></textarea></label>
-   <div class="ne-submit"><button class="btn" type="submit" id="ne-ev-save">Přidat událost</button></div>
+   <label class="ne-field"><span data-i18n-html="ev.place">Místo <small>(nepovinné)</small></span><input id="ne-ev-place" maxlength="120"></label>
+   <label class="ne-field"><span data-i18n-html="ev.desc">Popis <small>(nepovinné; prázdný řádek odděluje odstavce)</small></span><textarea id="ne-ev-desc" rows="4"></textarea></label>
+   <div class="ne-submit"><button class="btn" type="submit" id="ne-ev-save" data-i18n="ev.add">Přidat událost</button></div>
   </form>
-  <h2 class="display-s">Události</h2>
+  <h2 class="display-s" data-i18n="ev.list">Události</h2>
   <ul id="ne-event-list" class="ne-list"></ul>
   <p class="ne-msg" id="ne-event-msg" role="alert" hidden></p>
  </section>
  <form id="ne-editor" role="tabpanel" aria-labelledby="ne-tab-new">
-  <div class="ne-editing" id="ne-editing" hidden><p>Upravujete: <a id="ne-editing-link"></a></p><button type="button" class="link-btn" id="ne-cancel">Zrušit úpravy</button></div>
-  <p class="ne-msg ne-msg--error" id="ne-readonly" hidden>Tuto aktualitu napsal někdo jiný; upravit nebo smazat ji může jen autor nebo správce webu.</p>
+  <div class="ne-editing" id="ne-editing" hidden><p><span data-i18n="ev.editing" data-i18n="ed.editing">Upravujete:</span> <a id="ne-editing-link"></a></p><button type="button" class="link-btn" id="ne-cancel" data-i18n="ev.cancel">Zrušit úpravy</button></div>
+  <p class="ne-msg ne-msg--error" id="ne-readonly" hidden data-i18n="ed.readonly">Tuto aktualitu napsal někdo jiný; upravit nebo smazat ji může jen autor nebo správce webu.</p>
   <p class="ne-msg" id="ne-draft" hidden></p>
-  <label class="ne-field"><span>Titulek <i aria-hidden="true">*</i></span><input id="ne-title" maxlength="200" required></label>
+  <label class="ne-field"><span data-i18n-html="ed.title">Titulek <i aria-hidden="true">*</i></span><input id="ne-title" maxlength="200" required></label>
   <div class="ne-row">
-   <label class="ne-field"><span>Datum a čas zveřejnění</span><input id="ne-date" type="datetime-local" required><small id="ne-date-hint"></small></label>
-   <fieldset class="ne-field"><legend>Kategorie</legend><div id="ne-cats" class="ne-cats"></div></fieldset>
+   <label class="ne-field"><span data-i18n="ed.date">Datum a čas zveřejnění</span><input id="ne-date" type="datetime-local" required><small id="ne-date-hint"></small></label>
+   <fieldset class="ne-field"><legend data-i18n="ed.cats">Kategorie</legend><div id="ne-cats" class="ne-cats"></div></fieldset>
   </div>
   <div class="ne-row ne-flags">
-   <label class="ne-check"><input id="ne-draft-flag" type="checkbox"> Koncept <small>(uložit, ale zatím nezveřejnit)</small></label>
-   <label class="ne-check" id="ne-pin-field" hidden><input id="ne-pin" type="checkbox"> Připnout na úvodní stránku <small>(důležité oznámení)</small></label>
+   <label class="ne-check"><input id="ne-draft-flag" type="checkbox"> <span data-i18n-html="ed.draft">Koncept <small>(uložit, ale zatím nezveřejnit)</small></span></label>
+   <label class="ne-check" id="ne-pin-field" hidden><input id="ne-pin" type="checkbox"> <span data-i18n-html="ed.pin">Připnout na úvodní stránku <small>(důležité oznámení)</small></span></label>
   </div>
-  <div class="ne-field"><span id="ne-text-label">Text <i aria-hidden="true">*</i></span>
+  <div class="ne-field"><span id="ne-text-label" data-i18n-html="ed.text">Text <i aria-hidden="true">*</i></span>
    <div id="ne-text" class="ne-blocks" role="group" aria-labelledby="ne-text-label"></div>
-   <div id="ne-locked" class="ne-locked" hidden><p class="ne-msg ne-msg--error">Text této starší aktuality obsahuje prvky, které editor neumí (například fotografie s popiskem nebo tabulku). Text proto zůstane beze změny; upravit můžete titulek, datum, kategorie, perex, fotografii a přílohy.</p><div class="prose" id="ne-locked-text"></div></div>
-   <p class="ne-hint" id="ne-text-hint">Text skládejte z oddílů (text, fotografie); pořadí měňte šipkami nebo přetažením. V textu nadpis a podnadpis, tučné písmo, kurzíva, seznamy, citace a odkazy. Dvě a více fotografií za sebou tvoří mřížku a aktualita se objeví i ve fotogalerii. Písmo a barvy jsou dané vzhledem webu.</p>
+   <div id="ne-locked" class="ne-locked" hidden><p class="ne-msg ne-msg--error" data-i18n="ed.locked">Text této starší aktuality obsahuje prvky, které editor neumí (například fotografie s popiskem nebo tabulku). Text proto zůstane beze změny; upravit můžete titulek, datum, kategorie, perex, fotografii a přílohy.</p><div class="prose" id="ne-locked-text"></div></div>
+   <p class="ne-hint" id="ne-text-hint" data-i18n="ed.hint">Text skládejte z oddílů (text, fotografie); pořadí měňte šipkami nebo přetažením. V textu nadpis a podnadpis, tučné písmo, kurzíva, seznamy, citace a odkazy. Dvě a více fotografií za sebou tvoří mřížku a aktualita se objeví i ve fotogalerii. Písmo a barvy jsou dané vzhledem webu.</p>
    <p class="ne-msg" id="ne-inline-msg" hidden></p></div>
-  <label class="ne-field"><span>Perex <small>(nepovinné – krátké shrnutí v přehledu aktualit; jinak se vezme začátek textu)</small></span><textarea id="ne-excerpt" rows="2" maxlength="300"></textarea></label>
-  <div class="ne-field"><span>Hlavní fotografie <small>(nepovinné – zobrazí se nad textem; zmenší se před odesláním)</small></span>
-   <label class="btn btn--ghost ne-pick">Vybrat fotografii<input id="ne-photo" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden"></label>
+  <label class="ne-field"><span data-i18n-html="ed.excerpt">Perex <small>(nepovinné – krátké shrnutí v přehledu aktualit; jinak se vezme začátek textu)</small></span><textarea id="ne-excerpt" rows="2" maxlength="300"></textarea></label>
+  <div class="ne-field"><span data-i18n-html="ed.photo">Hlavní fotografie <small>(nepovinné – zobrazí se nad textem; zmenší se před odesláním)</small></span>
+   <label class="btn btn--ghost ne-pick"><span data-i18n="ed.pickPhoto">Vybrat fotografii</span><input id="ne-photo" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden"></label>
    <ul id="ne-photo-box" class="ne-files ne-photo"></ul></div>
-  <div class="ne-field"><span>Přílohy ke stažení <small>(PDF nebo fotografie, nejvýše 3 MB na soubor; fotografie i větší PDF se před odesláním zmenší přímo v prohlížeči)</small></span>
-   <div class="ne-drop" id="ne-drop"><p>Přetáhněte soubory sem, nebo</p>
-    <label class="btn btn--ghost ne-pick">vyberte soubory<input id="ne-files" type="file" multiple accept="application/pdf,image/jpeg,image/png,image/webp" class="visually-hidden"></label></div>
+  <div class="ne-field"><span data-i18n-html="ed.attach">Přílohy ke stažení <small>(PDF nebo fotografie, nejvýše 3 MB na soubor; fotografie i větší PDF se před odesláním zmenší přímo v prohlížeči)</small></span>
+   <div class="ne-drop" id="ne-drop"><p data-i18n="ed.drop">Přetáhněte soubory sem, nebo</p>
+    <label class="btn btn--ghost ne-pick"><span data-i18n="ed.pickFiles">vyberte soubory</span><input id="ne-files" type="file" multiple accept="application/pdf,image/jpeg,image/png,image/webp" class="visually-hidden"></label></div>
    <ul id="ne-file-list" class="ne-files"></ul>
-   <p class="ne-hint">PDF zmenšuje Ghostscript (licence AGPL) spuštěný v tomto prohlížeči; soubor nikam jinam neodchází. <a href="/js/vendor/ghostscript-1.1.0/SOURCE.txt">Zdroj a licence</a>.</p></div>
+   <p class="ne-hint" data-i18n-html="ed.gs">PDF zmenšuje Ghostscript (licence AGPL) spuštěný v tomto prohlížeči; soubor nikam jinam neodchází. <a href="/js/vendor/ghostscript-1.1.0/SOURCE.txt">Zdroj a licence</a>.</p></div>
   <div class="ne-submit"><button class="btn" type="submit" id="ne-publish">Zveřejnit</button>
    <p class="ne-msg" id="ne-msg" role="alert" hidden></p></div>
  </form>
@@ -970,7 +998,7 @@ def render_news_editor():
  <div id="ne-done" class="ne-card" hidden role="status">
   <h2 class="display-s" id="ne-done-title">Zveřejněno</h2>
   <p id="ne-done-text">Změna bude na webu asi za minutu: <a id="ne-done-link"></a></p>
-  <p><button class="btn" type="button" id="ne-again">Zpět na aktuality</button></p>
+  <p><button class="btn" type="button" id="ne-again" data-i18n="done.back">Zpět na aktuality</button></p>
  </div>
 </div>
 <link rel="stylesheet" href="/js/vendor/quill-2.0.3/quill.snow.css">
