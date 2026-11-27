@@ -54,27 +54,27 @@
     "semantic_hash": ""
   },
   "content/translations/de.json": {
-    "mtime": 1795780717.3956137,
-    "seen": 1795780850.4503376,
-    "ast_hash": "8bdccac1ac94647fd0a1c19672415715",
+    "mtime": 1795786538.8191402,
+    "seen": 1795786633.145774,
+    "ast_hash": "a31186187fc1b7327f430796be6af268",
     "semantic_hash": ""
   },
   "content/translations/en.json": {
-    "mtime": 1795780717.396748,
-    "seen": 1795780850.4503386,
-    "ast_hash": "b4526df484fb82a469437cd5758fcf14",
+    "mtime": 1795786538.8199632,
+    "seen": 1795786633.145776,
+    "ast_hash": "5f75457ca5c139e538f3a2eddaa72965",
     "semantic_hash": ""
   },
   "content/translations/fr.json": {
-    "mtime": 1795780717.396748,
-    "seen": 1795780850.4503396,
-    "ast_hash": "e1c5f03eaf998d32bf3c2985cf541450",
+    "mtime": 1795786538.8167305,
+    "seen": 1795786633.1457782,
+    "ast_hash": "6ee2f0813d9fa88255dc656ce4a6f004",
     "semantic_hash": ""
   },
   "content/translations/it.json": {
-    "mtime": 1795780717.396748,
-    "seen": 1795780850.4503407,
-    "ast_hash": "36a87069f8167b51b27d01de27d6af6d",
+    "mtime": 1795786538.8182137,
+    "seen": 1795786633.1457794,
+    "ast_hash": "6fa374842ce5681965fc318cd08c7d38",
     "semantic_hash": ""
   },
   "package.json": {
@@ -135,12 +135,6 @@
     "mtime": 1795780717.6741314,
     "seen": 1795780850.450355,
     "ast_hash": "90c0375a2c9fa4db0706e91d731a5125",
-    "semantic_hash": ""
-  },
-  "tests/news.local.js": {
-    "mtime": 1795780717.6764982,
-    "seen": 1795780850.4503572,
-    "ast_hash": "c603e9db97dc02530c0285bf948d0d64",
     "semantic_hash": ""
   },
   "tests/news.test.js": {
@@ -462,9 +456,9 @@
     "semantic_hash": ""
   },
   "content/pages/chci-byt-dobrovolnikem/index.html": {
-    "mtime": 1795780717.3956137,
-    "seen": 1795780850.4504507,
-    "ast_hash": "411656c8d5df614da30e7dd85c4fab3d",
+    "mtime": 1795786228.7138705,
+    "seen": 1795786633.1458676,
+    "ast_hash": "5ef64739412e7b51627e364b06f6eaad",
     "semantic_hash": ""
   },
   "content/pages/granty-ceske-maltezske-mladeze/index.html": {
@@ -492,9 +486,9 @@
     "semantic_hash": ""
   },
   "content/pages/mam-zajem-o-sluzby/index.html": {
-    "mtime": 1795780717.3956137,
-    "seen": 1795780850.450457,
-    "ast_hash": "8342abedf6fa7fde0041f97ecc98d9b5",
+    "mtime": 1795786228.7134764,
+    "seen": 1795786633.1458743,
+    "ast_hash": "68baee9f9018caf7c148d15e9e53a9ec",
     "semantic_hash": ""
   },
   "content/pages/nase-aktivity/index.html": {
@@ -534,9 +528,9 @@
     "semantic_hash": ""
   },
   "docs/publishing.md": {
-    "mtime": 1795780717.4021313,
-    "seen": 1795780850.4504664,
-    "ast_hash": "5cc0433153fe78265be8077a73876c01",
+    "mtime": 1795786607.2325351,
+    "seen": 1795786633.1458826,
+    "ast_hash": "1b05b094124646b467256fcf88f2b408",
     "semantic_hash": ""
   },
   "docs/qa-report.md": {

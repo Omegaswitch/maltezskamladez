@@ -519,30 +519,6 @@ button.btn[disabled]{opacity:.65;cursor:progress}
 .ne-load{display:grid;place-items:center;min-height:30vh}
 .link-btn{min-height:32px;background:none;border:0;padding:0;font:600 .9rem var(--ui);color:var(--red-text);text-decoration:underline;text-underline-offset:.18em;cursor:pointer}
 .btn+.link-btn{margin-left:var(--s4)}
-/* attachment preview: the button beside the link, the PDF or photo below it */
-.file-toggle{margin-left:var(--s4)}
-.file-view{margin:var(--s3) 0 var(--s5)}
-/* the PDF viewer: a slim bar (name, page, download, open), then the pages on grey, drawn to the width */
-.pdfv{border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px -12px rgba(16,24,40,.18)}
-.pdfv-bar{display:flex;align-items:center;gap:var(--s4);min-height:48px;padding:0 var(--s2) 0 var(--s4);border-bottom:1px solid var(--rule);font:500 .88rem var(--ui)}
-.pdfv-name{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--ink-strong)}
-.pdfv-nav{display:inline-flex;align-items:center;gap:var(--s1)}
-.pdfv-count{min-width:3.6em;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
-.pdfv-arrow{display:inline-grid;place-items:center;width:32px;height:32px;padding:0;border:1px solid var(--rule);border-radius:50%;background:#fff;color:var(--ink-strong);font:600 1.15rem/1 var(--ui);cursor:pointer;transition:border-color var(--fast) var(--ease),color var(--fast) var(--ease)}
-.pdfv-arrow:hover:not(:disabled){border-color:var(--red);color:var(--red-text)}
-.pdfv-arrow:disabled{opacity:.35;cursor:default}
-.pdfv-arrow:focus-visible{outline:2px solid var(--red);outline-offset:2px}
-.pdfv-btn{display:inline-flex;align-items:center;min-height:32px;padding:0 var(--s3);border-radius:2px;color:var(--ink-strong);font-weight:600;text-decoration:none}
-.pdfv-btn:hover{background:var(--grey);text-decoration:none}
-.pdfv-btn:focus-visible,.pdfv-pages:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
-.pdfv-pages{position:relative;max-height:min(85vh,1100px);overflow:auto;overscroll-behavior:contain;padding:16px;background:#ececec;display:grid;gap:16px}
-.pdfv-page{position:relative;width:100%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18)}
-.pdfv-page:not(.is-drawn){background:linear-gradient(90deg,#fff 30%,#f4f4f4 50%,#fff 70%) 0 0/300% 100%;animation:pdfv-wait 1.2s linear infinite}
-.pdfv-page canvas{display:block;width:100%;height:100%}
-.pdfv-error{color:var(--muted);font-size:.95rem}
-@keyframes pdfv-wait{to{background-position:-150% 0}}
-@media (max-width:640px){.pdfv-bar{gap:var(--s2);padding-left:var(--s3)}.pdfv-name{flex:1;visibility:hidden;min-width:0}.pdfv-pages{padding:8px;gap:8px}}
-.file-view img{display:block;max-width:100%;height:auto;border:1px solid var(--rule)}
 .ne{max-width:860px}
 .ne [hidden]{display:none!important}
 .ne form,.ne-card{display:grid;gap:var(--s5);margin-top:var(--s5)}
