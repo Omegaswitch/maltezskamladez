@@ -1,7 +1,7 @@
 # Graph Report - maltezskamladez  (2026-11-27)
 
 ## Corpus Check
-- 46 files · ~134,935 words
+- 46 files · ~135,069 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 23 file(s) not represented in the graph (top: .woff2 16, (none) 3, .css 2)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9fdb4cc5`
+- Built from commit: `35031bcb`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -291,16 +291,16 @@ Nodes (3): _descendants(), side_nav(), walk()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Module()` connect `Module` to `news.js`?**
-  _High betweenness centrality (0.184) - this node is a cross-community bridge._
+  _High betweenness centrality (0.196) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `Module()` (e.g. with `ac()` and `$b()`) actually correct?**
   _`Module()` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **Should `news.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06241519674355495 - nodes in this community are weakly interconnected._
 - **Why does `v()` connect `o` to `news-editor.js`, `m`, `quill.js`, `f`, `update`?**
-  _High betweenness centrality (0.111) - this node is a cross-community bridge._
+  _High betweenness centrality (0.096) - this node is a cross-community bridge._
 - **Should `news-editor.js` be split into smaller, more focused modules?**
   _Cohesion score 0.08648648648648649 - nodes in this community are weakly interconnected._
-- **Why does `i` connect `i` to `s`, `quill.js`, `constructor`, `optimize`, `update`?**
-  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+- **Why does `n()` connect `m` to `Module`, `quill.js`, `o`, `constructor`, `optimize`, `qt`, `update`?**
+  _High betweenness centrality (0.076) - this node is a cross-community bridge._
 - **Should `i` be split into smaller, more focused modules?**
   _Cohesion score 0.0531986531986532 - nodes in this community are weakly interconnected._
