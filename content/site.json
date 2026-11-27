@@ -1,5 +1,5 @@
 {
- "baseUrl": "https://cmm.orderofmalta.cz",
+ "baseUrl": "https://cmm.maltezskyrad.cz",
  "addcal": {
   "calendarUid": "",
   "publicUrl": "",
@@ -82,11 +82,11 @@
    "it": "Gran Priorato di Boemia",
    "de": "Großpriorat Böhmen"
   },
-  "url": "https://www.orderofmalta.cz/"
+  "url": "https://www.maltezskyrad.cz/"
  },
  "gdpr": {
-  "principles": "https://www.orderofmalta.cz/gdpr/zasady-pro-zpracovani-osobnich-udaju/",
-  "consent": "https://www.orderofmalta.cz/gdpr/maltezska-mladez/"
+  "principles": "https://www.maltezskyrad.cz/gdpr/zasady-pro-zpracovani-osobnich-udaju/",
+  "consent": "https://www.maltezskyrad.cz/gdpr/maltezska-mladez/"
  },
  "social": [
   {

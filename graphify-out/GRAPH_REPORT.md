@@ -1,17 +1,17 @@
 # Graph Report - maltezskamladez  (2026-11-27)
 
 ## Corpus Check
-- 46 files · ~134,963 words
+- 46 files · ~134,935 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 23 file(s) not represented in the graph (top: .woff2 16, (none) 3, .css 2)
 
 ## Summary
-- 1021 nodes · 2011 edges · 50 communities (40 shown, 10 thin omitted)
+- 1021 nodes · 2013 edges · 56 communities (46 shown, 10 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 77 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5e14abca`
+- Built from commit: `9fdb4cc5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,6 +38,7 @@
 - f
 - _auth.mjs
 - optimize
+- _mail.js
 - qt
 - load_news
 - render_home
@@ -51,15 +52,20 @@
 - re
 - make_og.py
 - Deployment
+- map.js
+- package.json
 - Sanitiser
 - site.js
+- _sites.js
 - Media
 - lockup
 - Brand compliance report
 - Content inventory
 - Česká maltézská mládež
+- _sessions.mjs
 - k
 - serve
+- _authlog.mjs
 - _descendants
 - localized_nav
 - CLAUDE.md
@@ -92,11 +98,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (50 total, 10 thin omitted)
+## Communities (56 total, 10 thin omitted)
 
 ### Community 0 - "news.js"
-Cohesion: 0.05
-Nodes (61): ALLOWED, auditEntry(), CATEGORIES, commit(), configured(), contentsPath(), crypto, editable() (+53 more)
+Cohesion: 0.06
+Nodes (54): ALLOWED, auditEntry(), CATEGORIES, commit(), configured(), contentsPath(), crypto, editable() (+46 more)
 
 ### Community 1 - "news-editor.js"
 Cohesion: 0.09
@@ -163,12 +169,16 @@ Cohesion: 0.24
 Nodes (10): expand_acronym(), get_all(), get_json(), main(), page_body(), _self_test(), text_excerpt(), tidy_files() (+2 more)
 
 ### Community 20 - "_auth.mjs"
-Cohesion: 0.05
-Nodes (46): ac, alert(), auth, HERE_CMM, LOC, mail(), NEW_PW, ORIGIN (+38 more)
+Cohesion: 0.17
+Nodes (12): ac, HERE_CMM, LOC, NEW_PW, ORIGIN, { plugin, put }, pool, roles (+4 more)
 
 ### Community 21 - "optimize"
 Cohesion: 0.11
 Nodes (16): appendChild(), deleteAt(), descendants(), enforceAllowedChildren(), format(), formatAt(), insertAt(), isolate() (+8 more)
+
+### Community 22 - "_mail.js"
+Cohesion: 0.24
+Nodes (10): alert(), auth, mail(), brandOf(), button(), esc(), frame(), L (+2 more)
 
 ### Community 23 - "qt"
 Cohesion: 0.08
@@ -218,6 +228,14 @@ Nodes (5): lead_image(), line(), text_right(), line(), main()
 Cohesion: 0.25
 Nodes (7): Build, Calendar and the CSP, Canonical host and the current certificate fault, Deployment, Hosting, Launch checklist, nginx translation
 
+### Community 37 - "map.js"
+Cohesion: 0.24
+Nodes (7): CRC, crc(), crypto, decode(), encode(), render(), zlib
+
+### Community 38 - "package.json"
+Cohesion: 0.24
+Nodes (9): dependencies, better-auth@^1.7.22, pg@^8.23.1, description, private, scripts, test, better-auth (+1 more)
+
 ### Community 39 - "Sanitiser"
 Cohesion: 0.18
 Nodes (5): _iframe_label(), make_url_map(), url_map(), sanitise(), Sanitiser
@@ -225,6 +243,10 @@ Nodes (5): _iframe_label(), make_url_map(), url_map(), sanitise(), Sanitiser
 ### Community 40 - "site.js"
 Cohesion: 0.48
 Nodes (6): go(), load(), pause(), restart(), watch(), watchWidgets()
+
+### Community 41 - "_sites.js"
+Cohesion: 0.32
+Nodes (7): loadAuth(), session(), CHOICES, editorFor(), mayPublish(), SITES, sitesOf()
 
 ### Community 42 - "Media"
 Cohesion: 0.38
@@ -246,9 +268,17 @@ Nodes (7): privacy_html(), Content inventory, For the editorial review, Pages, P
 Cohesion: 0.33
 Nodes (5): Commands, Documentation, Editorial workflow, Where things are, Česká maltézská mládež
 
+### Community 47 - "_sessions.mjs"
+Cohesion: 0.47
+Nodes (5): device(), LANGS, place(), sessionsPlugin(), SIGN_IN
+
 ### Community 49 - "serve"
 Cohesion: 0.67
 Nodes (4): serve(), do_GET(), end_headers(), guess_type()
+
+### Community 50 - "_authlog.mjs"
+Cohesion: 0.67
+Nodes (3): authHooks(), PATHS, who()
 
 ### Community 51 - "_descendants"
 Cohesion: 0.67
@@ -261,16 +291,16 @@ Nodes (3): _descendants(), side_nav(), walk()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Module()` connect `Module` to `news.js`?**
-  _High betweenness centrality (0.194) - this node is a cross-community bridge._
+  _High betweenness centrality (0.184) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `Module()` (e.g. with `ac()` and `$b()`) actually correct?**
   _`Module()` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **Should `news.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.05405405405405406 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06241519674355495 - nodes in this community are weakly interconnected._
 - **Why does `v()` connect `o` to `news-editor.js`, `m`, `quill.js`, `f`, `update`?**
-  _High betweenness centrality (0.119) - this node is a cross-community bridge._
+  _High betweenness centrality (0.111) - this node is a cross-community bridge._
 - **Should `news-editor.js` be split into smaller, more focused modules?**
   _Cohesion score 0.08648648648648649 - nodes in this community are weakly interconnected._
-- **Why does `n()` connect `m` to `Module`, `quill.js`, `o`, `constructor`, `optimize`, `qt`, `update`?**
-  _High betweenness centrality (0.077) - this node is a cross-community bridge._
+- **Why does `i` connect `i` to `s`, `quill.js`, `constructor`, `optimize`, `update`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._
 - **Should `i` be split into smaller, more focused modules?**
   _Cohesion score 0.0531986531986532 - nodes in this community are weakly interconnected._
