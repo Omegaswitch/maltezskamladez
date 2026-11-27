@@ -1246,9 +1246,11 @@
     $("#ne-admin-users").hidden = !state.owner;
     if (info && !info.mail) { var pw = $("#ne-user-form").password; pw.required = true; pw.previousElementSibling.setAttribute("data-i18n-html", "uf.pwNoMail"); applyLang(); }
     fetch("/api/members?action=me", { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (m) {
-      $("#ne-sprava").hidden = !(m && m.access);
-      if (m && m.user && !langSaved && LANGS.indexOf(m.user.lang) >= 0) setLang(m.user.lang, false);  // the language the person was invited in
+      $("#ne-sprava").hidden = !(m && m.access);  // only on the main site, which has the member database
     }, function () {});
+    // the account's language (Můj účet / Nastavení; at first the one the person was invited in) unless a language was
+    // picked here by hand: the same on every site that shares the accounts, whatever language the browser is in
+    if (state.auth === "better-auth") authJson("my-settings").then(function (d) { if (!langSaved && d && LANGS.indexOf(d.lang) >= 0) setLang(d.lang, false); }, function () {});
     setup(); tab("new");
   }
   call().then(function (r) {

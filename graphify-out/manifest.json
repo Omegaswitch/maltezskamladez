@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "static/js/news-editor.js": {
-    "mtime": 1795781980.166361,
-    "seen": 1795782081.9002419,
-    "ast_hash": "e24d0b1d98cd87f493cf0ad7744a69e0",
+    "mtime": 1795784167.1917107,
+    "seen": 1795784386.9330697,
+    "ast_hash": "9c42592812d21015883617dfd9c260c6",
     "semantic_hash": ""
   },
   "static/js/pdf-worker.js": {

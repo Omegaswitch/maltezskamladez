@@ -1,17 +1,17 @@
 # Graph Report - maltezskamladez  (2026-11-27)
 
 ## Corpus Check
-- 47 files · ~127,988 words
+- 47 files · ~128,047 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 23 file(s) not represented in the graph (top: .woff2 16, (none) 3, .css 2)
 
 ## Summary
-- 1033 nodes · 2029 edges · 55 communities (47 shown, 8 thin omitted)
+- 1033 nodes · 2030 edges · 55 communities (47 shown, 8 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 77 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8949b119`
+- Built from commit: `47a94a16`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -92,8 +92,8 @@
   docs/content-inventory.md → build.py
 - `jt()` --indirect_call--> `P()`  [INFERRED]
   static/js/vendor/quill-2.0.3/quill.js → static/js/vendor/ghostscript-1.1.0/gs.js
-- `session()` --calls--> `sitesOf()`  [EXTRACTED]
-  api/news.js → api/_sites.js
+- `ua()` --indirect_call--> `E()`  [INFERRED]
+  static/js/vendor/ghostscript-1.1.0/gs.js → static/js/vendor/quill-2.0.3/quill.js
 
 ## Import Cycles
 - None detected.
@@ -295,16 +295,16 @@ Nodes (3): _descendants(), side_nav(), walk()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Module()` connect `Module` to `news.local.js`, `news.test.js`?**
-  _High betweenness centrality (0.227) - this node is a cross-community bridge._
+  _High betweenness centrality (0.196) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `Module()` (e.g. with `ac()` and `$b()`) actually correct?**
   _`Module()` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **Should `news.js` be split into smaller, more focused modules?**
   _Cohesion score 0.12631578947368421 - nodes in this community are weakly interconnected._
 - **Why does `v()` connect `o` to `news-editor.js`, `b`, `quill.js`, `constructor`, `u`?**
-  _High betweenness centrality (0.086) - this node is a cross-community bridge._
+  _High betweenness centrality (0.110) - this node is a cross-community bridge._
 - **Should `news-editor.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.08612612612612612 - nodes in this community are weakly interconnected._
-- **Why does `jt()` connect `qt` to `s`, `Module`, `b`, `quill.js`, `rt`, `o`, `constructor`?**
-  _High betweenness centrality (0.077) - this node is a cross-community bridge._
+  _Cohesion score 0.08648648648648649 - nodes in this community are weakly interconnected._
+- **Why does `n()` connect `b` to `Module`, `m`, `quill.js`, `o`, `constructor`, `optimize`, `qt`, `u`?**
+  _High betweenness centrality (0.073) - this node is a cross-community bridge._
 - **Should `i` be split into smaller, more focused modules?**
   _Cohesion score 0.0531986531986532 - nodes in this community are weakly interconnected._
