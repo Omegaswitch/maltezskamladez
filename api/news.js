@@ -16,6 +16,8 @@ const crypto = require("crypto");
 const SITE = require("../content/site.json");
 
 const DEFAULT_REPO = "Omegaswitch/maltezskamladez";
+const HERE = "cmm";  // this site in api/_sites.js (accounts are shared with the main site, www.orderofmalta.cz)
+const SITES = require("./_sites.js");
 const DEFAULT_CATEGORY = SITE.defaultCategory;
 const FEATURES = {"events": false, "pin": true};  // events: the calendar of events; pin: a notice pinned to the home page
 
@@ -32,16 +34,20 @@ const env = (k, d = "") => process.env[k] || d;
 
 // ---------------------------------------------------------------- sign-in and roles
 
-let loadAuth = async () => (await import("./_auth.mjs")).getAuth();  // tests put a stand-in here (module.exports.useAuth)
+let loadAuth = async () => (await import("./_auth.mjs"));  // tests put a stand-in here (module.exports.useAuth)
 const configured = () => !!(env("DATABASE_URL") && env("BETTER_AUTH_SECRET"));
 
 // The signed-in person, or null: { id, name, role: "editor" | "admin", owner, twoFactor, needs2fa }
 async function session(req) {
-  const auth = await loadAuth();
+  const m = await loadAuth(), auth = m.auth || m;
   const s = await auth.api.getSession({ headers: new Headers(Object.entries(req.headers).map(([k, v]) => [k, String(v)])) });
   if (!s || !s.user || s.user.banned) return null;
-  const admin = s.user.role === "admin" || s.user.role === "owner", twoFactor = !!s.user.twoFactorEnabled;
-  return { id: s.user.id, name: s.user.name, role: admin ? "admin" : "editor", storedRole: s.user.role || "editor", owner: s.user.role === "owner", twoFactor, needs2fa: admin && !twoFactor };
+  const admin = s.user.role === "admin" || s.user.role === "owner", twoFactor = !!s.user.twoFactorEnabled, owner = s.user.role === "owner";
+  // accounts are shared with the main site: only those set to publish here (Přístupy: Maltézská mládež or both) may;
+  // the others are sent to their own editor, and "Jen členská databáze" has no news at all
+  const sites = owner ? "both" : m.pool ? await SITES.sitesOf(m.pool, s.user.id) : HERE;
+  const elsewhere = s.user.role === "members" ? SITES.SITES.main.editor.replace("/pridat-aktualitu/", "/sprava/") : SITES.mayPublish(sites, HERE) ? null : SITES.editorFor(sites);
+  return { id: s.user.id, name: s.user.name, role: admin ? "admin" : "editor", storedRole: s.user.role || "editor", owner, twoFactor, needs2fa: admin && !twoFactor, elsewhere };
 }
 
 // An editor may change what they wrote (or what nobody signed: imported posts); an admin may change anything.
@@ -384,7 +390,9 @@ const sameOrigin = (req) => {
 
 module.exports = async (req, res) => {
   const send = (status, data) => { res.statusCode = status; res.setHeader("Content-Type", "application/json; charset=utf-8"); res.setHeader("Cache-Control", "no-store"); res.end(JSON.stringify(data)); };
-  const info = (user) => ({ user: user ? user.name : null, id: user ? user.id : null, role: user ? user.role : null, owner: !!(user && user.owner), twoFactor: !!(user && user.twoFactor), needs2fa: !!(user && user.needs2fa),
+  // auth/mail/list/manageUsersAt: what the editor (the same static/js/news-editor.js as the main site) needs to know here
+  const info = (user) => ({ auth: "better-auth", mail: !!env("RESEND_API_KEY"), list: "/api/news?list=1", manageUsersAt: SITES.SITES.main.editor.replace("/pridat-aktualitu/", "/sprava/#/pristupy"),
+    elsewhere: (user && user.elsewhere) || null, user: user ? user.name : null, id: user ? user.id : null, role: user ? user.role : null, owner: !!(user && user.owner), twoFactor: !!(user && user.twoFactor), needs2fa: !!(user && user.needs2fa),
     categories: CATEGORIES.map((c) => [c, SITE.newsCategories[c]]), allCategories: SITE.newsCategories, defaultCategory: DEFAULT_CATEGORY,
     features: { events: !!FEATURES.events, pin: !!FEATURES.pin && !!user && user.role === "admin" && !user.needs2fa } });
   if (req.method !== "GET" && req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return send(405, { error: "method" }); }
@@ -397,6 +405,7 @@ module.exports = async (req, res) => {
     const user = await session(req);
     if (req.method === "GET" && !wantsList) return send(200, info(user));
     if (!user) return send(401, { error: "session" });
+    if (user.elsewhere) return send(403, { error: "forbidden" });  // set to publish only on the main site
     if (user.needs2fa) return send(403, { error: "2fa" });  // admins and owners work only with two-step sign-in on
     if (wantsList) return send(...(await listNews()));  // drafts and scheduled posts are listed only here, behind the session
     const body = await readJson(req);

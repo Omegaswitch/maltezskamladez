@@ -6,21 +6,21 @@
     "semantic_hash": ""
   },
   "api/_auth.mjs": {
-    "mtime": 1795780717.389191,
-    "seen": 1795780850.4503238,
-    "ast_hash": "601928785943aac9685a9acafa2f66a9",
+    "mtime": 1795781922.1077728,
+    "seen": 1795782081.9002008,
+    "ast_hash": "be882d0596f7c86b4251e6093ba865e5",
     "semantic_hash": ""
   },
   "api/auth.js": {
-    "mtime": 1795780717.3902717,
-    "seen": 1795780850.4503267,
-    "ast_hash": "407c63d0866b1e465d9279000384958a",
+    "mtime": 1795781922.1254628,
+    "seen": 1795782081.9002128,
+    "ast_hash": "704086dcd976cb366005fd66f6c27546",
     "semantic_hash": ""
   },
   "api/news.js": {
-    "mtime": 1795780717.3902717,
-    "seen": 1795780850.4503288,
-    "ast_hash": "41617c60b7e450af876ed7791d5bce65",
+    "mtime": 1795781937.5839157,
+    "seen": 1795782081.9002163,
+    "ast_hash": "a53847e1ec720356799b398cc641c0e2",
     "semantic_hash": ""
   },
   "api/rebuild.js": {
@@ -30,9 +30,9 @@
     "semantic_hash": ""
   },
   "build.py": {
-    "mtime": 1795780717.3902717,
-    "seen": 1795780850.4503324,
-    "ast_hash": "163fe640f05be0b872b82cba8ffba6da",
+    "mtime": 1795782005.098208,
+    "seen": 1795782081.9002216,
+    "ast_hash": "d6ac69c12baaf9261e44a23b1b449351",
     "semantic_hash": ""
   },
   "check.py": {
@@ -48,8 +48,8 @@
     "semantic_hash": ""
   },
   "content/site.json": {
-    "mtime": 1795780822.2570548,
-    "seen": 1795780850.4503362,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.900228,
     "ast_hash": "f28d5feabac39a7776d88811c9824bcc",
     "semantic_hash": ""
   },
@@ -78,21 +78,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1795780717.4066398,
-    "seen": 1795780850.4503424,
-    "ast_hash": "d1749022b9d25cf757bef22f53160c57",
-    "semantic_hash": ""
-  },
-  "scripts/add-user.mjs": {
-    "mtime": 1795780717.4066398,
-    "seen": 1795780850.4503431,
-    "ast_hash": "fc590a6e931838d80ef64852c0a5a941",
-    "semantic_hash": ""
-  },
-  "scripts/user-sql.mjs": {
-    "mtime": 1795780717.4112997,
-    "seen": 1795780850.450344,
-    "ast_hash": "d44763ca6cb04c3c872182e5d987ec26",
+    "mtime": 1795782062.6306605,
+    "seen": 1795782081.900236,
+    "ast_hash": "cd70463584422986d1959e91e94b428d",
     "semantic_hash": ""
   },
   "static/img/banner/banner-photo.webp.json": {
@@ -102,8 +90,8 @@
     "semantic_hash": ""
   },
   "static/img/lockup/lockup.json": {
-    "mtime": 1795780771.6566627,
-    "seen": 1795780850.450347,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.900239,
     "ast_hash": "488ef837728e16e432425cacbaae24ff",
     "semantic_hash": ""
   },
@@ -114,9 +102,9 @@
     "semantic_hash": ""
   },
   "static/js/news-editor.js": {
-    "mtime": 1795780717.4149923,
-    "seen": 1795780850.450349,
-    "ast_hash": "4a860a1adf426e833c706374f4d0561d",
+    "mtime": 1795781980.166361,
+    "seen": 1795782081.9002419,
+    "ast_hash": "e24d0b1d98cd87f493cf0ad7744a69e0",
     "semantic_hash": ""
   },
   "static/js/pdf-worker.js": {
@@ -147,12 +135,6 @@
     "mtime": 1795780717.6741314,
     "seen": 1795780850.450355,
     "ast_hash": "90c0375a2c9fa4db0706e91d731a5125",
-    "semantic_hash": ""
-  },
-  "tests/auth.test.js": {
-    "mtime": 1795780717.6741314,
-    "seen": 1795780850.450356,
-    "ast_hash": "d1e6fab858b5005cc32b20fd74611589",
     "semantic_hash": ""
   },
   "tests/news.local.js": {
@@ -222,9 +204,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1795780717.389191,
-    "seen": 1795780850.4503675,
-    "ast_hash": "8f16315b7445309d6b92a8789358b015",
+    "mtime": 1795782078.670327,
+    "seen": 1795782081.900265,
+    "ast_hash": "036c2bc41fc5d05a1f4037a0bf129e81",
     "semantic_hash": ""
   },
   "content/news/2018/10/09/pansky-cundr.html": {
@@ -744,62 +726,62 @@
     "semantic_hash": ""
   },
   "static/img/lockup/cs.svg": {
-    "mtime": 1795780771.5713675,
-    "seen": 1795780850.4505765,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.900397,
     "ast_hash": "a469141d51ee8fe159a3822b56aa9f34",
     "semantic_hash": ""
   },
   "static/img/lockup/de.svg": {
-    "mtime": 1795780771.5806072,
-    "seen": 1795780850.45058,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.900398,
     "ast_hash": "8cd346bf3d82cc9f6c5484880bc973f8",
     "semantic_hash": ""
   },
   "static/img/lockup/en.svg": {
-    "mtime": 1795780771.5734186,
-    "seen": 1795780850.4505885,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.9003992,
     "ast_hash": "ef46069278ca7220f486ab13c344f631",
     "semantic_hash": ""
   },
   "static/img/lockup/fr.svg": {
-    "mtime": 1795780771.5756662,
-    "seen": 1795780850.4505897,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.9004,
     "ast_hash": "218d432b6ff6622a3440550f1c9793f0",
     "semantic_hash": ""
   },
   "static/img/lockup/it.svg": {
-    "mtime": 1795780771.5783615,
-    "seen": 1795780850.4505918,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.9004009,
     "ast_hash": "36ab59974f18a043f3b7bacdf44cfd79",
     "semantic_hash": ""
   },
   "static/img/og-cs.jpg": {
-    "mtime": 1795780805.7821367,
-    "seen": 1795780850.4508462,
+    "mtime": 1795781370.2541702,
+    "seen": 1795782081.900402,
     "ast_hash": "2ed49567ad35c1f94a44eae11bf24efa",
     "semantic_hash": ""
   },
   "static/img/og-de.jpg": {
-    "mtime": 1795780807.6301367,
-    "seen": 1795780850.4508507,
+    "mtime": 1795781370.2581701,
+    "seen": 1795782081.9004033,
     "ast_hash": "8da5f81e5f0f1ac692d5721f3c967063",
     "semantic_hash": ""
   },
   "static/img/og-en.jpg": {
-    "mtime": 1795780806.2261367,
-    "seen": 1795780850.450854,
+    "mtime": 1795781370.2581701,
+    "seen": 1795782081.9004042,
     "ast_hash": "25c10fc7926bf39f6267a794d132ef92",
     "semantic_hash": ""
   },
   "static/img/og-fr.jpg": {
-    "mtime": 1795780806.6941366,
-    "seen": 1795780850.4508564,
+    "mtime": 1795781370.2581701,
+    "seen": 1795782081.9004052,
     "ast_hash": "d40c05f9c4e0b7289176b3ea0806b4b6",
     "semantic_hash": ""
   },
   "static/img/og-it.jpg": {
-    "mtime": 1795780807.1221368,
-    "seen": 1795780850.4508579,
+    "mtime": 1795781370.2581701,
+    "seen": 1795782081.9004061,
     "ast_hash": "b444fc688a31ea7e49a4f820268e1416",
     "semantic_hash": ""
   },
@@ -2235,6 +2217,60 @@
     "mtime": 1795780717.6741314,
     "seen": 1795780850.4511487,
     "ast_hash": "cb894694abcbb2f899c4e4331d48ddfe",
+    "semantic_hash": ""
+  },
+  "api/_authlog.mjs": {
+    "mtime": 1795781912.13501,
+    "seen": 1795782081.9002056,
+    "ast_hash": "acaf4734737d23448a4573bf7430aadb",
+    "semantic_hash": ""
+  },
+  "api/_mail.js": {
+    "mtime": 1795781912.138219,
+    "seen": 1795782081.9002075,
+    "ast_hash": "bc46e7df0655715368a564cbc94c67a6",
+    "semantic_hash": ""
+  },
+  "api/_sessions.mjs": {
+    "mtime": 1795781912.1365478,
+    "seen": 1795782081.900209,
+    "ast_hash": "931880596798e53f88f2f4399681d978",
+    "semantic_hash": ""
+  },
+  "api/_sites.js": {
+    "mtime": 1795781912.1416445,
+    "seen": 1795782081.9002101,
+    "ast_hash": "7d7fbf6fe6828977a1cf02539bdc509f",
+    "semantic_hash": ""
+  },
+  "api/map.js": {
+    "mtime": 1795781912.139951,
+    "seen": 1795782081.9002144,
+    "ast_hash": "7d4469c5b75edc5d56c2aca5fe174784",
+    "semantic_hash": ""
+  },
+  "static/media/napoveda/1-zaklad.webp": {
+    "mtime": 1795781980.1720593,
+    "seen": 1795782081.9006655,
+    "ast_hash": "af2dad20f5f6a169ac7e94566eee0003",
+    "semantic_hash": ""
+  },
+  "static/media/napoveda/2-text.webp": {
+    "mtime": 1795781980.172107,
+    "seen": 1795782081.9006672,
+    "ast_hash": "ca16e42b99aee8d2e6095b9489d3f947",
+    "semantic_hash": ""
+  },
+  "static/media/napoveda/3-prilohy.webp": {
+    "mtime": 1795781980.1721365,
+    "seen": 1795782081.9006681,
+    "ast_hash": "c610c6457c5ea22a051c5c2d9a5e5b86",
+    "semantic_hash": ""
+  },
+  "static/media/napoveda/4-upravit.webp": {
+    "mtime": 1795781980.1721647,
+    "seen": 1795782081.900669,
+    "ast_hash": "7515ab6ce91a2eb94103c4c7752d317e",
     "semantic_hash": ""
   },
   "package-lock.json": {

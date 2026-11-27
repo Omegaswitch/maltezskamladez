@@ -2,9 +2,7 @@
   "private": true,
   "description": "Serverless functions in api/ (the site itself is built by build.py)",
   "scripts": {
-    "test": "node tests/news.test.js && node tests/auth.test.js",
-    "auth:user": "node scripts/add-user.mjs",
-    "auth:user-sql": "node scripts/user-sql.mjs"
+    "test": "node tests/news.test.js"
   },
   "dependencies": {
     "better-auth": "^1.7.22",
