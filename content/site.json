@@ -1,5 +1,5 @@
 {
- "baseUrl": "https://cmm.maltezskyrad.cz",
+ "baseUrl": "https://cmm.orderofmalta.cz",
  "addcal": {
   "calendarUid": "",
   "publicUrl": "",
@@ -12,7 +12,7 @@
    "orderActivities": "Maltézský řád",
    "entity": "Česká maltézská mládež",
    "site": "Maltézský řád – Česká maltézská mládež",
-   "lockup": "Maltézský řád – Česká republika"
+   "lockup": "Maltézský řád – Česká republika – Česká maltézská mládež"
   },
   "en": {
    "order": "Sovereign Military Hospitaller Order of St. John of Jerusalem of Rhodes and of Malta",
@@ -20,7 +20,7 @@
    "orderActivities": "Order of Malta",
    "entity": "Czech Maltese Youth",
    "site": "Order of Malta – Czech Maltese Youth",
-   "lockup": "Order of Malta – Czech Republic"
+   "lockup": "Order of Malta – Czech Republic – Czech Maltese Youth"
   },
   "fr": {
    "order": "Ordre Souverain Militaire et Hospitalier de Saint-Jean de Jérusalem de Rhodes et de Malte",
@@ -28,7 +28,7 @@
    "orderActivities": "Ordre de Malte",
    "entity": "Jeunesse maltaise tchèque",
    "site": "Ordre de Malte – Jeunesse maltaise tchèque",
-   "lockup": "Ordre de Malte – République tchèque"
+   "lockup": "Ordre de Malte – République tchèque – Jeunesse maltaise tchèque"
   },
   "it": {
    "order": "Sovrano Militare Ordine Ospedaliero di San Giovanni di Gerusalemme di Rodi e di Malta",
@@ -36,7 +36,7 @@
    "orderActivities": "Ordine di Malta",
    "entity": "Gioventù maltese ceca",
    "site": "Ordine di Malta – Gioventù maltese ceca",
-   "lockup": "Ordine di Malta – Repubblica Ceca"
+   "lockup": "Ordine di Malta – Repubblica Ceca – Gioventù maltese ceca"
   },
   "de": {
    "order": "Souveräner Ritter- und Hospitalorden vom Heiligen Johannes von Jerusalem von Rhodos und von Malta",
@@ -44,7 +44,7 @@
    "orderActivities": "Malteserorden",
    "entity": "Tschechische Malteserjugend",
    "site": "Malteserorden – Tschechische Malteserjugend",
-   "lockup": "Der Malteserorden – Tschechische Republik"
+   "lockup": "Der Malteserorden – Tschechische Republik – Tschechische Malteserjugend"
   }
  },
  "languages": [
@@ -82,11 +82,11 @@
    "it": "Gran Priorato di Boemia",
    "de": "Großpriorat Böhmen"
   },
-  "url": "https://www.maltezskyrad.cz/"
+  "url": "https://www.orderofmalta.cz/"
  },
  "gdpr": {
-  "principles": "https://www.maltezskyrad.cz/gdpr/zasady-pro-zpracovani-osobnich-udaju-cmm/",
-  "consent": "https://www.maltezskyrad.cz/gdpr/maltezska-mladez/"
+  "principles": "https://www.orderofmalta.cz/gdpr/zasady-pro-zpracovani-osobnich-udaju/",
+  "consent": "https://www.orderofmalta.cz/gdpr/maltezska-mladez/"
  },
  "social": [
   {
