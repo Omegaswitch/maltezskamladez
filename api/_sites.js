@@ -4,7 +4,10 @@
 // When maltezskyrad.cz is handed over, the editor addresses change to www.maltezskyrad.cz and cmm.maltezskyrad.cz.
 const SITES = {
   main: { editor: "https://www.orderofmalta.cz/pridat-aktualitu/" },
-  cmm: { editor: "https://cmm.orderofmalta.cz/pridat-aktualitu/" },
+  cmm: { editor: "https://cmm.orderofmalta.cz/pridat-aktualitu/",
+    // its e-mail letterhead (api/_mail.js frame(…, "cmm")), for invitations the main site sends to people of Mládež;
+    // the same data as maltezskamladez content/site.json (names, contact) and its header images /img/email-header-<lang>.jpg
+    letterhead: {"origin": "https://cmm.orderofmalta.cz", "host": "cmm.orderofmalta.cz", "names": {"cs": {"order": "Suverénní vojenský špitální řád svatého Jana Jeruzalémského, z Rhodu a z Malty", "orderActivities": "Maltézský řád", "entity": "Česká maltézská mládež", "lockup": "Česká maltézská mládež"}, "en": {"order": "Sovereign Military Hospitaller Order of St. John of Jerusalem of Rhodes and of Malta", "orderActivities": "Order of Malta", "entity": "Czech Maltese Youth", "lockup": "Czech Maltese Youth"}, "fr": {"order": "Ordre Souverain Militaire et Hospitalier de Saint-Jean de Jérusalem de Rhodes et de Malte", "orderActivities": "Ordre de Malte", "entity": "Jeunesse maltaise tchèque", "lockup": "Jeunesse maltaise tchèque"}, "it": {"order": "Sovrano Militare Ordine Ospedaliero di San Giovanni di Gerusalemme di Rodi e di Malta", "orderActivities": "Ordine di Malta", "entity": "Gioventù maltese ceca", "lockup": "Gioventù maltese ceca"}, "de": {"order": "Souveräner Ritter- und Hospitalorden vom Heiligen Johannes von Jerusalem von Rhodos und von Malta", "orderActivities": "Malteserorden", "entity": "Tschechische Malteserjugend", "lockup": "Tschechische Malteserjugend"}}, "contact": {"legalName": "Česká maltézská mládež, z.s.", "ico": "06519555", "address": "Velkopřevorské náměstí 485/4, Malá Strana, 118 00 Praha 1", "addressIntl": "Velkopřevorské náměstí 485/4, Malá Strana, 118 00 Prague 1, Czech Republic", "email": "mladez@maltezskamladez.cz", "phones": ["+420 724 047 401", "+420 607 827 014"]}} },
 };
 const CHOICES = ["main", "cmm", "both"];
 const TABLE = "create table if not exists user_sites (user_id text primary key, sites text not null default 'main')";

@@ -3,7 +3,8 @@
 // Grand Priory's lockup (static/img/email-header-<lang>.jpg, rendered from the site header in each language), the graphite menu band, then the
 // grey footer (full name, legal name, IČO, seat, contact) and the red footer. Table layout and inline styles for Gmail and
 // Outlook; Georgia and Arial stand in for EB Garamond and Asap, which e-mail programs do not load.
-const { names: ALL_NAMES, contact: C } = require("../content/site.json");
+const SITE = require("../content/site.json");
+const SITES = require("./_sites.js");
 // the letterhead follows the language of the body: banner, names, footer lines and links (cs, en, fr, it, de)
 const L = {
   cs: { home: "", privacy: "/ochrana-osobnich-udaju/", auto: "Zprávu odeslal web automaticky.", main: "Hlavní web", priv: "Ochrana osobních údajů", id: "IČO" },
@@ -19,7 +20,11 @@ const ORIGIN = (() => { try { return new URL(process.env.BETTER_AUTH_URL).origin
 const SANS = "font-family:Arial,'Segoe UI',sans-serif";
 const SERIF = "Georgia,'Times New Roman',serif";
 
-const frame = (body, lang = "cs") => { const lg = L[lang] ? lang : "cs", t = L[lg], NAMES = ALL_NAMES[lg] || ALL_NAMES.cs; return (
+// whose letterhead: this site's own (content/site.json), or another site sharing the accounts (api/_sites.js, e.g. "cmm")
+const OWN = { origin: ORIGIN, host: new URL(SITE.baseUrl).host, names: SITE.names, contact: SITE.contact };
+const brandOf = (brand) => (brand && SITES.SITES[brand] && SITES.SITES[brand].letterhead) || OWN;
+
+const frame = (body, lang = "cs", brand) => { const lg = L[lang] ? lang : "cs", t = L[lg], B = brandOf(brand), ORIGIN = B.origin, C = B.contact, NAMES = B.names[lg] || B.names.cs; return (
   `<!doctype html><html lang="${lg}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
   `<style>h1,h2,h3{font-family:${SERIF};font-weight:normal;color:#111111}</style></head>` +
   `<body style="margin:0;padding:0;background:#f3f3f3">` +
@@ -34,7 +39,7 @@ const frame = (body, lang = "cs") => { const lg = L[lang] ? lang : "cs", t = L[l
   `<p style="margin:0 0 6px;font-weight:bold;color:#111111">${esc(NAMES.order)} – ${esc(NAMES.entity)}</p>` +
   `<p style="margin:0 0 6px">${esc(C.legalName)}, ${esc(t.id)} ${esc(C.ico)} · ${esc(lg === "cs" ? C.address : C.addressIntl || C.address)} · <a href="mailto:${esc(C.email)}" style="color:#c80e00">${esc(C.email)}</a> · ${C.phones.map(esc).join(" · ")}</p>` +
   `<p style="margin:0">${esc(t.auto)}</p></td></tr>` +
-  `<tr><td style="background:#e31a18;color:#ffffff;padding:16px 32px;font-size:13px">${esc(t.main)}: <a href="${ORIGIN}/${t.home}" style="color:#ffffff">www.maltezskyrad.cz</a> · <a href="${ORIGIN}${t.privacy}" style="color:#ffffff">${esc(t.priv)}</a></td></tr>` +
+  `<tr><td style="background:#e31a18;color:#ffffff;padding:16px 32px;font-size:13px">${esc(t.main)}: <a href="${ORIGIN}/${t.home}" style="color:#ffffff">${esc(B.host)}</a> · <a href="${ORIGIN}${t.privacy}" style="color:#ffffff">${esc(t.priv)}</a></td></tr>` +
   `</table></td></tr></table></body></html>`); };
 
 const button = (url, label) =>
