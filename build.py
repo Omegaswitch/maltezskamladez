@@ -880,7 +880,7 @@ def render_news_editor():
  </form>
  <div id="ne-app" hidden>
  <div class="ne-bar"><p class="ne-who"><span data-i18n="who.in">Přihlášen(a):</span> <b id="ne-user"></b> · <button type="button" class="link-btn" id="ne-logout" data-i18n="who.out">Odhlásit</button></p>
- <a href="https://www.orderofmalta.cz/sprava/" id="ne-sprava" class="btn ne-small ne-members-link" hidden><span data-i18n="who.members">Členská databáze</span> <span aria-hidden="true">→</span></a></div>
+ <a href="https://www.maltezskyrad.cz/sprava/" id="ne-sprava" class="btn ne-small ne-members-link" hidden><span data-i18n="who.members">Členská databáze</span> <span aria-hidden="true">→</span></a></div>
  <details id="ne-help" class="ne-help">
   <summary data-i18n-html="help.summary">Jak přidat aktualitu <small>– krátký návod</small></summary>
   <ol>
@@ -930,7 +930,7 @@ def render_news_editor():
    <p class="ne-msg" id="ne-ses-msg" role="alert" hidden></p>
    <p><button type="button" class="btn ne-small" id="ne-ses-others" data-i18n="ses.others">Odhlásit všechna ostatní zařízení</button></p>
   </section>
-  <p id="ne-users-elsewhere" class="ne-card" hidden><span data-i18n="users.elsewhere">Uživatele přidáváte a jejich přístupy měníte ve Správě → Přístupy (stejné účty jako na hlavním webu).</span> <a href="https://www.orderofmalta.cz/sprava/#/pristupy" data-i18n="users.elsewhereLink">Ve Správě → Přístupy</a></p>
+  <p id="ne-users-elsewhere" class="ne-card" hidden><span data-i18n="users.elsewhere">Uživatele přidáváte a jejich přístupy měníte ve Správě → Přístupy (stejné účty jako na hlavním webu).</span> <a href="https://www.maltezskyrad.cz/sprava/#/pristupy" data-i18n="users.elsewhereLink">Ve Správě → Přístupy</a></p>
   <div id="ne-admin-users" hidden>
    <form id="ne-user-form" class="ne-card">
     <h2 class="display-s" data-i18n="uf.title">Přidat uživatele</h2>

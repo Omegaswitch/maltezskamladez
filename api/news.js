@@ -16,7 +16,7 @@ const crypto = require("crypto");
 const SITE = require("../content/site.json");
 
 const DEFAULT_REPO = "Omegaswitch/maltezskamladez";
-const HERE = "cmm";  // this site in api/_sites.js (accounts are shared with the main site, www.orderofmalta.cz)
+const HERE = "cmm";  // this site in api/_sites.js (accounts are shared with the main site, www.maltezskyrad.cz)
 const SITES = require("./_sites.js");
 const DEFAULT_CATEGORY = SITE.defaultCategory;
 const FEATURES = {"events": false, "pin": true};  // events: the calendar of events; pin: a notice pinned to the home page
