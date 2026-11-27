@@ -136,7 +136,7 @@ export const auth = betterAuth({
   disabledPaths: ["/update-user"],
   hooks: { before: strength },
   // the site answers on orderofmalta.cz until maltezskyrad.cz takes over, with and without www: accept all four
-  trustedOrigins: ["orderofmalta.cz", "maltezskyrad.cz"].flatMap((d) => [`https://${d}`, `https://www.${d}`, `https://cmm.${d}`]),  // cmm.: Česká maltézská mládež (same accounts, api/_sites.js)
+  trustedOrigins: ["orderofmalta.cz", "maltezskyrad.cz"].flatMap((d) => [`https://${d}`, `https://www.${d}`, `https://cmm.${d}`]).concat("https://cvp.maltezskyrad.cz"),  // cmm.: Česká maltézská mládež (same accounts, api/_sites.js)
   // everyone added gets e-mail codes on new devices (existing people: see scripts/auth-schema.sql)
   databaseHooks: MAIL ? { user: { create: { before: async (user) => ({ data: { ...user, twoFactorEnabled: true } }) } } } : undefined,
   plugins: [
