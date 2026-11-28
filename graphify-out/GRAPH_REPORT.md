@@ -1,17 +1,17 @@
-# Graph Report - maltezskamladez  (2026-11-27)
+# Graph Report - maltezskamladez  (2026-11-28)
 
 ## Corpus Check
-- 46 files · ~135,069 words
+- 46 files · ~135,293 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 23 file(s) not represented in the graph (top: .woff2 16, (none) 3, .css 2)
 
 ## Summary
-- 1021 nodes · 2013 edges · 56 communities (46 shown, 10 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 77 edges (avg confidence: 0.85)
+- 1021 nodes · 2014 edges · 58 communities (48 shown, 10 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 78 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `35031bcb`
+- Built from commit: `8223ec62`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,7 +22,7 @@
 - s
 - Module
 - m
-- j
+- b
 - quill.js
 - rt
 - rt
@@ -70,6 +70,8 @@
 - localized_nav
 - CLAUDE.md
 - _existing
+- I
+- .replaceWith
 
 ## God Nodes (most connected - your core abstractions)
 1. `i` - 57 edges
@@ -98,7 +100,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (56 total, 10 thin omitted)
+## Communities (58 total, 10 thin omitted)
 
 ### Community 0 - "news.js"
 Cohesion: 0.06
@@ -122,15 +124,19 @@ Nodes (34): Module(), a(), Aa(), bb(), c(), cc(), a(), d() (+26 more)
 
 ### Community 5 - "m"
 Cohesion: 0.06
-Nodes (13): attachUI(), b(), create(), descendant(), et, find(), g(), getFormat() (+5 more)
+Nodes (10): attachUI(), descendant(), descendants(), et, g(), getHTML(), j, m (+2 more)
+
+### Community 6 - "b"
+Cohesion: 0.18
+Nodes (7): b(), create(), find(), getFormat(), e(), M(), n()
 
 ### Community 7 - "quill.js"
-Cohesion: 0.05
-Nodes (15): copy(), detach(), emit(), handleCompositionEnd(), handleCompositionStart(), hasNext(), ht(), L (+7 more)
+Cohesion: 0.06
+Nodes (13): copy(), emit(), handleCompositionEnd(), handleCompositionStart(), hasNext(), ht(), L, move() (+5 more)
 
 ### Community 9 - "rt"
-Cohesion: 0.09
-Nodes (7): add(), G, Q, u, value(), X, z()
+Cohesion: 0.10
+Nodes (5): G, Q, u, X, z()
 
 ### Community 10 - "Components"
 Cohesion: 0.07
@@ -143,10 +149,6 @@ Nodes (5): E(), N, q(), R(), w()
 ### Community 12 - "o"
 Cohesion: 0.16
 Nodes (12): applyDelta(), attach(), deleteText(), formatLine(), formatText(), insertContents(), insertEmbed(), insertText() (+4 more)
-
-### Community 13 - "c"
-Cohesion: 0.12
-Nodes (4): c, clone(), splitAfter(), Y
 
 ### Community 14 - "build.py"
 Cohesion: 0.12
@@ -162,7 +164,7 @@ Nodes (17): runs-on, steps, CI, jobs, build, name, on, pull_request (+9 more)
 
 ### Community 17 - "constructor"
 Cohesion: 0.16
-Nodes (17): buildItem(), buildLabel(), buildOptions(), buildPicker(), close(), constructor(), escape(), focus() (+9 more)
+Nodes (18): buildItem(), buildLabel(), buildOptions(), buildPicker(), close(), constructor(), escape(), focus() (+10 more)
 
 ### Community 18 - "import_wp.py"
 Cohesion: 0.24
@@ -173,8 +175,8 @@ Cohesion: 0.17
 Nodes (12): ac, HERE_CMM, LOC, NEW_PW, ORIGIN, { plugin, put }, pool, roles (+4 more)
 
 ### Community 21 - "optimize"
-Cohesion: 0.11
-Nodes (16): appendChild(), deleteAt(), descendants(), enforceAllowedChildren(), format(), formatAt(), insertAt(), isolate() (+8 more)
+Cohesion: 0.15
+Nodes (12): appendChild(), deleteAt(), enforceAllowedChildren(), formatAt(), insertAt(), isolate(), length(), optimize() (+4 more)
 
 ### Community 22 - "_mail.js"
 Cohesion: 0.24
@@ -182,7 +184,7 @@ Nodes (10): alert(), auth, mail(), brandOf(), button(), esc(), frame(), L (+2 mo
 
 ### Community 23 - "qt"
 Cohesion: 0.08
-Nodes (28): Bt(), Ct(), Dt(), Et(), F(), Ft(), Gt(), hide() (+20 more)
+Nodes (26): Bt(), Ct(), Dt(), Et(), F(), Ft(), Gt(), hide() (+18 more)
 
 ### Community 25 - "load_news"
 Cohesion: 0.20
@@ -201,8 +203,8 @@ Cohesion: 0.17
 Nodes (11): buildCommand, cleanUrls, crons, framework, headers, installCommand, outputDirectory, redirects (+3 more)
 
 ### Community 29 - "update"
-Cohesion: 0.21
-Nodes (13): A(), a, build(), getDelta(), getRange(), I(), i(), insertBefore() (+5 more)
+Cohesion: 0.29
+Nodes (8): A(), build(), getDelta(), getRange(), insertBefore(), normalizedToRange(), update(), y()
 
 ### Community 30 - "render_page"
 Cohesion: 0.22
@@ -284,6 +286,14 @@ Nodes (3): authHooks(), PATHS, who()
 Cohesion: 0.67
 Nodes (3): _descendants(), side_nav(), walk()
 
+### Community 56 - "I"
+Cohesion: 0.21
+Nodes (9): a, add(), detach(), I(), i(), l(), p(), remove() (+1 more)
+
+### Community 57 - ".replaceWith"
+Cohesion: 0.22
+Nodes (4): moveChildren(), replaceWith(), unwrap(), Z
+
 ## Knowledge Gaps
 - **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -291,16 +301,16 @@ Nodes (3): _descendants(), side_nav(), walk()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Module()` connect `Module` to `news.js`?**
-  _High betweenness centrality (0.196) - this node is a cross-community bridge._
+  _High betweenness centrality (0.171) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `Module()` (e.g. with `ac()` and `$b()`) actually correct?**
   _`Module()` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **Should `news.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06241519674355495 - nodes in this community are weakly interconnected._
-- **Why does `v()` connect `o` to `news-editor.js`, `m`, `quill.js`, `f`, `update`?**
-  _High betweenness centrality (0.096) - this node is a cross-community bridge._
+- **Why does `v()` connect `o` to `news-editor.js`, `b`, `quill.js`, `f`, `I`, `update`?**
+  _High betweenness centrality (0.118) - this node is a cross-community bridge._
 - **Should `news-editor.js` be split into smaller, more focused modules?**
   _Cohesion score 0.08648648648648649 - nodes in this community are weakly interconnected._
-- **Why does `n()` connect `m` to `Module`, `quill.js`, `o`, `constructor`, `optimize`, `qt`, `update`?**
-  _High betweenness centrality (0.076) - this node is a cross-community bridge._
+- **Why does `n()` connect `b` to `Module`, `m`, `quill.js`, `o`, `constructor`, `qt`, `I`, `.replaceWith`, `update`?**
+  _High betweenness centrality (0.074) - this node is a cross-community bridge._
 - **Should `i` be split into smaller, more focused modules?**
   _Cohesion score 0.0531986531986532 - nodes in this community are weakly interconnected._

@@ -5,7 +5,7 @@
   "3": "s",
   "4": "Module",
   "5": "m",
-  "6": "j",
+  "6": "b",
   "7": "quill.js",
   "8": "rt",
   "9": "rt",
@@ -54,5 +54,7 @@
   "52": "localized_nav",
   "53": "CLAUDE.md",
   "54": "_existing",
-  "55": "head.js"
+  "55": "head.js",
+  "56": "I",
+  "57": ".replaceWith"
 }
